@@ -1,0 +1,198 @@
+{
+	"responseHeader":{
+		"transactionId":"20151204112246357815",
+		"requestTime":"20151204222310",
+		"channelCode":"eCare",
+		"resultCode":"0",
+		"bizCode":"C029",
+		"resultDesc":"success",
+		"responseTime":"20151204112247"
+	},
+	"responseBody":{
+		"serviceNumber":"10509888",
+		"extParameters":{
+			"beginRowNum":"0",
+			"totalCDRNum":"897",
+			"cdrList":[
+				{
+					"startTime":"2015-12-04 09:47:18",
+					"flowType":"--",
+					"serviceTypeName":"local data service",
+					"otherNumber":"10509888",
+					"actualVolume":"0.57(KB)",
+					"endTime":"2015-12-04 09:47:18",
+					"actualChargeAmt":"0.0205"
+				},
+				{
+					"startTime":"2015-12-04 09:29:40",
+					"flowType":"--",
+					"serviceTypeName":"local data service",
+					"otherNumber":"10509888",
+					"actualVolume":"3.87(KB)",
+					"endTime":"2015-12-04 07:45:11",
+					"actualChargeAmt":""
+				},
+				{
+					"startTime":"2015-12-04 06:23:26",
+					"flowType":"--",
+					"serviceTypeName":"local data service",
+					"otherNumber":"10509888",
+					"actualVolume":"2.85(KB)",
+					"endTime":"2015-12-04 06:23:26",
+					"actualChargeAmt":"0.0205"
+				},
+				{
+					"startTime":"2015-12-04 05:04:12",
+					"flowType":"--",
+					"serviceTypeName":"local data service",
+					"otherNumber":"10509888",
+					"actualVolume":"62.45(KB)",
+					"endTime":"2015-12-04 05:03:27",
+					"actualChargeAmt":"0.0205"
+				},
+				{
+					"startTime":"2015-12-04 04:56:10",
+					"flowType":"--",
+					"serviceTypeName":"rental",
+					"actualVolume":"0",
+					"endTime":"2015-12-04 04:56:10",
+					"actualChargeAmt":"3.0000"
+				},
+				{
+					"startTime":"2015-12-04 02:31:35",
+					"flowType":"--",
+					"serviceTypeName":"local data service",
+					"otherNumber":"10509888",
+					"actualVolume":"1.15(KB)",
+					"endTime":"2015-12-04 02:46:35",
+					"actualChargeAmt":""
+				},
+				{
+					"startTime":"2015-12-04 01:46:35",
+					"flowType":"--",
+					"serviceTypeName":"local data service",
+					"otherNumber":"10509888",
+					"actualVolume":"7.48(KB)",
+					"endTime":"2015-12-04 02:01:35",
+					"actualChargeAmt":"0.0100"
+				},
+				{
+					"startTime":"2015-12-04 11:32:53",
+					"flowType":"--",
+					"serviceTypeName":"local data service",
+					"otherNumber":"10509888",
+					"actualVolume":"4.09(KB)",
+					"endTime":"2015-12-04 11:45:02",
+					"actualChargeAmt":""
+				},
+				{
+					"startTime":"2015-12-04 10:17:53",
+					"flowType":"--",
+					"serviceTypeName":"local data service",
+					"otherNumber":"10509888",
+					"actualVolume":"13.91(KB)",
+					"endTime":"2015-12-04 10:32:53",
+					"actualChargeAmt":""
+				},
+				{
+					"startTime":"2015-12-04 10:02:53",
+					"flowType":"--",
+					"serviceTypeName":"local data service",
+					"otherNumber":"10509888",
+					"actualVolume":"37.59(KB)",
+					"endTime":"2015-12-04 10:17:53",
+					"actualChargeAmt":"0.0100"
+				},
+				{
+					"startTime":"2015-12-04 09:40:08",
+					"flowType":"--",
+					"serviceTypeName":"local data service",
+					"otherNumber":"10509888",
+					"actualVolume":"0.05(KB)",
+					"endTime":"2015-12-04 09:55:08",
+					"actualChargeAmt":""
+				},
+				{
+					"startTime":"2015-12-04 08:40:08",
+					"flowType":"--",
+					"serviceTypeName":"local data service",
+					"otherNumber":"10509888",
+					"actualVolume":"2.34(KB)",
+					"endTime":"2015-12-04 08:55:08",
+					"actualChargeAmt":""
+				},
+				{
+					"startTime":"2015-12-04 08:25:08",
+					"flowType":"--",
+					"serviceTypeName":"local data service",
+					"otherNumber":"10509888",
+					"actualVolume":"13.20(KB)",
+					"endTime":"2015-12-04 08:40:08",
+					"actualChargeAmt":""
+				},
+				{
+					"startTime":"2015-12-04 08:10:08",
+					"flowType":"--",
+					"serviceTypeName":"local data service",
+					"otherNumber":"10509888",
+					"actualVolume":"100.22(KB)",
+					"endTime":"2015-12-04 08:25:08",
+					"actualChargeAmt":"0.0100"
+				},
+				{
+					"startTime":"2015-12-04 07:45:47",
+					"flowType":"--",
+					"serviceTypeName":"local data service",
+					"otherNumber":"10509888",
+					"actualVolume":"0.15(KB)",
+					"endTime":"2015-12-04 08:00:47",
+					"actualChargeAmt":""
+				},
+				{
+					"startTime":"2015-12-04 07:30:47",
+					"flowType":"--",
+					"serviceTypeName":"local data service",
+					"otherNumber":"10509888",
+					"actualVolume":"2.74(KB)",
+					"endTime":"2015-12-04 07:45:47",
+					"actualChargeAmt":"0.0100"
+				},
+				{
+					"startTime":"2015-12-04 07:00:47",
+					"flowType":"--",
+					"serviceTypeName":"local data service",
+					"otherNumber":"10509888",
+					"actualVolume":"0.66(KB)",
+					"endTime":"2015-12-04 07:15:47",
+					"actualChargeAmt":"0.0100"
+				},
+				{
+					"startTime":"2015-12-04 05:47:20",
+					"flowType":"--",
+					"serviceTypeName":"local data service",
+					"otherNumber":"10509888",
+					"actualVolume":"0.29(KB)",
+					"endTime":"2015-12-04 06:02:20",
+					"actualChargeAmt":"0.0100"
+				},
+				{
+					"startTime":"2015-12-04 12:00:00",
+					"flowType":"--",
+					"serviceTypeName":"rental",
+					"actualVolume":"0",
+					"endTime":"2015-12-04 12:00:00",
+					"actualChargeAmt":""
+				},
+				{
+					"startTime":"2015-12-04 12:00:00",
+					"flowType":"--",
+					"serviceTypeName":"rental",
+					"actualVolume":"0",
+					"endTime":"2015-12-04 12:00:00",
+					"actualChargeAmt":""
+				}
+			],
+			"fetchRowNum":"20"
+		}
+	}
+}

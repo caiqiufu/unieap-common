@@ -1,0 +1,23 @@
+{
+	"responseHeader":{
+		"transactionId":"20151210105618641605",
+		"requestTime":"20151210215631",
+		"channelCode":"eCare",
+		"resultCode":"0",
+		"bizCode":"C025",
+		"resultDesc":"success",
+		"responseTime":"20151210105618"
+	},
+	"responseBody":{
+		"serviceNumber":"",
+		"extParameters":{
+			"upgradeInfo":{
+				"upgradeInfo":{
+					"upgradeDesc":"fixed bugs",
+					"url":"http://192.168.0.109:8080/unieap/apps/mcare/apk/smartHall20151209_Unieap.apk"
+				},
+				"isUpgrade":"Y"
+			}
+		}
+	}
+}

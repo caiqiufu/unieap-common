@@ -1,0 +1,46 @@
+{
+	"responseHeader":{
+		"transactionId":"20151124040311619631",
+		"requestTime":"20151124160310",
+		"channelCode":"eCare",
+		"resultCode":"0",
+		"bizCode":"C026",
+		"resultDesc":"success",
+		"responseTime":"20151124040311"
+	},
+	"responseBody":{
+		"serviceNumber":"93268659",
+		"extParameters":{
+			"P":[
+				{
+					"id":8574,
+					"text":"Smart customer: buy 6s get big promition",
+					"subject":"iPhone 6s new promotion",
+					"hyperlink":""
+				}
+			],
+			"B":[
+				{
+					"id":8565,
+					"text":"USSD will be upgrade by 25/11/2105",
+					"subject":"system upgrade",
+					"hyperlink":"2233"
+				}
+			],
+			"N":[
+				{
+					"id":8563,
+					"text":"xchange promotion",
+					"subject":"xchange promotion",
+					"hyperlink":"3443444"
+				},
+				{
+					"id":8578,
+					"text":"Top-up promition",
+					"subject":"Top-up promition",
+					"hyperlink":"66"
+				}
+			]
+		}
+	}
+}

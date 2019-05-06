@@ -1,0 +1,39 @@
+
+
+<div class="metro_na" style="background-color: transparent; display: block;">
+	<ul>
+		<li style="background-color: transparent; transform: scale(1, 1);">
+			<a style="background-color: rgb(77, 61, 152);" href="#">
+			<img src="/images/login/icon_home.png" /><span>Home</span></a>
+		</li>
+		<li style="background-color: transparent; transform: scale(1, 1);">
+			<a style="background-color: rgb(136, 40, 143);" href="#">
+			<img src="/images/login/icon_home.png" /><span>Home2</span></a>
+		</li>
+		<li style="background-color: transparent; transform: scale(1, 1);">
+			<a style="background-color: rgb(0, 160, 177);" href="#">
+			<img src="/images/login/icon_home.png" /><span>Home3</span></a>
+		</li>
+		<li style="background-color: transparent; transform: scale(1, 1);">
+			<a style="background-color: rgb(210, 72, 39);" href="#">
+			<img src="/images/login/icon_home.png" /><span>Home3</span></a>
+		</li>
+	</ul>
+</div>
+<div class="containor">
+	<div class="nav_right" th:object="${menus}">
+		<div class="sub" data-id="${menus.index}" th:each="menu:${menus}">
+			<dl>
+				<dt>
+					<a th:text="${menu.menuName}"><i> &gt;</i></a>
+				</dt>
+				<dd>
+					<a  th:each="childMenu:${menu.childrenContainer}" style="text-decoration:underline" href="javascript:void(0)" 
+						th:onclick="|javascript:toFrame('${childMenu.href}','${childMenu.menuName}')|"
+						target="_self" title="${childMenu.menuName}" th:text="${childMenu.menuName}">
+					</a>
+				</dd>
+			</dl>
+		</div>
+	</div>
+</div>

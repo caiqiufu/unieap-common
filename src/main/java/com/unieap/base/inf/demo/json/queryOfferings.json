@@ -1,0 +1,10 @@
+{
+	"responseHeader":{
+		"transactionId":"20151117113746274183",
+		"resultCode":"10004",
+		"resultDesc":"Authentication failed due to an incorrect user name or password"
+	},
+	"responseBody":{
+		"serviceNumber":""
+	}
+}

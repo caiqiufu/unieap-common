@@ -1,0 +1,25 @@
+{
+	"requestBody":{
+		"serviceNumber":"15899785476",
+		"extParameters":{
+			"cardPinNumber":"11122345678877765554"
+		}
+	},
+	"requestHeader":{
+		"requestTime":"20150927083325",
+		"accessUser":"unieap",
+		"bizCode":"C007",
+		"accessPwd":"unieap",
+		"deviceInfo":{
+			"extParameters ":"",
+			"APKVersion":"1.0",
+			"OSType":"IOS",
+			"IMEI":"356952073509324",
+			"networkType":"3",
+			"model ":"P8",
+			"version":"9.0.1",
+			"resolution":"1920×1080",
+			"brand":"huawei"
+		}
+	}
+}

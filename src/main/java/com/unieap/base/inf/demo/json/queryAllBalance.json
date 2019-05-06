@@ -1,0 +1,71 @@
+{
+	"responseHeader":{
+		"transactionId":"20151120102233329919",
+		"requestTime":"20151120212248",
+		"channelCode":"eCare",
+		"resultCode":"0",
+		"bizCode":"C015",
+		"resultDesc":"success",
+		"responseTime":"20151120102234"
+	},
+	"responseBody":{
+		"serviceNumber":"962138386",
+		"extParameters":{
+			"allBalanceInfo":{
+				"voiceBalance":{
+					"remaningAmount":"58",
+					"balanceDetails":[
+						{
+							"expiryTime":"2015-11-21 12:00:00",
+							"remaningAmount":"58",
+							"totalAmount":"60",
+							"effectiveTime":"2015-11-20 12:00:00",
+							"usageAmount":"2"
+						}
+					],
+					"totalAmount":"60",
+					"dailyUsageAmount":"0",
+					"usageAmount":"2"
+				},
+				"moneyBalance":{
+					"mainBalanceDetails":[
+						{
+							"expiryTime":"2014-11-01 10:04:11",
+							"remaningAmount":"4.6761",
+							"totalAmount":"0.0000",
+							"effectiveTime":"2014-10-20 03:41:40",
+							"offeringName":"PPS_MainAccount"
+						}
+					],
+					"mainExpiryTime":"2015-12-24 11:59:59",
+					"mainUsageAmount":"0.1175",
+					"bonusBalanceDetails":[
+						
+					],
+					"mainRemaningAmount":"4.6761"
+				},
+				"dataBalance":{
+					"remaningAmount":"1967",
+					"balanceDetails":[
+						{
+							"expiryTime":"2015-11-22 12:00:00",
+							"remaningAmount":"0",
+							"totalAmount":"2048",
+							"effectiveTime":"2015-10-23 12:00:00",
+							"usageAmount":"2048"
+						},
+						{
+							"expiryTime":"2015-12-08 12:00:00",
+							"remaningAmount":"1967",
+							"totalAmount":"4096",
+							"effectiveTime":"2015-11-08 12:00:00",
+							"usageAmount":"2129"
+						}
+					],
+					"totalAmount":"6144",
+					"usageAmount":"4177"
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,59 @@
+{
+	"responseBody":{
+		"serviceNumber":"962138364",
+		"extParameters":{
+			"shopList":[
+				{
+					"createBy":"unieap",
+					"address":"Corner Sihanouk (274) & Sothearos (3) Blvd, Sangkat Tonle Bassac, Khan Chamkarmorn, Phnom Penh, Cambodia",
+					"cityName":"Phnom Penh",
+					"latitude":"11.44554",
+					"shopName":"Smart Shop Phnom Penh center",
+					"cityId":"1",
+					"id":2,
+					"openTime":"9:00-18:00",
+					"shopNo":"",
+					"activeFlag":"Y",
+					"createDate":"2014-05-10 04:47:25",
+					"longitude":"123.03003"
+				},
+				{
+					"createBy":"unieap",
+					"address":"Ground floor- inside Sorya Shoping Center. #13-16, Khan Daun Penh, Phnom Penh, Cambodia",
+					"cityName":"Phnom Penh",
+					"latitude":"12.44554",
+					"shopName":"Smart Shop Sorya Shopping Center",
+					"cityId":"1",
+					"id":1,
+					"openTime":"9:00-18:00",
+					"shopNo":"",
+					"activeFlag":"Y",
+					"createDate":"2014-05-10 04:47:25",
+					"longitude":"123.00009"
+				},
+				{
+					"createBy":"unieap",
+					"address":"Inside TK Avenue Boutique Lifestyle Mall, #80, St 315, SK Beung Kak 1, Khan Toul Kork, Phnom Penh, Cambodia",
+					"cityName":"Phnom Penh",
+					"latitude":"11.44554",
+					"shopName":"Smart Shop Toul Kork",
+					"cityId":"1",
+					"id":3,
+					"openTime":"9:00-18:00",
+					"activeFlag":"Y",
+					"createDate":"2014-05-10 04:47:25",
+					"longitude":"123.00009"
+				}
+			]
+		}
+	},
+	"responseHeader":{
+		"requestTime":"20151112010456",
+		"bizCode":"C016",
+		"responseTime":"20151112010457",
+		"resultCode":"0",
+		"resultDesc":"success",
+		"transactionId":"20151112010457297727",
+		"channelCode":"eCare"
+	}
+}

@@ -1,0 +1,62 @@
+{
+	"responseBody":{
+		"serviceNumber":"15899785476",
+		"extParameters":{
+			"categorys":[
+				{
+					"categoryType":"ct_Data",
+					"pictureUrl":"12",
+					"offerings":[
+						
+					],
+					"categoreName":"4G上网套餐体验版",
+					"categoryId":"2",
+					"priceDesc":"58-888",
+					"categoryDesc":"4G高速上网，让你畅享互联网"
+				},
+				{
+					"categoryType":"ct_Data",
+					"pictureUrl":"11",
+					"offerings":[
+						
+					],
+					"categoreName":"流量保障服务",
+					"categoryId":"3",
+					"priceDesc":"10-50",
+					"categoryDesc":"上网安心了，流量自动叠加"
+				},
+				{
+					"categoryType":"ct_Data",
+					"pictureUrl":"112",
+					"offerings":[
+						
+					],
+					"categoreName":"流量套餐",
+					"categoryId":"5",
+					"priceDesc":"5-280",
+					"categoryDesc":"即日起流量月套餐马上升级"
+				},
+				{
+					"categoryType":"ct_Voice",
+					"pictureUrl":"11",
+					"offerings":[
+						
+					],
+					"categoreName":"语音短信不限流量套餐",
+					"categoryId":"1",
+					"priceDesc":"338-518",
+					"categoryDesc":"请阅读温馨提示中协议内容"
+				}
+			]
+		}
+	},
+	"responseHeader":{
+		"requestTime":"20151030011142",
+		"bizCode":"C009",
+		"responseTime":"20151030011144",
+		"resultCode":"0",
+		"resultDesc":"success",
+		"transactionId":"20151030011144195513",
+		"channelCode":"eCare"
+	}
+}

@@ -1,0 +1,287 @@
+{
+	"responseBody":{
+		"serviceNumber":"962138386",
+		"extParameters":{
+			"subscribedInfo":{
+				"normalOfferings":[
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"Value 3",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringType":"P",
+						"offeringDesc":"Value 3",
+						"offeringId":"1385995483",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":"30_PO_POS"
+					}
+				],
+				"services":[
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"TransferProduct",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringDesc":"TransferProduct",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":""
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"CUGMemberProduct",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringDesc":"CUGMemberProduct",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":""
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"VoiceProduct",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringDesc":"VoiceProduct",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":""
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"MMSProduct",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringDesc":"MMSProduct",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":""
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"DemoGSMProduct",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringDesc":"DemoGSMProduct",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":""
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"GPRS",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringDesc":"GPRS",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":""
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"SMSProduct",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringDesc":"SMSProduct",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":""
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"Monthly International Line",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringDesc":"Monthly International Line",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":""
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"LTE",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringDesc":"LTE",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":""
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"MyNotify_7171 Service",
+						"subscribeDate":"2015-10-25 07:00:49",
+						"offeringDesc":"MyNotify_7171 Service",
+						"effectiveDate":"2015-10-25 07:00:49",
+						"offeringCode":""
+					}
+				],
+				"promotionOfferings":[
+					
+				],
+				"products":[
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"TransferProduct",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringDesc":"TransferProduct",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":""
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"CUGMemberProduct",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringDesc":"CUGMemberProduct",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":""
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"VoiceProduct",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringDesc":"VoiceProduct",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":""
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"MMSProduct",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringDesc":"MMSProduct",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":""
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"DemoGSMProduct",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringDesc":"DemoGSMProduct",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":""
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"GPRS",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringDesc":"GPRS",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":""
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"SMSProduct",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringDesc":"SMSProduct",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":""
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"Monthly International Line",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringDesc":"Monthly International Line",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":""
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"LTE",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringDesc":"LTE",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":""
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"MyNotify_7171 Service",
+						"subscribeDate":"2015-10-25 07:00:49",
+						"offeringDesc":"MyNotify_7171 Service",
+						"effectiveDate":"2015-10-25 07:00:49",
+						"offeringCode":""
+					}
+				],
+				"vasOfferings":[
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"10 min CUG1",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringType":"S",
+						"offeringDesc":"10 min CUG1",
+						"offeringId":"190851712",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":"1_S_CUG",
+						"seq":"520025197915"
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"Monthly International Line POS",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringType":"S",
+						"offeringDesc":"Monthly International Line POS",
+						"offeringId":"1487022941",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":"3_VAS_POS",
+						"seq":"520025197916"
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"4G_LTE_Service",
+						"subscribeDate":"2015-10-24 11:04:56",
+						"offeringType":"S",
+						"offeringDesc":"4G_LTE_Service",
+						"offeringId":"1290134625",
+						"effectiveDate":"2015-10-24 11:04:56",
+						"offeringCode":"38_SO_POS",
+						"seq":"520025197917"
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"Fun  Talk",
+						"subscribeDate":"2015-10-25 07:00:49",
+						"offeringType":"S",
+						"offeringDesc":"Fun  Talk",
+						"offeringId":"1690910432",
+						"effectiveDate":"2015-10-25 07:00:49",
+						"offeringCode":"59_VAS_PPS_New",
+						"seq":"520025197927"
+					},
+					{
+						"expiryDate":"2015-10-25 08:00:49",
+						"offeringName":"3G BOX_1884",
+						"subscribeDate":"2015-10-25 07:00:49",
+						"offeringType":"S",
+						"offeringDesc":"3G BOX_1884",
+						"offeringId":"1792550570",
+						"effectiveDate":"2015-10-25 07:00:49",
+						"offeringCode":"61_VAS_PPS",
+						"seq":"520025197928"
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"MyNotify",
+						"subscribeDate":"2015-10-25 07:00:49",
+						"offeringType":"S",
+						"offeringDesc":"MyNotify",
+						"offeringId":"1377502846",
+						"effectiveDate":"2015-10-25 07:00:49",
+						"offeringCode":"4_VAS_PPS",
+						"seq":"520025197929"
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"Smart Tips Aphorisms",
+						"subscribeDate":"2015-10-25 07:00:49",
+						"offeringType":"S",
+						"offeringDesc":"Smart Tips Aphorisms",
+						"offeringId":"1194196717",
+						"effectiveDate":"2015-10-25 07:00:49",
+						"offeringCode":"69_VAS_PPS",
+						"seq":"520025197930"
+					},
+					{
+						"expiryDate":"2099-12-31 04:59:59",
+						"offeringName":"vTalk  vFun",
+						"subscribeDate":"2015-10-25 07:00:49",
+						"offeringType":"S",
+						"offeringDesc":"vTalk  vFun",
+						"offeringId":"1090891612",
+						"effectiveDate":"2015-10-25 07:00:49",
+						"offeringCode":"57_VAS_PPS_New",
+						"seq":"520025197931"
+					}
+				]
+			}
+		}
+	},
+	"responseHeader":{
+		"requestTime":"20151025204933",
+		"bizCode":"C013",
+		"responseTime":"20151025084936",
+		"resultCode":"0",
+		"resultDesc":"success",
+		"transactionId":"20151025084935501903",
+		"channelCode":"eCare"
+	}
+}

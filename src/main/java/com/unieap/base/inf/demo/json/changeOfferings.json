@@ -1,0 +1,14 @@
+{
+	"responseBody":{
+		"serviceNumber":"962138364"
+	},
+	"responseHeader":{
+		"requestTime":"20151029221806",
+		"bizCode":"C014",
+		"responseTime":"20151029101851",
+		"resultCode":"0",
+		"resultDesc":"success",
+		"transactionId":"20151029101807880716",
+		"channelCode":"eCare"
+	}
+}

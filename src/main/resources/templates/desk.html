@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"  
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<link rel="stylesheet" href="/css/menu.css" />
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="keywords" content="mobile care,mobile service,self-service">
+<meta http-equiv="description" content="unieap system">	
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">    
+<meta name="format-detection" content="telephone=no" /> 
+<head>
+<script type="text/javascript"
+	src="/js/ext-6.2.0/build/ext-all.js"></script>
+<script type="text/javascript" th:src="@{/js/ext-6.2.0/build/classic/locale/locale-zh_CN.js}"></script>
+<link rel="stylesheet" type="text/css" href="/js/ext-6.2.0/build/classic/theme-triton/resources/theme-triton-all.css" />
+<title>desk</title>
+<script>
+	var tabs;
+	var userName = 'Chai';
+	Ext.onReady(function() {
+	    Ext.tip.QuickTipManager.init();
+	    tabs = Ext.create('Ext.tab.Panel', {
+	    	//renderTo: Ext.getBody(),
+            region: 'center',
+	    	layout: 'fit',
+	        activeTab: 0,
+	        items: 
+	            [{
+		            title: 'Home Page',
+		            xtype: 'panel',
+		            autoScroll:true,
+		            autoHeight:true,
+		            loader: {
+		                url: '/menu'
+		            },
+		            listeners: {
+		                activate: function(tab) {
+		                    //tab.loader.load();
+		                }
+		            }
+	        }]
+	    });
+	    tabs.items.items[0].loader.load();
+	    var viewport = Ext.create('Ext.Viewport', {
+	    	layout:"fit",
+            items: [tabs]
+        });
+	});
+	
+	//tabs.render();
+	/**functions**/
+	function toFrame(href,title){
+		openTab('',href,title,'');
+	}
+	function openTab(id,href,text,imgSrc){
+    	addTab (true,id,href,text,imgSrc);
+    }
+	function addTab (closable,id,href,text,imgSrc) {
+    	//var url = basePathUrl+"/"+href;
+    	var url = href;
+    	var windowName = text;
+    	var imgSrc = imgSrc;
+    	var tabItems = tabs.items.items;
+    	//url = 'https://www.baidu.com/';
+    	if(tabItems.length == 0){
+    		tabs.add({
+		        	title:windowName,
+		        	layout: 'fit',
+		        	autoScroll:true,
+		            autoHeight:true,
+		            xtype: 'panel',
+		            html :'<iframe scrolling="yes" frameborder="0" border="0" frameBorder="0" marginwidth="0" marginheight="0" src="'+url+'" style="width:100%;height:100%;"></iframe>',
+		        	closable: !!closable
+		        }).show();
+	        
+    	}else{
+    		var isExist = false;
+	    	Ext.each(tabItems,function(tab){
+	    		if(tab.title == windowName){
+	    			isExist = true;
+	    			tab.show();
+	    			//tab.loader.load();
+	    		}
+	    	});
+	    	if(!isExist){
+		        tabs.add({
+		        	title:windowName,
+		            xtype: 'panel',
+		            autoScroll:true,
+		            autoHeight:true,
+		            layout: 'fit',
+		            html :'<iframe scrolling="yes" frameborder="0" border="0" frameBorder="0" marginwidth="0" marginheight="0" src="'+url+'" style="width:100%;height:100%;"></iframe>',
+		        	closable: !!closable
+		        }).show();
+	    	}
+    	}
+    }
+</script>
+</head>
+<body>
+	<div id="tabs">
+	</div>
+</body>
+</html>

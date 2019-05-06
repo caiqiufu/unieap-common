@@ -1,0 +1,422 @@
+@charset "utf-8";
+.bodyWidth{
+	width:960px;
+	margin:0 auto
+}
+.topMenu{
+	background:#008621;
+	padding:6px 0;
+	overflow:hidden;
+	heigth:50px;
+}
+.topMenuLeft{
+	position:relative;
+    float:left;
+}
+.topMenuRight{
+	postion:relative;
+	float:right;
+	height:30px;
+	padding-top:20px;
+	width:400px;
+}
+.topMenuRight1{
+	position:relative;
+    float:left;
+}
+.topMenuRight2{
+	position:relative;
+    float:left;
+}
+.topMenuRight2 a{
+	color: #ffffff;
+	text-decoration: none;
+	text-align:left;
+	display: block;
+	float: left;
+	padding: 5px 5px 0 5px
+}
+
+.topMenuRight2 a:hover{
+	color: #d8d8d8
+}
+
+
+
+/*--------------------------------------middle content-----------------------------------------*/
+.midContent{
+	position: relative;
+	width: 100%;
+	min-height:570px;
+}
+.midRangeImage{
+	position:relative;
+    float:left;
+	height: 490px;
+}
+.midLoginArea{
+	padding: 80px 10px 0 0;
+	position:relative;
+    float:right;
+    width: 300px;
+}
+
+.loginPageBox1 {
+	position:relative;
+	right: 0;
+	top: 10px;
+	width: 450px;
+	padding: 60px 5px 0 5px;
+}
+.conTileH1 {
+	position: relative;
+	padding: 5px 0 10px 0;
+	font-size: 16px;
+	font-weight: bold
+}
+
+.titleImg {
+	position: relative;
+	z-index: 2
+}
+
+
+
+.formTableLine {
+	overflow: hidden;
+	line-height: 28px;
+	padding: 8px 0;
+	*zoom: 1
+}
+.formTableLine.l {
+	width: 40%
+}
+
+.formTableLine dt, .formTableLine dd {
+	float: left
+}
+
+.formTableLine dt {
+	width: 25%;
+	padding-left: 2%;
+	position: relative;
+	min-height: 2px
+}
+
+.formTableLine dd {
+	width: 30%;
+	*width: 28%
+}
+
+.formTableLine.l dt {
+	width: 36%;
+	padding-left: 4%
+}
+
+.formTableLine.l dd {
+	width: 60%
+}
+
+.mb20 {
+	margin-bottom: 20px;
+}
+
+
+.inputText {
+	border: 1px solid #A8A8A8;
+	background: url("../mcare/images/inputTextS.png") left top repeat-x scroll
+		#FFFFFF;
+	height: 20px;
+	line-height: 20px;
+	padding: 4px 6px;
+	width: 150px;
+}
+
+.inputTextCheckCode {
+	border: 1px solid #A8A8A8;
+	background: url("../mcare/images/inputTextS.png") left top repeat-x scroll
+		#FFFFFF;
+	height: 17px;
+	line-height: 17px;
+	padding: 4px 6px;
+	width:60px;
+	float:left;
+}
+.mr5 {
+	margin-right: 5px
+}
+
+.midLoginAreaVerifyCodeInput{
+	position:relative;
+    float:left;
+}
+.midLoginAreaVerifyCodeImg{
+	position:relative;
+    float:right;
+    width:50px;
+}
+/*--------------------------------------footer-----------------------------------------*/
+.footerHaut {
+	position:relative;
+	background: #333;
+	color: #fff;
+	heigth:50px;
+	clear:both;
+}
+
+.footerHaut a {
+	color: #fff
+}
+
+.footerCopy {
+	padding-top: 16px;
+	padding-bottom: 16px
+}
+
+/*--------------------------------------button-----------------------------------------*/
+.mr10 {
+	margin-right: 10px
+}
+.inputBut {
+	cursor: pointer;
+	height: 33px;
+	width:80px;
+	padding-top: 7px;
+	padding-right: 5px;
+	padding-bottom: 11px;
+	position: relative;
+	font-size: 13px;
+	font-weight: bold;
+	padding-top: 8px \0;
+	*padding-top: 9px;
+	color: #fff;
+	background:#4588DF;
+}
+.inputButAlign{
+	align:center;
+	padding-left:70px;
+}
+
+
+/*--------------------------------------biz display area-----------------------------------------*/
+.bizPageTitle {
+	height: 50px;
+	background: #ffffff;
+	text-align: left;
+}
+
+.bizPageTitleFont {
+	height: 50px;
+	line-height: 48px;
+	font-family: 'Lato', sans-serif;
+	font-size: 18px;
+	color: #000000;
+	font-weight: bold;
+	display: block;
+	text-shadow: 0 1px 1px #000;
+	background: #ffffff;
+	background: -moz-linear-gradient(#ffffff 0%, #ffffff 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ffffff),
+		color-stop(100%, #ffffff));
+	background: -webkit-linear-gradient(#ffffff 0%, #ffffff 100%);
+	background: linear-gradient(#ffffff 0%, #ffffff 100%);
+}
+
+.bizPageTitleFont1 {
+	height: 50px;
+	line-height: 48px;
+	font-family: 'Lato', sans-serif;
+	font-size: 18px;
+	color: #ffffff;
+	font-weight: bold;
+	display: block;
+	text-shadow: 0 1px 1px #000;
+	background: #00e1e1;
+	background: -moz-linear-gradient(#00e1e1 0%, #2894ff 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #00e1e1),
+		color-stop(100%, #2894ff));
+	background: -webkit-linear-gradient(#00e1e1 0%, #2894ff 100%);
+	background: linear-gradient(#00e1e1 0%, #2894ff 100%);
+}
+
+/*
+table {
+	width: 100%;
+}
+table td {
+	border: 2px solid #FFFFFF;
+	height: 35px;
+	width: 120px;
+}
+*/
+.tableDisplay{
+	width: 100%;
+}
+.tableDisplay td{
+	height: 35px;
+}
+/*
+.oneFieldTableTd {
+	width: 300px;
+}
+**/
+.tableDisplayTdField{
+	background: #CCFFFF;
+}
+.tableDisplayTdValue{
+	background: #FFFFFF;
+}
+.tableDispalyField {
+	padding-left: 5px;
+	font-size: 14px;
+	width: 120px;
+	display: block;
+	padding-left: 2px;
+	background: #CCFFFF;
+	background: -moz-linear-gradient(#CCFFFF 0%, #CCFFFF 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #CCFFFF),
+		color-stop(100%, #CCFFFF));
+	background: -webkit-linear-gradient(#CCFFFF 0%, #CCFFFF 100%);
+	background: linear-gradient(#CCFFFF 0%, #CCFFFF 100%);
+	
+}
+.tableDispalyOneField {
+	vertical-align: middle;
+	width: 180px;
+	border: 2px solid #FFFFFF;
+	height: 35px;
+	color: #000000;
+	background: #CCFFFF;
+	background: -moz-linear-gradient(#CCFFFF 0%, #CCFFFF 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #CCFFFF),
+		color-stop(100%, #CCFFFF));
+	background: -webkit-linear-gradient(#CCFFFF 0%, #CCFFFF 100%);
+	background: linear-gradient(#CCFFFF 0%, #CCFFFF 100%);
+}
+.tableDispalyMultipleField {
+	/**vertical-align: middle;*/
+	width: 120px;
+	border: 2px solid #FFFFFF;
+	/**height: 35px;*/
+	color: #000000;
+	background: #CCFFFF;
+	background: -moz-linear-gradient(#CCFFFF 0%, #CCFFFF 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #CCFFFF),
+		color-stop(100%, #CCFFFF));
+	background: -webkit-linear-gradient(#CCFFFF 0%, #CCFFFF 100%);
+	background: linear-gradient(#CCFFFF 0%, #CCFFFF 100%);
+}
+.tableDispalyValue {
+	font-size: 14px;
+	width: 100px;
+	color: #000000;
+	display: block;
+	padding-left: 5px;
+	background: #FFFFFF;
+	background: -moz-linear-gradient(#FFFFFF 0%, #FFFFFF 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #FFFFFF),
+		color-stop(100%, #FFFFFF));
+	background: -webkit-linear-gradient(#FFFFFF 0%, #FFFFFF 100%);
+	background: linear-gradient(#FFFFFF 0%, #FFFFFF 100%);
+}
+/*******************************/
+.desc {
+	float: left;
+	margin-left: 16px;
+	width: 540px;
+	line-height: 23px
+}
+
+.desc h1 {
+	color: #1e51a4;
+	font-size: 16px;
+	width: 535px;
+	line-height: 28px
+}
+
+.desc .optionsDesc {
+	line-height: 23px;
+	color: #666
+}
+
+.desc .desc_1 li {
+	line-height: 35px
+}
+
+.desc div {
+	line-height: 25px
+}
+.fl{
+	float: left;
+}
+.fr{
+	float: right;
+}
+.cl{
+	clear:both;
+}
+.descTitle1{
+	font-size: 24px;
+	font-family: 'Lato', sans-serif;
+	font-size: 18px;
+	color: #000000;
+	font-weight: bold;
+	
+}
+.bizPageDisplay{
+	margin:5px 0 0 20px;
+	z-index:2;
+	height:100%;
+}
+.bizPageDisplayTitle1{
+	padding:15px 30px 0 30px;
+	width: 60px;
+	background: #00e1e1;
+	
+}
+.bizPageDisplayTitle2{
+	padding:10px 0 0 0;
+	width: 590px;
+	float: right;
+}
+.bizPageDisplayTitle3{
+	border-right:1px solid #ddd;
+	padding:15px 0 0 10px;
+	width: 30%;
+}
+.bizPageDisplayTitle31{
+	padding:15px 0 0 10px;
+	width: 30%;
+}
+
+.ft14{
+	font-size: 24px;
+}
+.ft24{
+	font-size: 48px;
+}
+.ft24wc{
+	font-size: 48px;
+	color: #000000;
+	padding-left:200px;
+	width: 300px;
+}
+.displayListTitle{
+	padding:10px 0 0 10px;
+	font-size: 16px;
+	display : block; 
+	color : #ffffff; 
+	text-shadow : 0 1px 1px #000;
+	background : #00e1e1; 
+	background : -moz-linear-gradient( #00e1e1 0%, #2894ff 100%); 
+	background : -webkit-gradient( linear, left top, left bottom, color-stop( 0%, #00e1e1), color-stop( 100%, #2894ff));
+	background : -webkit-linear-gradient( #00e1e1 0%, #2894ff 100%);
+	background : linear-gradient( #00e1e1 0%, #2894ff 100%) ;
+	height:30px;
+}
+.color_6,a.color_6,.color_6:visited,.color_6:hover{color:#679}
+
+/*--------------------------------------show box-----------------------------------------*/
+.showBoxContext {
+	line-height: 25px
+}

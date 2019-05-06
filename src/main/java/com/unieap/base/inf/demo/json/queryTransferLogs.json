@@ -1,0 +1,74 @@
+{
+	"responseHeader":{
+		"transactionId":"20151125115004245947",
+		"requestTime":"20151125235004",
+		"channelCode":"eCare",
+		"resultCode":"0",
+		"bizCode":"C022",
+		"resultDesc":"success",
+		"responseTime":"20151125115005"
+	},
+	"responseBody":{
+		"serviceNumber":"10509888",
+		"extParameters":{
+			"transferBalanceLog":[
+				{
+					"transferorNumber":"10509888",
+					"tradeTime":"2015-11-20 05:45:09",
+					"transferChannelID":"",
+					"transferAmount":"1.0000",
+					"resultCode":"0",
+					"transfereeNumber":"10509888"
+				},
+				{
+					"transferorNumber":"10509888",
+					"tradeTime":"2015-11-20 05:45:09",
+					"transferChannelID":"",
+					"transferAmount":"-1.0000",
+					"resultCode":"0",
+					"transfereeNumber":"10509888"
+				},
+				{
+					"transferorNumber":"10509888",
+					"tradeTime":"2015-09-01 04:54:19",
+					"transferChannelID":"",
+					"transferAmount":"-0.1000",
+					"resultCode":"0",
+					"transfereeNumber":"10255910"
+				},
+				{
+					"transferorNumber":"10509888",
+					"tradeTime":"2015-09-01 04:49:36",
+					"transferChannelID":"",
+					"transferAmount":"-0.1000",
+					"resultCode":"0",
+					"transfereeNumber":"10509888"
+				},
+				{
+					"transferorNumber":"10509888",
+					"tradeTime":"2015-09-01 04:49:36",
+					"transferChannelID":"",
+					"transferAmount":"0.1000",
+					"resultCode":"0",
+					"transfereeNumber":"10509888"
+				},
+				{
+					"transferorNumber":"10509888",
+					"tradeTime":"2015-09-01 04:37:40",
+					"transferChannelID":"",
+					"transferAmount":"0.1000",
+					"resultCode":"0",
+					"transfereeNumber":"10509888"
+				},
+				{
+					"transferorNumber":"10509888",
+					"tradeTime":"2015-09-01 04:37:40",
+					"transferChannelID":"",
+					"transferAmount":"-0.1000",
+					"resultCode":"0",
+					"transfereeNumber":"10509888"
+				}
+			]
+		}
+	}
+}

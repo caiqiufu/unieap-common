@@ -1,0 +1,36 @@
+{
+	"responseHeader":{
+		"transactionId":"20151125031630566887",
+		"requestTime":"20151125151629",
+		"channelCode":"eCare",
+		"resultCode":"0",
+		"bizCode":"C027",
+		"resultDesc":"success",
+		"responseTime":"20151125031630"
+	},
+	"responseBody":{
+		"serviceNumber":"93268659",
+		"extParameters":{
+			"2":[
+				{
+					"index":"0.5",
+					"value":"0.5$"
+				},
+				{
+					"index":"2",
+					"value":"2$"
+				}
+			],
+			"1":[
+				{
+					"index":"0.5",
+					"value":"0.5 to 15$"
+				},
+				{
+					"index":"1",
+					"value":"1 to 30$"
+				}
+			]
+		}
+	}
+}

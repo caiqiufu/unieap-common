@@ -1,0 +1,54 @@
+{
+	"responseHeader":{
+		"transactionId":"20151128022505313556",
+		"requestTime":"20151128132515",
+		"channelCode":"eCare",
+		"resultCode":"0",
+		"bizCode":"C011",
+		"resultDesc":"success",
+		"responseTime":"20151128022506"
+	},
+	"responseBody":{
+		"serviceNumber":"962138386",
+		"extParameters":{
+			"dataBalance":{
+				"remaningAmount":"1624.0",
+				"websiteAmount":"162.4",
+				"emailAmount":"324",
+				"balanceDetails":[
+					{
+						"offeringDesc":"Smart_Store_GPRS_Bonus",
+						"remaningAmount":"0",
+						"offeringCode":"C_Smart_Store_GPRS_Bonus",
+						"totalAmount":"100",
+						"offeringName":"Smart_Store_GPRS_Bonus",
+						"usageAmount":"100.0"
+					},
+					{
+						"offeringDesc":"Monthly Surf Like Crazy-2GB",
+						"remaningAmount":"1619",
+						"offeringCode":"C_Monthly_SLC_2GB",
+						"totalAmount":"2048",
+						"offeringName":"Monthly Surf Like Crazy-2GB",
+						"usageAmount":"429.0"
+					},
+					{
+						"offeringDesc":"Monthly Surf Like Crazy-4GB",
+						"remaningAmount":"5",
+						"offeringCode":"C_Monthly_SLC_4GB",
+						"totalAmount":"4096",
+						"offeringName":"Monthly Surf Like Crazy-4GB",
+						"usageAmount":"4091.0"
+					}
+				],
+				"totalAmount":"6244.0",
+				"readAmount":"162.4",
+				"vedioAmount":"16.2",
+				"chatAmount":"81.2",
+				"dailyUsageAmount":"32.5",
+				"songAmount":"54.1",
+				"usageAmount":"4620.0"
+			}
+		}
+	}
+}

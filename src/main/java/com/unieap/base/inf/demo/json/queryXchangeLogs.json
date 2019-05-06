@@ -1,0 +1,45 @@
+{
+	"responseHeader":{
+		"transactionId":"20151125112104065E-4",
+		"requestTime":"20151125232104",
+		"channelCode":"eCare",
+		"resultCode":"0",
+		"bizCode":"C020",
+		"resultDesc":"success",
+		"responseTime":"20151125112109"
+	},
+	"responseBody":{
+		"serviceNumber":"10509888",
+		"extParameters":{
+			"xChangeLog":[
+				{
+					"deductAmount":"0.0000",
+					"receiverNumber":"10509888",
+					"bonusExpTime":"2015-12-01 04:59:59",
+					"tradeTime":"2015-11-20 10:45:09",
+					"transferFee":"0.0000",
+					"applierNumber":"10509888",
+					"bonusAmount":"30.0000"
+				},
+				{
+					"deductAmount":"0.0000",
+					"receiverNumber":"10509888",
+					"bonusExpTime":"2015-09-02 05:00:00",
+					"tradeTime":"2015-08-31 09:37:40",
+					"transferFee":"0.0000",
+					"applierNumber":"10509888",
+					"bonusAmount":"1.0000"
+				},
+				{
+					"deductAmount":"0.0000",
+					"receiverNumber":"10509888",
+					"bonusExpTime":"2015-09-02 05:00:00",
+					"tradeTime":"2015-08-31 09:49:36",
+					"transferFee":"0.0000",
+					"applierNumber":"10509888",
+					"bonusAmount":"1.0000"
+				}
+			]
+		}
+	}
+}
