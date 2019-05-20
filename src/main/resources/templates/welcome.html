@@ -1,14 +1,24 @@
 <!DOCTYPE html>  
 <html xmlns="http://www.w3.org/1999/xhtml"  
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+      xmlns:th="http://www.thymeleaf.org">
     <head>
         <title>Spring Security Example </title>
-        <script type="text/javascript" src="/js/unieap.js"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    	var message = [[${'myname1.test'}]];
+        alert('message='+message);
+	/*]]>*/
+</script>
     </head>
     <body>
         <div>
              welcome again
+             <h1 th:text="${myname}"></h1>
+             <h1 th:text="${myname1}"></h1>
+             comm.search is: <h1 th:text="#{comm.search}"></h1>
+             <p th:text="#{apple.message(1,1)}"></p>
+			 <p th:text="#{apple.message(2,2)}"></p>
+			 <p th:text="#{apple.message(0,2)}"></p>
         </div>
     </body>
 </html>  

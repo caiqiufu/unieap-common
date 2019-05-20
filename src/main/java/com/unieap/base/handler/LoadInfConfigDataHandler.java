@@ -58,7 +58,7 @@ public class LoadInfConfigDataHandler implements ConfigHandler {
 
 	public Map<String, String> getBizTransformMessageHandler(String infCode) throws Exception {
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT * FROM esb_inf_config_transform where inf_code =?");
+		sql.append("SELECT * FROM esb_inf_config_transform where inf_code =? and activate_flag = 'Y'");
 		List<?> datas = DBManager.getJT().queryForList(sql.toString(), new Object[] {infCode });
 		if(datas!=null&&datas.size()>0) {
 			Map<String,String> transfers = new HashMap<String,String>();

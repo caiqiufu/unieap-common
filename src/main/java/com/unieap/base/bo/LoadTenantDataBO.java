@@ -20,7 +20,7 @@ public class LoadTenantDataBO extends BaseBO {
 			StringBuffer sql = new StringBuffer();
 			sql.append("SELECT dd.dic_code as dicCode,dd.dic_name as dicName,");
 			sql.append(" dg.group_code as groupCode,dg.group_name as groupName,");
-			sql.append(" dd.activate_flag as activeFlag ,dd.seq as seq ");
+			sql.append(" dd.activate_flag as activateFlag ,dd.seq as seq ");
 			sql.append(" FROM mdm_dic_group dg,mdm_dic_item dd ");
 			sql.append("  where dg.id = dd.group_id and dd.activate_flag = 'Y' ");
 			sql.append("  order by dg.group_name, dd.dic_name,dd.seq ASC ");

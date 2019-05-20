@@ -17,8 +17,8 @@ import com.unieap.base.UnieapConstants;
 import com.unieap.base.pojo.MdmFileArchive;
 import com.unieap.base.utils.JSONUtils;
 
-@Service("txtBO")
-public class TxtBO extends FileBO {
+@Service
+public class TxtBO extends FileHandler {
 
 	public Map<String, String> importTxt(String parameters, String handlerName, List<MdmFileArchive> files)
 			throws Exception {

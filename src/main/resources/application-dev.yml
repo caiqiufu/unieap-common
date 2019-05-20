@@ -12,12 +12,6 @@ eureka:
       defaultZone: http://172.30.8.52:8761/eureka/
 #数据库配置###################################### 
 spring:  
-  security :
-     basic : 
-        enabled : false
-     user :
-       name : admin
-       password : admin
   datasource :
     url : jdbc:mysql://127.0.0.1:3306/unieap?characterencoding=utf-8;GenerateSimpleParameterMetadata=true
     username : unieap  
@@ -42,17 +36,12 @@ spring:
     poolPreparedStatements : true
     maxPoolPreparedStatementPerConnectionSize : 20
   thymeleaf :
-    cache : false
-    prefix : classpath:/templates/
-    suffix : .html
-    encoding : UTF-8
-    content-type : text/html
+    cache: false
+    suffix: .html
+    encoding: UTF-8
+    content-type: text/html
     #mode=HTML5 not work
-    mode : HTML
-  resources :
-     static-locations : classpath:/static/,classpath:/public/
-  mvc :
-     static-path-pattern : /static/**
+    mode: HTML
   jpa :
      database : MYSQL  
      show-sql : false

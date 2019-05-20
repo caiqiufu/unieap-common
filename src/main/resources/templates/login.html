@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
 <title>Login Page</title>
-<script type="text/javascript" src="/js/unieap.js"></script>
 <style type="text/css">
 body {
 	font: 12px 'Lucida Sans Unicode', 'Trebuchet MS', Arial, Helvetica;
@@ -106,7 +105,8 @@ body {
 <body>
 	<div class="lg-container">
 		<h1>Easy Mobile</h1>
-		<form th:action="@{/login?language=zh_CN}" method="post" id="lg-form"
+		<h1 th:text="${myname}"></h1>
+		<form th:action="@{/desk}" method="post" id="lg-form"
 			name="lg-form">
 			<div>
 				<label for="username">Username:</label> <input type="text"

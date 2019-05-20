@@ -10,9 +10,11 @@ import org.dom4j.Node;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
+import com.unieap.base.UnieapCacheMgt;
 import com.unieap.base.inf.transform.BizFieldVO;
 import com.unieap.base.inf.transform.BizMessageVO;
 import com.unieap.base.inf.transform.InfFieldVO;
+import com.unieap.base.vo.InfConfigVO;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -20,7 +22,7 @@ import net.sf.json.JSONObject;
 public class TransformMessageUtils {
 	private static final Log logger = LogFactory.getLog(TransformMessageUtils.class);
 
-	public static String getBizMessage(BizMessageVO bizMessageVO, Map<String, org.dom4j.Document> documents) {
+	public static String getBizMessage(BizMessageVO bizMessageVO, Map<String, Object> results) {
 		List<BizFieldVO> fields = new ArrayList<BizFieldVO>();
 		JSONObject jso = new JSONObject();
 		ReadContext ctx = JsonPath.parse(jso);
@@ -28,21 +30,51 @@ public class TransformMessageUtils {
 			BizFieldVO bizFieldVO = bizMessageVO.getRootFieldVO();
 			fields.add(bizFieldVO);
 			while (!bizFieldVO.isLeaf || fields.size() > 0) {
+				InfConfigVO infConfigVO = UnieapCacheMgt.getInfHandler(bizFieldVO.getInfFieldVO().getInfCode());
 				if (bizFieldVO.isLeaf) {
 					if (bizFieldVO.getParentVO() == null) {
-						String value = getMessageFromSourceValue(documents.get(bizFieldVO.getInfFieldVO().getInfCode()),
-								bizFieldVO.getInfFieldVO());
-						jso.put(bizFieldVO.getFieldName(), value);
+						if ("xml".equals(infConfigVO.getResultType())) {
+							String value = getMessageFromXmlSourceValue(
+									(org.dom4j.Document) results.get(bizFieldVO.getInfFieldVO().getInfCode()),
+									bizFieldVO.getInfFieldVO());
+							jso.put(bizFieldVO.getFieldName(), value);
+						}
+						if ("json".equals(infConfigVO.getResultType())) {
+							String value = getMessageFromJsonSourceValue(
+									(ReadContext) results.get(bizFieldVO.getInfFieldVO().getInfCode()),
+									bizFieldVO.getInfFieldVO());
+							jso.put(bizFieldVO.getFieldName(), value);
+						}
+
 					} else {
 						if ("Object".equals(bizFieldVO.getParentVO().getFieldType())) {
-							String value = getMessageFromSourceValue(
-									documents.get(bizFieldVO.getInfFieldVO().getInfCode()), bizFieldVO.getInfFieldVO());
-							((JSONObject) ctx.read(bizFieldVO.getParentVO().getXpath())).put(bizFieldVO.getFieldName(),
-									value);
+							if ("xml".equals(infConfigVO.getResultType())) {
+								String value = getMessageFromXmlSourceValue(
+										(org.dom4j.Document) results.get(bizFieldVO.getInfFieldVO().getInfCode()),
+										bizFieldVO.getInfFieldVO());
+								((JSONObject) ctx.read(bizFieldVO.getParentVO().getXpath()))
+										.put(bizFieldVO.getFieldName(), value);
+							}
+							if ("json".equals(infConfigVO.getResultType())) {
+								String value = getMessageFromJsonSourceValue(
+										(ReadContext) results.get(bizFieldVO.getInfFieldVO().getInfCode()),
+										bizFieldVO.getInfFieldVO());
+								((JSONObject) ctx.read(bizFieldVO.getParentVO().getXpath()))
+										.put(bizFieldVO.getFieldName(), value);
+							}
 						}
 						if ("List".equals(bizFieldVO.getParentVO().getFieldType())) {
-							List<String> values = getMessageFromSourceList(
-									documents.get(bizFieldVO.getInfFieldVO().getInfCode()), bizFieldVO.getInfFieldVO());
+							List<String> values = new ArrayList<String>();
+							if ("xml".equals(infConfigVO.getResultType())) {
+								values = getMessageFromXmlSourceList(
+										(org.dom4j.Document) results.get(bizFieldVO.getInfFieldVO().getInfCode()),
+										bizFieldVO.getInfFieldVO());
+							}
+							if ("json".equals(infConfigVO.getResultType())) {
+								values = getMessageFromJsonSourceList(
+										(ReadContext) results.get(bizFieldVO.getInfFieldVO().getInfCode()),
+										bizFieldVO.getInfFieldVO());
+							}
 							// records list from source
 							JSONArray allfieldsobj = ctx.read(bizFieldVO.getParentVO().getXpath());
 							int i = values.size();
@@ -123,16 +155,34 @@ public class TransformMessageUtils {
 		return json;
 	}
 
-	public static String getMessageFromSourceValue(org.dom4j.Document document, InfFieldVO infFieldVO) {
+	public static String getMessageFromXmlSourceValue(org.dom4j.Document document, InfFieldVO infFieldVO) {
 		return document.selectSingleNode(infFieldVO.getXpath()).getText();
 	}
 
-	public static List<String> getMessageFromSourceList(org.dom4j.Document document, InfFieldVO infFieldVO) {
+	public static List<String> getMessageFromXmlSourceList(org.dom4j.Document document, InfFieldVO infFieldVO) {
 		List<Node> nodes = document.selectNodes(infFieldVO.getXpath());
 		if (nodes != null && nodes.size() > 0) {
 			List<String> values = new ArrayList<String>();
 			for (int i = 0; i < nodes.size(); i++) {
 				values.add(nodes.get(i).getText());
+			}
+			return values;
+		}
+		return null;
+	}
+
+	public static String getMessageFromJsonSourceValue(ReadContext ctx, InfFieldVO infFieldVO) {
+		JSONObject pjson = ctx.read(infFieldVO.getXpath());
+		return pjson.getString(infFieldVO.getFieldName());
+	}
+
+	public static List<String> getMessageFromJsonSourceList(ReadContext ctx, InfFieldVO infFieldVO) {
+		JSONArray pjson = ctx.read(infFieldVO.getXpath());
+		if (pjson != null && pjson.size() > 0) {
+			List<String> values = new ArrayList<String>();
+			for (int i = 0; i < pjson.size(); i++) {
+				JSONObject obj = pjson.getJSONObject(i);
+				values.add(obj.getString(infFieldVO.getFieldName()));
 			}
 			return values;
 		}

@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"  
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-<link rel="stylesheet" href="/css/menu.css" />
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="cache-control" content="no-cache">
 <meta http-equiv="expires" content="0">
@@ -13,13 +11,15 @@
 <meta name="format-detection" content="telephone=no" /> 
 <head>
 <script type="text/javascript"
-	src="/js/ext-6.2.0/build/ext-all.js"></script>
-<script type="text/javascript" th:src="@{/js/ext-6.2.0/build/classic/locale/locale-zh_CN.js}"></script>
-<link rel="stylesheet" type="text/css" href="/js/ext-6.2.0/build/classic/theme-triton/resources/theme-triton-all.css" />
+	src="/js/ext-6.2.0/build/ext-all.js"  th:src="@{/js/ext-6.2.0/build/ext-all.js}"></script>
+<script type="text/javascript" src="/js/ext-6.2.0/build/classic/locale/locale-en.js" th:src="@{/js/ext-6.2.0/build/classic/locale/locale-en.js}"></script>
+<script type="text/javascript"
+	src="/js/unieap.js"  th:src="@{/js/unieap.js}"></script>
+<link rel="stylesheet" href="/css/menu.css" th:href="@{/css/menu.css}"/>
+<link rel="stylesheet" type="text/css" href="/js/ext-6.2.0/build/classic/theme-triton/resources/theme-triton-all.css" th:href="@{/js/ext-6.2.0/build/classic/theme-triton/resources/theme-triton-all.css}"/>
 <title>desk</title>
 <script>
 	var tabs;
-	var userName = 'Chai';
 	Ext.onReady(function() {
 	    Ext.tip.QuickTipManager.init();
 	    tabs = Ext.create('Ext.tab.Panel', {

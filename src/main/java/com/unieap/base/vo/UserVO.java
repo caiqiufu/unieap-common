@@ -2,7 +2,9 @@ package com.unieap.base.vo;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,6 +27,7 @@ public class UserVO extends BaseVO implements UserDetails {
 	private Long tenantId;
 	private List<RoleVO> roles = new ArrayList<RoleVO>();
 	private Integer deptId;
+	public Map<String,Object> cacheData = new HashMap<String,Object>();
 
 	public Integer getId() {
 		return id;
@@ -102,11 +105,18 @@ public class UserVO extends BaseVO implements UserDetails {
 		this.deptId = deptId;
 	}
 
+	public Map<String, Object> getCacheData() {
+		return cacheData;
+	}
+
+	public void setCacheData(Map<String, Object> cacheData) {
+		this.cacheData = cacheData;
+	}
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Collection<GrantedAuthority> authorities = new ArrayList<>();
 		List<RoleVO> userRoles = this.getRoles();
-
 		if (userRoles != null) {
 			for (RoleVO role : userRoles) {
 				SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getRoleCode());
@@ -117,17 +127,7 @@ public class UserVO extends BaseVO implements UserDetails {
 	}
 
 	public List<RoleVO> getRoles() {
-		RoleVO vo1 = new RoleVO();
-		vo1.setId(Integer.valueOf("1"));
-		vo1.setRoleCode("unieap");
-		vo1.setRoleName("unieap");
-		this.roles.add(vo1);
-		RoleVO vo2 = new RoleVO();
-		vo2.setId(Integer.valueOf("2"));
-		vo2.setRoleCode("admin");
-		vo2.setRoleName("admin");
-		this.roles.add(vo2);
-		return this.roles;
+		return roles;
 	}
 
 	@Override

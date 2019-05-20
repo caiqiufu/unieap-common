@@ -87,6 +87,8 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-batch</artifactId>
 		</dependency>
+		<!--
+		  -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
@@ -167,11 +169,12 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 		</dependency>
+		 -->
 		<!-- https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path -->
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
@@ -179,11 +182,10 @@
 			</dependency>
 
 		<!-- app customization start -->
-		<!-- https://mvnrepository.com/artifact/javax.xml/jaxb-api -->
+		<!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
 		<dependency>
-		    <groupId>javax.xml</groupId>
+		    <groupId>javax.xml.bind</groupId>
 		    <artifactId>jaxb-api</artifactId>
-		    <version>2.1</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/javax.xml/jaxb-impl 
 		-->
@@ -239,12 +241,6 @@
 					<classifier>exec</classifier>
 				</configuration>
 			</plugin>
-			<!-- generate java code based on wsdl file -->
-			<!-- <plugin> <groupId>org.jvnet.jaxb2.maven2</groupId> <artifactId>maven-jaxb2-plugin</artifactId> 
-				<version>0.14.0</version> <executions> <execution> <goals> <goal>generate</goal> 
-				</goals> </execution> </executions> <configuration> <schemaDirectory>${project.basedir}/src/main/resources/wsdl</schemaDirectory> 
-				<schemaIncludes> <include>*.wsdl</include> </schemaIncludes> </configuration> 
-				</plugin> -->
 		</plugins>
 	</build>
 </project>

@@ -26,8 +26,8 @@ import com.unieap.base.file.vo.SheetVO;
 import com.unieap.base.pojo.MdmFileArchive;
 import com.unieap.base.utils.JSONUtils;
 
-@Service("excelBO")
-public class ExcelBO extends FileBO {
+@Service
+public class ExcelBO extends FileHandler {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Map<String, String> exportExcel(String parameters, String handlerName, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {

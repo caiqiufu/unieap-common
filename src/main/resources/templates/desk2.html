@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>desk</title>
+<script type="text/javascript" src="/js/unieap.js"></script>
+<script type="text/javascript"
+	src="/js/jquery/jquery-3.2.1.js"></script>
+<script
+	src="/js/jquery/plugins/jquery-ui-1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet"
+	href="/js/jquery/plugins/jquery-ui-1.12.1/jquery-ui.css">
+<link rel="stylesheet" href="/css/style.css">
+<style>
+#dialog label, #dialog input {
+	display: block;
+}
+
+#dialog label {
+	margin-top: 0.5em;
+}
+
+#dialog input, #dialog textarea {
+	width: 95%;
+}
+
+#tabs {
+	margin-top: 1em;
+}
+
+#tabs li .ui-icon-close {
+	float: left;
+	margin: 0.4em 0.2em 0 0;
+	cursor: pointer;
+}
+
+#add_tab {
+	cursor: pointer;
+}
+</style>
+
+<script>
+	var tabTemplate = "<li><a href='#{href}'>#{label}</a><span class='ui-icon ui-icon-close' role='presentation'></span></li>";
+	var tabTemplateNotClose = "<li><a href='#{href}'>#{label}</a><span class='ui-icon' role='presentation'></span></li>";
+    var tabs;
+	$(function() {
+		tabs = $("#tabs").tabs();
+		// Close icon: removing the tab on click
+		tabs.on("click", "span.ui-icon-close", function() {
+			var panelId = $(this).closest("li").remove().attr("aria-controls");
+			$("#" + panelId).remove();
+			tabs.tabs("refresh");
+		});
+
+		tabs.on("keyup", function(event) {
+			if (event.altKey && event.keyCode === $.ui.keyCode.BACKSPACE) {
+				var panelId = tabs.find(".ui-tabs-active").remove().attr(
+						"aria-controls");
+				$("#" + panelId).remove();
+				tabs.tabs("refresh");
+			}
+		});
+	});
+
+	function toFrame(href,title){
+		var id = "#" + "tabs-" + title;
+		if(!isExist(title)){
+			openTab(id,href,title,'');
+		}
+	}
+	function openTab(id,href,title,imgSrc){
+		var url = "/"+href;
+    	addTab (true,id,href,title,imgSrc);
+    }
+	function addTab(closeable,id,url,title,imgSrc) {
+		if(!closeable){
+			tabTemplate = tabTemplateNotClose;
+		}
+		var li = $(tabTemplate.replace(/#\{href\}/g, url).replace(
+				/#\{label\}/g, title));
+		tabs.find(".ui-tabs-nav").append(li);
+		tabs.tabs("refresh");
+		var titleList = tabs.find(".ui-tabs-nav").find("li a");
+		tabs.tabs( "option", "active",titleList.length-1);
+	}
+    function isExist(title){
+    	var titleList = tabs.find(".ui-tabs-nav").find("li a");
+    	var isExist = false;
+    	titleList.each(function(index,item){
+					if(item.text == title){
+						isExist = true;
+						tabs.tabs( "option", "active",index);
+					}
+        	});
+    	return isExist;
+    }
+</script>
+</head>
+<body>
+	<div id="tabs">
+		<ul>
+			<li><a href="#tabs-menu">Menu</a> <span class="ui-icon" role="presentation">Menu</span></li>
+		</ul>
+		<div id="tabs-menu">
+			<a id='menu-1' href="javascript:void(0)" onclick='toFrame("mdmController.do?method=dic","Dictionary Management")' title="Dictionary Management">Dictionary Management</a>
+			<a id='menu-2' href="javascript:void(0)" onclick='toFrame("mdmController.do?method=dic","Dictionary Management2")' title="Dictionary Management2">Dictionary Management2</a>
+			<a id='menu-3' href="javascript:void(0)" onclick='toFrame("mdmController.do?method=dic","Dictionary Management3")' title="Dictionary Management3">Dictionary Management3</a>
+			 <ul th:each="menu:${menus}">  
+			 	<a style="text-decoration:underline" href="javascript:void(0)" onclick="toFrame(${menu.href},${menu.menuName})" target="_self" title="${menu.menuName}" th:text="${menu.menuName}"></a>
+		    </ul>   
+		</div>
+	</div>
+</body>
+</html>

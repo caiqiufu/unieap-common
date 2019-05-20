@@ -4,6 +4,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 
 import com.unieap.base.db.DBManager;
@@ -29,13 +32,13 @@ public class UnieapConstants {
 	public final static String RETURN_MESSAGE = "message";
 	public final static String SUCCESS = "success";
 	public final static String FAILED = "failed";
-	//public final static String JSON = "json";
+	// public final static String JSON = "json";
 	public final static boolean TRUE = true;
 	public final static boolean FALSE = false;
 	public final static String YES = "Y";
 	public final static String NO = "N";
 	public static String C99999 = "999999";
-	
+
 	public final static String ESB = "unieap-esb";
 	public final static String SUCCESS_CODE = "SUCCESSCODE";
 	public final static String ERRORCODE_IGNORE = "ERRORCODEIGNORE";
@@ -43,16 +46,19 @@ public class UnieapConstants {
 	public final static String DATEFORMAT = "yyyy-MM-dd";
 	public final static String TIMEFORMAT = "yyyy-MM-dd HH:mm:ss";
 	public final static String TIMEFORMAT2 = "yyyyMMddHHmmss";
-	
+
 	public final static String TRANSFORMTYPE = "TRANSFORM_TYPE";
 	public final static String TRANSFORM2EXISTING = "TE";
 	public final static String TRANSFORM2STANDARD = "TS";
-	
+
 	public final static String INFCONFIG = "INFCONFIG";
 	public final static String BIZCONFIG = "BIZCONFIG";
-	
+
 	public final static String PAYLOAD = "payload";
 	public final static String REQUEST_MESSAGE = "REQUEST_MESSAGE";
+
+	public final static String BUTTON_PERMISSION = "button_permission";
+	public final static String DIC_PERMISSION = "dic_permission";
 
 	/**
 	 * success
@@ -64,11 +70,20 @@ public class UnieapConstants {
 	public static String C1 = "1";
 
 	public final static UserVO getUser() {
-		return null;
+		org.springframework.security.core.userdetails.User u;
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
+			u = (org.springframework.security.core.userdetails.User) auth.getPrincipal();
+		} else if (auth.getDetails() instanceof org.springframework.security.core.userdetails.User) {
+			u = (org.springframework.security.core.userdetails.User) auth.getDetails();
+		} else {
+			throw new AccessDeniedException("User not properly authenticated.");
+		}
+		return UnieapCacheMgt.getUser(u.getUsername());
 	}
 
 	public final static Long getTenantId() {
-		return UnieapConstants.getUser().getTenantId();
+		return Long.valueOf(SYSConfig.getConfig().get("tenantId"));
 	}
 
 	public final static String getCurrentTime() {
@@ -92,6 +107,9 @@ public class UnieapConstants {
 	 * @return
 	 */
 	public static String getDicName(String groupCode, String dicCode) {
+		if (StringUtils.isEmpty(dicCode)) {
+			return "";
+		}
 		DicGroupVO group = UnieapCacheMgt.getDicDataList(groupCode);
 		if (group == null) {
 			return dicCode;
@@ -117,7 +135,7 @@ public class UnieapConstants {
 		if (message != null) {
 			return message.getValue();
 		} else {
-			return "No message configured:["+messageName+"]";
+			return "No message configured:[" + messageName + "]";
 		}
 
 	}
@@ -132,8 +150,34 @@ public class UnieapConstants {
 		String language = SYSConfig.getConfig().get("language");
 		String key = messageName + "_" + language;
 		MessageVO message = UnieapCacheMgt.getMessage(key);
-		if(message ==null) {
-			return "No message configured:["+messageName+"]";
+		if (message == null) {
+			return "No message configured:[" + messageName + "]";
+		}
+		String value = message.getValue();
+		if (args != null && args.length > 0) {
+			for (int i = 0; i < args.length; i++) {
+				value = StringUtils.replace(value, "{" + i + "}", args[i]);
+			}
+		}
+		return value;
+	}
+
+	public final static String getMessage(String messageName, String language) {
+		String key = messageName + "_" + language;
+		MessageVO message = UnieapCacheMgt.getMessage(key);
+		if (message != null) {
+			return message.getValue();
+		} else {
+			return "No message configured:[" + messageName + "]";
+		}
+
+	}
+
+	public static String getMessage(String messageName, String language, String[] args) {
+		String key = messageName + "_" + language;
+		MessageVO message = UnieapCacheMgt.getMessage(key);
+		if (message == null) {
+			return "No message configured:[" + messageName + "]";
 		}
 		String value = message.getValue();
 		if (args != null && args.length > 0) {

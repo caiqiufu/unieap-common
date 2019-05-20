@@ -2,8 +2,6 @@
 server:
   port: 8080
   #address: localhost
-  #servlet: 
-  #   context-path: /unieap-common
   session-timeout: 30  
   tomcat.max-threads: 0  
   tomcat.uri-encoding: UTF-8

@@ -99,7 +99,7 @@ public class EntityRowMapper implements RowMapper<Object> {
 							byte[] data = blob.getBytes(1, bolblen);
 							String content = new String(data, "utf-8");
 							setter.invoke(bean, content);
-						} else if (String.class == retType && value.toString() == null) {
+						} else if (String.class == retType && value.toString() != null) {
 							str = value.toString();
 							setter.invoke(bean, str);
 						} else {

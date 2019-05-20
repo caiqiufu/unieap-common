@@ -8,8 +8,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.unieap.base.UnieapCacheMgt;
-import com.unieap.base.UnieapConstants;
-import com.unieap.base.inf.unitls.SoapCallUtils;
 
 @Configuration
 @EnableScheduling

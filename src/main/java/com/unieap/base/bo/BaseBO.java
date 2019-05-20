@@ -11,19 +11,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Property;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.unieap.base.ApplicationContextProvider;
+import com.unieap.base.SYSConfig;
 import com.unieap.base.UnieapCacheMgt;
 import com.unieap.base.UnieapConstants;
 import com.unieap.base.db.DBManager;
 import com.unieap.base.db.EntityRowMapper;
+import com.unieap.base.file.bo.FileBO;
 import com.unieap.base.handler.DicHandler;
 import com.unieap.base.vo.DicDataVO;
 import com.unieap.base.vo.DicGroupVO;
@@ -42,6 +47,9 @@ import net.sf.json.JSONObject;
  */
 @Service
 public class BaseBO {
+	
+	@Autowired
+	FileBO fileBO;
 	/**
 	 * <p>
 	 * 描述:
@@ -188,5 +196,12 @@ public class BaseBO {
 			}
 		}
 		return sb.toString();
+	}
+	public void createJs(ServletContext servlet, String fileName, String jsStr) throws Exception {
+		String shareFolderPath = SYSConfig.getConfig().get("shareFolderPath");
+		String mdmCommonPath = SYSConfig.getConfig().get("mdmCommonPath");
+		//String CODELISTJSPATH = "unieap/js/common";
+		String uploadPath = shareFolderPath+mdmCommonPath;
+		fileBO.write(fileName, uploadPath, true, true, jsStr);
 	}
 }

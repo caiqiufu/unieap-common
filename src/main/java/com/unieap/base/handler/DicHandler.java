@@ -4,22 +4,12 @@ import java.util.List;
 
 import com.unieap.base.UnieapConstants;
 import com.unieap.base.vo.DicDataVO;
-import com.unieap.base.vo.QueryDicVO;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 public abstract class DicHandler {
 	public abstract String getDicList(String isOptional, String whereby) throws Exception;
-
-	public String getSql(QueryDicVO vo, String whereby) throws Exception {
-		StringBuffer sql = new StringBuffer();
-		sql.append(" select " + vo.getDicId() + " as dicId," + vo.getDicCode() + " as dicCode,'root' as parentCode,");
-		sql.append(vo.getDicCode() + " as dicName," + vo.getSeq() + " as seq from " + vo.getTableName() + " where "
-				+ whereby + " order by " + vo.getOrderBy());
-		return sql.toString();
-
-	}
 
 	public String getDicData(List<?> datas, String isOptional) throws Exception {
 		JSONArray ja = new JSONArray();

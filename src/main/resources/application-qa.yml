@@ -37,16 +37,11 @@ spring:
     maxPoolPreparedStatementPerConnectionSize : 20
   thymeleaf :
     cache : false
-    prefix : classpath:/templates/
     suffix : .html
     encoding : UTF-8
     content-type : text/html
     #mode=HTML5 not work
     mode : HTML
-  resources :
-     static-locations : classpath:/static/,classpath:/public/
-  mvc :
-     static-path-pattern : /static/**
   jpa :
      database : MYSQL  
      show-sql : false

@@ -270,4 +270,8 @@ public final class UnieapCacheMgt {
 		UnieapCacheMgt.infFieldList = infFieldList;
 	}
 
+	public static Map<String, BizMessageVO> getBizMessageList() {
+		return bizMessageList;
+	}
+
 }

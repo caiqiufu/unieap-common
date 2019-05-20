@@ -15,6 +15,7 @@ public class MessageVO extends BaseVO implements java.io.Serializable {
 	private String value;
 	private String appName;
 	private String language;
+	private String category;
 	private String remark;
 	public int getId() {
 		return id;
@@ -51,6 +52,15 @@ public class MessageVO extends BaseVO implements java.io.Serializable {
 	}
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+	public String getCategory() {
+		return category;
+	}
+	public void setCategory(String category) {
+		this.category = category;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 	
 

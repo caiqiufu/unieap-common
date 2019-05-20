@@ -68,13 +68,6 @@ public class FileController {
 	@Autowired
 	public FileBO fileBO;
 
-	/*
-	 * @RequestMapping(params = "method=upload") public @ResponseBody
-	 * Map<String, String> uploadSignalFile(String parameters, String handlerId,
-	 * FileUploadVO vo, HttpServletRequest request, HttpServletResponse
-	 * response) throws Exception { return fileBO.saveFile(parameters,
-	 * handlerId, vo); }
-	 */
 
 	@RequestMapping(params = "method=upload")
 	public @ResponseBody Map<String, String> upload(String handlerName, String parameters, HttpServletRequest request,

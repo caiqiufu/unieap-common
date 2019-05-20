@@ -32,7 +32,7 @@ public class LoadSysUserDataHandler implements ConfigHandler {
 		Map<String, UserVO> userList = new HashMap<String, UserVO>();
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT u.enable,u.locked,u.user_code as userCode,u.user_name as userName,");
-		sql.append("u.id ,u.password,expired,locked FROM mdm_user u");
+		sql.append("u.id ,u.password,expired,locked,tenant_id as tenantId FROM mdm_user u");
 		List<?> datas = DBManager.getJT().query(sql.toString(), new EntityRowMapper(UserVO.class));
 		if (datas != null && datas.size() > 0) {
 			List<UserVO> volist = (List<UserVO>) datas;
@@ -44,20 +44,48 @@ public class LoadSysUserDataHandler implements ConfigHandler {
 		}
 	}
 
+	public UserVO loadUserVO(String userCode) {
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT u.enable,u.locked,u.user_code as userCode,u.user_name as userName,");
+		sql.append("u.id ,u.password,expired,locked FROM mdm_user u where user_code=?");
+		List<?> datas = DBManager.getJT().query(sql.toString(), new Object[] { userCode },
+				new EntityRowMapper(UserVO.class));
+		if (datas != null && datas.size() > 0) {
+			UserVO vo = (UserVO) datas.get(0);
+			List<UserVO> volist = (List<UserVO>) datas;
+			vo.setRoles(getUserRoleList(vo.getId()));
+			return vo;
+		}
+		return null;
+	}
+
 	public List<RoleVO> getUserRoleList(Integer userId) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT r.id,r.role_code as roleCode,r.role_name as roleName,r.tenant_id as tenantId ");
 		sql.append("FROM mdm_user_role ur, mdm_role r where r.id = ur.role_id and ur.id = ?");
 		List<?> datas = DBManager.getJT().query(sql.toString(), new Object[] { userId },
 				new EntityRowMapper(RoleVO.class));
+		List<RoleVO> volist = (List<RoleVO>) datas;
 		if (datas != null && datas.size() > 0) {
-			List<RoleVO> volist = (List<RoleVO>) datas;
 			for (RoleVO vo : volist) {
 				vo.setResList(getRoleResList(vo.getId()));
 			}
-			return volist;
 		}
-		return null;
+		addDefaultRoles(volist);
+		return volist;
+	}
+
+	private void addDefaultRoles(List<RoleVO> roles) {
+		RoleVO vo1 = new RoleVO();
+		vo1.setId(Integer.valueOf("1"));
+		vo1.setRoleCode("unieap");
+		vo1.setRoleName("unieap");
+		roles.add(vo1);
+		RoleVO vo2 = new RoleVO();
+		vo2.setId(Integer.valueOf("2"));
+		vo2.setRoleCode("admin");
+		vo2.setRoleName("admin");
+		roles.add(vo2);
 	}
 
 	public List<ResourceVO> getRoleResList(Integer roleId) {

@@ -123,7 +123,7 @@ public class TreeEntityRowMapper implements RowMapper<Object> {
 		List<String> columns = new ArrayList<String>();
 		int count = rsmd.getColumnCount();
 		for (int i = 1; i <= count; i++) {
-			columns.add(rsmd.getColumnName(i));
+			columns.add(rsmd.getColumnLabel(i));
 		}
 		return columns;
 	}
