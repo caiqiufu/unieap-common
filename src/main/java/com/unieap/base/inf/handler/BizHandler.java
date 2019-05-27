@@ -5,21 +5,22 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 
 import com.unieap.base.ApplicationContextProvider;
 import com.unieap.base.UnieapCacheMgt;
 import com.unieap.base.UnieapConstants;
 import com.unieap.base.inf.element.RequestInfo;
-import com.unieap.base.inf.transform.BizMessageVO;
 import com.unieap.base.inf.transform.TransformMessageHandler;
+import com.unieap.base.inf.vo.BizConfigVO;
+import com.unieap.base.inf.vo.BizMessageVO;
+import com.unieap.base.inf.vo.InfConfigVO;
 import com.unieap.base.pojo.Esblog;
 import com.unieap.base.repository.EsbLogCacheMgt;
 import com.unieap.base.utils.DateUtils;
 import com.unieap.base.utils.JSONUtils;
 import com.unieap.base.utils.JaxbXmlUtil;
-import com.unieap.base.vo.BizConfigVO;
-import com.unieap.base.vo.InfConfigVO;
 import com.unieap.base.vo.NumberRouteVO;
 
 import net.sf.json.JSONObject;
@@ -43,6 +44,35 @@ public abstract class BizHandler extends ConnectionHandler {
 	 * @throws Exception
 	 */
 	public abstract ProcessResult process(RequestInfo requestInfo, Map<String, Object> extParameters) throws Exception;
+
+	@Value("${spring.application.name}")
+	public String appCode;
+
+	/**
+	 * 
+	 * @param requestInfo
+	 * @param extParameters
+	 * @param requestMessage
+	 * @return
+	 * @throws Exception
+	 */
+	public ProcessResult process(RequestInfo requestInfo, Map<String, Object> extParameters, String requestMessage)
+			throws Exception {
+		requestInfo.getRequestHeader().setSystemCode(appCode);
+		ProcessResult processResult = this.callCommonHTTPService(appCode, requestInfo, requestMessage, extParameters);
+		return processResult;
+	}
+
+	/**
+	 * 
+	 * @param requestInfo
+	 * @param extParameters
+	 * @return
+	 * @throws Exception
+	 */
+	public String getRequestXML(RequestInfo requestInfo, Map<String, Object> extParameters) throws Exception {
+		return null;
+	}
 
 	/**
 	 * 
@@ -138,7 +168,9 @@ public abstract class BizHandler extends ConnectionHandler {
 	}
 
 	public BizHandler getProcessHandler(String code) throws Exception {
-		return BizServiceBO.getProcessHandler(code);
+		BizServiceHandler bizServiceHandler = (BizServiceHandler) ApplicationContextProvider
+				.getBean("bizServiceHandler");
+		return bizServiceHandler.getProcessHandler(code);
 	}
 
 	/**
@@ -177,6 +209,7 @@ public abstract class BizHandler extends ConnectionHandler {
 		processResult.setResultCode(UnieapConstants.C0);
 		processResult.setResultDesc(UnieapConstants.getMessage(UnieapConstants.C0));
 		List<InfConfigVO> dependInfCodeList = bizConfigVO.getDependInfCodeList();
+		boolean numberRouted = false;
 		if (dependInfCodeList != null && dependInfCodeList.size() > 0) {
 			extParameters.put(UnieapConstants.BIZCONFIG, bizConfigVO);
 			Map<String, Object> payloads = new HashMap<String, Object>();
@@ -189,10 +222,13 @@ public abstract class BizHandler extends ConnectionHandler {
 				if (!infConfigVO.isRouted()) {
 					continue;
 				}
+				numberRouted = true;
+				extParameters.put(UnieapConstants.INFCONFIG, infConfigVO);
 				bizMessageVO = this.getBizMessageVO(requestInfo.getRequestBody().getBizCode(), infConfigVO.getInfCode(),
 						newRequestInfo.getRequestBody().getServiceNumber());
-				extParameters.put("BIZMESSAGEVO", bizMessageVO);
+				extParameters.put(UnieapConstants.BIZMESSAGEVO, bizMessageVO);
 				BizHandler bizHandler = (BizHandler) this.getProcessHandler(infConfigVO.getInfCode());
+				extParameters.put(UnieapConstants.REQUESTINFO, newRequestInfo);
 				ProcessResult infProcessResult = bizHandler.process(newRequestInfo, extParameters);
 				if (UnieapConstants.C0.equals(infProcessResult.getResultCode())) {
 					if (!StringUtils.isEmpty(infConfigVO.getTransformMessageHandler())) {
@@ -215,15 +251,24 @@ public abstract class BizHandler extends ConnectionHandler {
 					throw new Exception(infProcessResult.getResultCode() + ":" + infProcessResult.getResultDesc());
 				}
 			}
+			if (!numberRouted) {
+				processResult.setResultCode("20010");
+				processResult.setResultDesc(UnieapConstants.getMessage("20010",
+						new String[] { bizConfigVO.getBizCode(), requestInfo.getRequestBody().getServiceNumber() }));
+			}
 			if (!StringUtils.isEmpty(bizConfigVO.getTransformMessageHandler())) {
 				TransformMessageHandler transformMessageHandler = (TransformMessageHandler) ApplicationContextProvider
 						.getBean(bizConfigVO.getTransformMessageHandler());
 				Object obj = transformMessageHandler.transform(payloads, extParameters);
 				if (obj != null) {
-					processResult = processAfterBizTransformMessage(obj.toString());
+					if ("JSON".equals(bizConfigVO.getResultType())) {
+						processResult = processAfterBizTransformMessage2JSON(obj.toString());
+					}
+					if ("XML".equals(bizConfigVO.getResultType())) {
+						processResult = processAfterBizTransformMessage2XML(obj.toString());
+					}
 				}
 			}
-			return processResult;
 		} else {
 			processResult.setResultCode("20009");
 			processResult.setResultDesc(UnieapConstants.getMessage("20009", new String[] { bizConfigVO.getBizCode() }));
@@ -231,19 +276,30 @@ public abstract class BizHandler extends ConnectionHandler {
 		return processResult;
 	}
 
-	public ProcessResult processAfterBizTransformMessage(String transformMessage) {
+	public ProcessResult processAfterBizTransformMessage2JSON(String transformMessage) {
 		ProcessResult processResult = new ProcessResult();
 		JSONObject obj = JSONObject.fromObject(transformMessage);
 		JSONObject resultHeader = obj.getJSONObject("ResultMsg").getJSONObject("ResultHeader");
 		JSONObject resultRecord = obj.getJSONObject("ResultMsg").getJSONObject("ResultRecord");
+		resultRecord.put("ResultRecord", resultRecord);
 		processResult.setResultCode(resultHeader.getString("ResultCode"));
 		processResult.setResultDesc(resultHeader.getString("ResultDesc"));
 		processResult.setVo(resultRecord.toString());
 		return processResult;
 	}
+
+	public ProcessResult processAfterBizTransformMessage2XML(String transformMessage) {
+		ProcessResult processResult = new ProcessResult();
+		processResult.setResultCode(UnieapConstants.C0);
+		processResult.setResultDesc(UnieapConstants.SUCCESS);
+		processResult.setVo(transformMessage);
+		return processResult;
+	}
+
 	public String getSOAPRequestMessageFromPayload(Object payload) throws Exception {
 		String requestMessage = JaxbXmlUtil.convertBeanToXml(payload);
-		requestMessage = requestMessage.substring( "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>".length());
+		requestMessage = requestMessage
+				.substring("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>".length());
 		StringBuffer sb = new StringBuffer();
 		sb.append("<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">");
 		sb.append("<soapenv:Header/>");

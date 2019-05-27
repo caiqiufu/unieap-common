@@ -1,4 +1,17 @@
-#eureka配置######################################
+##################################################
+# server info
+##################################################
+server:
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 1000
+    min-spare-threads: 30
+  port: 8080
+  #address: localhost
+  session-timeout: 30
+################################################
+#eureka配置
+################################################
 eureka:
   instance:
     lease-expiration-duration-in-seconds: 10 #服务过期时间配置,超过这个时间没有接收到心跳EurekaServer就会将这个实例剔除
@@ -10,9 +23,11 @@ eureka:
        enabled: false
     serviceUrl:
       defaultZone: http://172.30.8.52:8761/eureka/
-#数据库配置###################################### 
+################################################
+#数据库配置
+################################################
 spring:  
-  datasource:
+  datasource :
     url : jdbc:mysql://127.0.0.1:3306/unieap?characterencoding=utf-8;GenerateSimpleParameterMetadata=true
     username : unieap  
     password : unieap  
@@ -35,49 +50,17 @@ spring:
     #PSCatch
     poolPreparedStatements : true
     maxPoolPreparedStatementPerConnectionSize : 20
-  thymeleaf :
-    cache : false
-    suffix : .html
-    encoding : UTF-8
-    content-type : text/html
-    #mode=HTML5 not work
-    mode : HTML
-  jpa :
-     database : MYSQL  
-     show-sql : false
-     open-in-view : false
-     # Hibernate ddl auto (create, create-drop, update)
-     hibernate :
-       ddl-auto : update
-       naming-strategy : org.hibernate.cfg.ImprovedNamingStrategy
-     properties :
-        hibernate :
-           dialect : org.hibernate.dialect.MySQL5Dialect
-  batch : 
-      job :
-         enabled : false
-      table-prefix : BATCH_
+################################################
+#数据库配置
 # 共有8个级别，按照从低到高为：ALL < TRACE < DEBUG < INFO < WARN < ERROR < FATAL < OFF。
-logging:
-   file: logs/unieap-common/application-debug.log
-   pattern:
-     console: "%d %-5level %logger : %msg%n"
-     file: "%d %-5level [%thread] %logger : %msg%n"
-   level:
+################################################
+logging :
+   file : logs/unieap-common/application-debug.log
+   pattern :
+     console : "%d %-5level %logger : %msg%n"
+     file : "%d %-5level [%thread] %logger : %msg%n"
+   level :
       org.springframework: DEBUG
       org.springframework.web: DEBUG
       com.howtodoinjava: DEBUG
       org.hibernate: DEBUG
-context : 
-      listener : 
-         classes : com.unieap.base.ApplicationEventListener
-security:
-   basic: 
-      enabled: false
-#通过HTTP发送shutdown信号
-endpoints : 
-      #启用shutdown   
-      shutdown : 
-         enabled : true
-         #禁用密码验证
-         sensitive : false

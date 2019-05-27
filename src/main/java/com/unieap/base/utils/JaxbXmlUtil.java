@@ -48,11 +48,16 @@ public class JaxbXmlUtil {
 	public static <T> T convertXmlToJavaBean(String xml, String elementName, Class<T> t) throws Exception {
 		T obj;
 		Document document = DocumentHelper.parseText(xml);
+		String beanXml = xml;
 		// 如果不是SOAP返回的报文，是XML字符串则不需要这行代码
-		String beanXml = document.getRootElement().element("Body").element(elementName).asXML();
+		if (document.getRootElement().element("Body")!= null) {
+			beanXml = document.getRootElement().element("Body").element(elementName).asXML();
+		}
 		JAXBContext context = JAXBContext.newInstance(t);
 		Unmarshaller unmarshaller = context.createUnmarshaller();
-		obj = (T) unmarshaller.unmarshal(new StringReader(beanXml));
+		@SuppressWarnings("unchecked")
+		T unmarshal = (T) unmarshaller.unmarshal(new StringReader(beanXml));
+		obj = unmarshal;
 		return obj;
 	}
 

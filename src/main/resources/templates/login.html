@@ -3,6 +3,8 @@
 	xmlns:th="http://www.thymeleaf.org"
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="/images/favicon.ico" rel="shortcut icon">
 <title>Login Page</title>
 <style type="text/css">
 body {
@@ -105,7 +107,8 @@ body {
 <body>
 	<div class="lg-container">
 		<h1>Easy Mobile</h1>
-		<h1 th:text="${myname}"></h1>
+		<h1 th:text="${myname_zh}"></h1>
+		<h1 th:text="${myname_en}"></h1>
 		<form th:action="@{/desk}" method="post" id="lg-form"
 			name="lg-form">
 			<div>

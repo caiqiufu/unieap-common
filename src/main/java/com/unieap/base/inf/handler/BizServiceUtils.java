@@ -1,6 +1,5 @@
 package com.unieap.base.inf.handler;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
@@ -15,7 +14,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 
-import org.dom4j.io.SAXReader;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 
@@ -329,15 +327,22 @@ public class BizServiceUtils {
 
 	public static boolean authenticationCheck(RequestInfo requestInfo) {
 		UserVO user = UnieapCacheMgt.getUser(requestInfo.getRequestHeader().getAccessName());
-		if (user == null || !user.getPassword().equals(requestInfo.getRequestHeader().getPassword())) {
+		if (user == null) {
 			ProcessResult processResult = new ProcessResult();
 			processResult.setResultCode("20004");
 			processResult.setResultDesc(UnieapConstants.getMessage("20004"));
-			Esblog esblog = BizServiceUtils.getEsbLog(requestInfo, processResult, "", "", "", UnieapConstants.ESB);
-			EsbLogCacheMgt.setEsbLogVO(esblog);
 			return false;
 		} else {
-			return true;
+			boolean match = org.apache.commons.lang.StringUtils.equals(user.getPassword(),
+					requestInfo.getRequestHeader().getPassword());
+			if (match) {
+				return true;
+			} else {
+				ProcessResult processResult = new ProcessResult();
+				processResult.setResultCode("20004");
+				processResult.setResultDesc(UnieapConstants.getMessage("20004"));
+				return false;
+			}
 		}
 	}
 
@@ -347,8 +352,6 @@ public class BizServiceUtils {
 			ProcessResult processResult = new ProcessResult();
 			processResult.setResultCode("20005");
 			processResult.setResultDesc(UnieapConstants.getMessage("20005"));
-			Esblog esblog = BizServiceUtils.getEsbLog(requestInfo, processResult, "", "", "", UnieapConstants.ESB);
-			EsbLogCacheMgt.setEsbLogVO(esblog);
 			return false;
 		} else {
 			return true;

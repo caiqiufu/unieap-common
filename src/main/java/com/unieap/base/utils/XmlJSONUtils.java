@@ -4,8 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
 
@@ -17,7 +15,6 @@ import net.sf.json.JSONSerializer;
 import net.sf.json.xml.XMLSerializer;
 
 public class XmlJSONUtils {
-	private static final Log logger = LogFactory.getLog(XmlJSONUtils.class);
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		String json = "...";
@@ -58,18 +55,30 @@ public class XmlJSONUtils {
 	public static String json2xml(String jsonString) {
 		XMLSerializer xmlSerializer = new XMLSerializer();
 		return xmlSerializer.write(JSONSerializer.toJSON(jsonString));
-		// return xmlSerializer.write(JSONArray.fromObject(jsonString));//这种方式只支持JSON数组
 	}
+
 	public static org.dom4j.Document getSOAPXMLDocumentDom4J(String soapXMLMessage, Map<String, String> namespace)
 			throws Exception {
 		if (soapXMLMessage == null) {
 			return null;
 		}
-		logger.debug("soapXMLMessage="+soapXMLMessage);
 		SAXReader saxReader = new SAXReader();
 		saxReader.getDocumentFactory().setXPathNamespaceURIs(namespace);
 		org.dom4j.Document document = saxReader.read(new ByteArrayInputStream(soapXMLMessage.getBytes("UTF-8")));
 		return document;
+	}
 
+	public static String getNSAlias(Map<String, String> NSList, String ns) {
+		if (NSList.containsValue(ns)) {
+			for (String key : NSList.keySet()) {
+				String value = NSList.get(key);
+				if (ns.equals(value)) {
+					return key;
+				}
+			}
+		}
+		String NSAlias = "ns" + NSList.size();
+		NSList.put(NSAlias, ns);
+		return NSAlias;
 	}
 }

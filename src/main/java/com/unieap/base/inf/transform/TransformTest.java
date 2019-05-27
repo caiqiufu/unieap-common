@@ -7,6 +7,8 @@ import java.util.Map;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
+import com.unieap.base.inf.vo.BizFieldVO;
+import com.unieap.base.inf.vo.BizMessageVO;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;

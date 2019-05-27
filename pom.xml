@@ -51,13 +51,15 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		<!-- cloud end -->
-		<!-- 热部署组件 -->
+		<!-- 热部署组件  begin -->
+		<!--springloaded  hot deploy -->  
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
 			<scope>compile</scope>
 		</dependency>
+		<!-- 热部署组件  end -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -102,6 +104,7 @@
 			<groupId>wsdl4j</groupId>
 			<artifactId>wsdl4j</artifactId>
 		</dependency>
+		
 		<!--spring web service wsdl包 -->
 		<!-- json -->
 		<dependency>

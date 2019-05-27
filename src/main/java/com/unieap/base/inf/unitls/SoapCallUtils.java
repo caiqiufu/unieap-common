@@ -32,8 +32,8 @@ import com.unieap.base.inf.element.RequestHeader;
 import com.unieap.base.inf.element.RequestInfo;
 import com.unieap.base.inf.handler.BizServiceUtils;
 import com.unieap.base.inf.handler.ProcessResult;
+import com.unieap.base.inf.vo.InfConfigVO;
 import com.unieap.base.pojo.Esblog;
-import com.unieap.base.vo.InfConfigVO;
 
 public class SoapCallUtils {
 	private static MessageFactory messageFactory;

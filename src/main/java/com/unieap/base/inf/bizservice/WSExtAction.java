@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.unieap.base.ApplicationContextProvider;
-import com.unieap.base.inf.handler.BizServiceBO;
+import com.unieap.base.inf.handler.BizServiceHandler;
 
 public class WSExtAction extends ExtAction {
 	@RequestMapping("unieap/WSExtAction/bizHandle")
@@ -26,10 +26,10 @@ public class WSExtAction extends ExtAction {
 		String ContentType = request.getContentType();
 		extParameters.put("ContentType", ContentType);
 		extParameters.put("SOAPAction", SOAPAction);
-		BizServiceBO bizServiceBO = (BizServiceBO) ApplicationContextProvider.getBean("bizServiceBO");
+		BizServiceHandler bizServiceHandler = (BizServiceHandler) ApplicationContextProvider.getBean("bizServiceHandler");
 		if (!StringUtils.isEmpty(requestInfo)) {
 			requestInfo = binaryReader(request);
 		}
-		return bizServiceBO.process(SOAPAction,requestInfo, extParameters);
+		return bizServiceHandler.process(SOAPAction,requestInfo, extParameters);
 	}
 }

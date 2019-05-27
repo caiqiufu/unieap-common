@@ -1,4 +1,47 @@
+#################################################
+#应用级别参数
+#################################################
 spring:  
   profiles : 
      #指定读取配置文件:dev(开发环境),prod(生产环境),qa(测试环境)
      active : dev
+#################################################
+#应用级别参数
+#################################################
+  thymeleaf :
+    cache: false
+    suffix: .html
+    encoding: UTF-8
+    # 解决中文乱码
+    content-type: text/html; charset=utf-8
+    #mode=HTML5 not work
+    mode: HTML
+  jpa :
+     database : MYSQL  
+     show-sql : false
+     open-in-view : false
+     # Hibernate ddl auto (create, create-drop, update)
+     hibernate :
+       ddl-auto : update
+       naming-strategy : org.hibernate.cfg.ImprovedNamingStrategy
+     properties :
+        hibernate :
+           dialect : org.hibernate.dialect.MySQL5Dialect
+  batch : 
+      job :
+         enabled : false
+      table-prefix : BATCH_
+###################################################################
+context : 
+      listener : 
+         classes : com.unieap.base.ApplicationEventListener
+security:
+   basic: 
+      enabled: false
+#通过HTTP发送shutdown信号
+endpoints : 
+      #启用shutdown   
+      shutdown : 
+         enabled : true
+         #禁用密码验证
+         sensitive : false

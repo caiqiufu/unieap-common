@@ -50,10 +50,14 @@ public class UnieapConstants {
 	public final static String TRANSFORMTYPE = "TRANSFORM_TYPE";
 	public final static String TRANSFORM2EXISTING = "TE";
 	public final static String TRANSFORM2STANDARD = "TS";
-
+    //esb interface begin
 	public final static String INFCONFIG = "INFCONFIG";
 	public final static String BIZCONFIG = "BIZCONFIG";
-
+	public final static String BIZMESSAGEVO = "BIZMESSAGEVO";
+	public final static String REQUESTINFO = "REQUESTINFO";
+	//esb interface end
+	
+	
 	public final static String PAYLOAD = "payload";
 	public final static String REQUEST_MESSAGE = "REQUEST_MESSAGE";
 

@@ -26,10 +26,14 @@ public class LoginController {
 
 	@RequestMapping("/login")
 	public String login(HttpServletRequest request, HttpServletResponse response, Model model) {
-		model.addAttribute("myname", "Chai");
+		model.addAttribute("myname_zh", "菜菜");
+		model.addAttribute("myname_en", "Chai Chai");
 		return "login";
 	}
-
+	@RequestMapping("/")
+	public String index(HttpServletRequest request, HttpServletResponse response, Model model) {
+		return "index";
+	}
 	@RequestMapping("/logout")
 	public String logout() {
 		return "logout";
@@ -69,6 +73,7 @@ public class LoginController {
 	@RequestMapping("/welcome")
 	public ModelAndView welcome(HttpServletRequest request, HttpServletResponse response, Model model, String language) {
 		model.addAttribute("myname", "Chai");
+		model.addAttribute("myname1", "菜菜");
 		ModelAndView vmodel = new ModelAndView("welcome");
 		vmodel.addObject("myname1.test", "Chai Chai");
 		return vmodel;

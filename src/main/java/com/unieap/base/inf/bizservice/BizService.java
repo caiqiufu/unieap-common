@@ -6,7 +6,7 @@ import javax.jws.WebResult;
 import javax.jws.WebService;
 
 import com.unieap.base.ApplicationContextProvider;
-import com.unieap.base.inf.handler.BizServiceBO;
+import com.unieap.base.inf.handler.BizServiceHandler;
 
 //name="MyWebService1",  // 服务实现类的名称
 //serviceName="MyWebServiceService1",  // 默认在发布的服务实现者的名称后面添加Service
@@ -21,14 +21,14 @@ public class BizService {
 	// 可以指定wsdl中的方法名，参数名和返回值
 	@WebMethod(operationName = "queryInfo")
 	public String queryInfo(@WebParam(name = "requestInfo") String requestInfo) {
-		BizServiceBO bizServiceBO = (BizServiceBO) ApplicationContextProvider.getBean("bizServiceBO");
-		return bizServiceBO.process(requestInfo, null);
+		BizServiceHandler bizServiceHandler = (BizServiceHandler) ApplicationContextProvider.getBean("bizServiceHandler");
+		return bizServiceHandler.process(requestInfo, null);
 	}
 
 	@WebResult(name = "responseInfo", targetNamespace = "http://www.unieap.easy.com")
 	@WebMethod(operationName = "bizHandle")
 	public String bizHandle(@WebParam(name = "requestInfo") String requestInfo) {
-		BizServiceBO bizServiceBO = (BizServiceBO) ApplicationContextProvider.getBean("bizServiceBO");
-		return bizServiceBO.process(requestInfo, null);
+		BizServiceHandler bizServiceHandler = (BizServiceHandler) ApplicationContextProvider.getBean("bizServiceHandler");
+		return bizServiceHandler.process(requestInfo, null);
 	}
 }

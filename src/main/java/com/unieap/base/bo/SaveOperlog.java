@@ -25,8 +25,8 @@ public class SaveOperlog {
 		saveOperlog();
 	}
 
-	public void saveOperlog(){
-		List<Object> datas = UnieapCacheMgt.getPersistenceData("mdm_operlog");
+	public void saveOperlog() {
+		List<Object> datas = UnieapCacheMgt.getPersistenceData("MDM_OPERLOG");
 		if (datas != null && datas.size() > 0) {
 			Date startTime = new Date();
 			logger.debug("SaveOperlog start..." + startTime);
@@ -34,7 +34,8 @@ public class SaveOperlog {
 			if (!UnieapCacheMgt.persistenceListLock) {
 				UnieapCacheMgt.persistenceListLock = true;
 				copyDatas.addAll(datas);
-				 UnieapCacheMgt.getPersistenceData("mdm_operlog").clear();
+				UnieapCacheMgt.getPersistenceData("MDM_OPERLOG").clear();
+				datas.clear();
 				UnieapCacheMgt.persistenceListLock = false;
 				logger.debug("Copy esblist:" + copyDatas.size());
 			}
@@ -43,8 +44,8 @@ public class SaveOperlog {
 				logger.debug("Save list:" + copyDatas.size());
 			}
 			long timeDuring = new Date().getTime() - startTime.getTime();
-			logger.debug("Process size:" + copyDatas.size() + ",time during:"
-					+timeDuring+",avg(records/s):"+(copyDatas.size()*1000/timeDuring));
+			logger.debug("Process size:" + copyDatas.size() + ",time during:" + timeDuring + ",avg(records/s):"
+					+ (copyDatas.size() * 1000 / timeDuring));
 			Date endTime = new Date();
 			logger.debug("SaveOperlog end..." + endTime);
 		}

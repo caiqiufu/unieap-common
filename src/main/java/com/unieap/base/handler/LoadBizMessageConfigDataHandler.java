@@ -5,20 +5,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
 import com.unieap.base.UnieapCacheMgt;
 import com.unieap.base.db.DBManager;
 import com.unieap.base.db.EntityRowMapper;
-import com.unieap.base.inf.transform.BizFieldVO;
-import com.unieap.base.inf.transform.BizMessageVO;
-import com.unieap.base.inf.transform.InfFieldVO;
+import com.unieap.base.inf.vo.BizConfigVO;
+import com.unieap.base.inf.vo.BizFieldVO;
+import com.unieap.base.inf.vo.BizMessageVO;
+import com.unieap.base.inf.vo.InfFieldVO;
+import com.unieap.base.utils.XmlJSONUtils;
 
 @Service
 public class LoadBizMessageConfigDataHandler implements ConfigHandler {
-	private final Log logger = LogFactory.getLog(LoadBizMessageConfigDataHandler.class);
 
 	@Override
 	public void deal(Map<String, Object> parameters) throws Exception {
@@ -81,20 +80,33 @@ public class LoadBizMessageConfigDataHandler implements ConfigHandler {
 				new EntityRowMapper(BizFieldVO.class));
 		if (rootVOList != null && rootVOList.size() > 0) {
 			BizFieldVO rootVO = (BizFieldVO) rootVOList.get(0);
+			log.debug("=============" + rootVO.getXpath());
 			rootVO.setChildrenList(getChildrenList(rootVO.getBizCode(), rootVO.getId(), numberStart, numberEnd));
 			rootVO.setInfFieldVO(getInfField(rootVO.getInfFieldId()));
 			List<BizFieldVO> fields = new ArrayList<BizFieldVO>();
 			fields.add(rootVO);
+			Map<String, BizFieldVO> fieldList = new HashMap<String, BizFieldVO>();
+			BizConfigVO bizConfigVO = UnieapCacheMgt.getBizHandlerList().get(rootVO.getBizCode());
+			Map<String, String> nSList = new HashMap<String, String>();
+			bizConfigVO.setNSList(nSList);
 			while (fields.size() > 0) {
+				String nsAlias = null;
 				BizFieldVO fieldVO = fields.get(0);
-				logger.debug("============================================================================");
-				logger.debug(fieldVO.toJsonString());
+				fieldList.put(fieldVO.getId().toString(), fieldVO);
+				log.debug("==============" + fieldVO.getXpath());
 				fieldVO.setInfFieldVO(getInfField(fieldVO.getInfFieldId()));
-				BizFieldVO parentVO = getBizFieldVO(fieldVO.getBizCode(), fieldVO.getParentId(), numberStart,
-						numberEnd);
-				if (parentVO != null) {
-					fieldVO.setParentId(parentVO.getId());
+				if (fieldVO.getParentId() != null) {
+					BizFieldVO parentVO = fieldList.get(fieldVO.getParentId().toString());
 					fieldVO.setParentVO(parentVO);
+				}
+				if (fieldVO.getNs() != null) {
+					nsAlias = XmlJSONUtils.getNSAlias(nSList, fieldVO.getNs());
+				}
+				if("XML".equals(bizConfigVO.getResultType())) {
+					fieldVO.updateXMLXpath(nsAlias);
+				}
+				if("JSON".equals(bizConfigVO.getResultType())) {
+					fieldVO.updateJSONXpath();
 				}
 				if (!fieldVO.isLeaf()) {
 					List<BizFieldVO> childrenList = getChildrenList(fieldVO.getBizCode(), fieldVO.getId(), numberStart,
@@ -104,6 +116,7 @@ public class LoadBizMessageConfigDataHandler implements ConfigHandler {
 				}
 				fields.remove(fieldVO);
 			}
+			//fieldList.forEach((k, v) -> System.out.println("key : " + k + "; value : " + v.getXpath()));
 			return rootVO;
 		}
 		return null;

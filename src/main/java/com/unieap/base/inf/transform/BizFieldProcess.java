@@ -1,5 +1,8 @@
 package com.unieap.base.inf.transform;
 
+import com.unieap.base.inf.vo.BizFieldVO;
+import com.unieap.base.inf.vo.BizMessageVO;
+
 public interface BizFieldProcess {
 	/**
 	 * 

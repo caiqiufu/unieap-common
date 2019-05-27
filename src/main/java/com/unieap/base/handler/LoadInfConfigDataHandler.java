@@ -11,8 +11,7 @@ import com.unieap.base.SYSConfig;
 import com.unieap.base.UnieapCacheMgt;
 import com.unieap.base.db.DBManager;
 import com.unieap.base.db.EntityRowMapper;
-import com.unieap.base.vo.InfConfigNSVO;
-import com.unieap.base.vo.InfConfigVO;
+import com.unieap.base.inf.vo.InfConfigVO;
 import com.unieap.base.vo.NumberFilterVO;
 import com.unieap.base.vo.NumberRouteVO;
 
@@ -49,7 +48,7 @@ public class LoadInfConfigDataHandler implements ConfigHandler {
 				vo.setNumberRoute(getNumberRoute(vo.getInfCode()));
 				vo.setNumberFilterList(getNumberFilterList(vo.getInfCode()));
 				vo.setNumberRouteList(getNumberRouteList(vo.getInfCode()));
-				vo.setNSList(getNSList(vo.getInfCode()));
+				//vo.setNSList(getNSList(vo.getInfCode()));
 				vo.setBizTransformMessageHandler(getBizTransformMessageHandler(vo.getInfCode()));
 				UnieapCacheMgt.getInfHandlerList().put(vo.getInfCode(), vo);
 			}
@@ -68,15 +67,6 @@ public class LoadInfConfigDataHandler implements ConfigHandler {
 		}
 		return null;
 	}
-	public List<InfConfigNSVO> getNSList(String infCode) {
-		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT id, inf_code as infCode, ns, alias FROM esb_inf_config_field_ns where inf_code=?");
-		List<?> childrenList = DBManager.getJT().query(sql.toString(), new Object[] { infCode },
-				new EntityRowMapper(InfConfigNSVO.class));
-		List<InfConfigNSVO> vos = (List<InfConfigNSVO>) childrenList;
-		return vos;
-	}
-
 	public List<NumberFilterVO> getNumberFilterList(String infCode) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("select id,inf_code as infCode,number_start as numberStart,");

@@ -1,10 +1,10 @@
 package com.unieap.base.bo;
 
-import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,7 +32,7 @@ public class OperlogBO extends BaseBO {
 		vo.setOperDate(UnieapConstants.getDateTime());
 		vo.setOperatorName(UnieapConstants.getUser().getUserName());
 		vo.setTenantId(UnieapConstants.getTenantId());
-		UnieapCacheMgt.getPersistenceData("mdm_operlog").add(vo);
+		UnieapCacheMgt.getPersistenceData("MDM_OPERLOG").add(vo);
 		return result(UnieapConstants.ISSUCCESS, UnieapConstants.SUCCESS);
 	}
 
@@ -52,9 +52,9 @@ public class OperlogBO extends BaseBO {
 	 * @param newValue
 	 * @return
 	 */
-	public Map<String, String> save(String dsName,String appName, String moduleName, String bizCode, String bizDesc, String operObj,
-			String operType, String operDesc, String recordId, String fieldName, String displayName, String oldValue,
-			String newValue) {
+	public Map<String, String> save(String dsName, String appName, String moduleName, String bizCode, String bizDesc,
+			String operObj, String operType, String operDesc, String recordId, String fieldName, String displayName,
+			String oldValue, String newValue) {
 		MdmOperlog vo = new MdmOperlog();
 		vo.setAppName(appName);
 		vo.setId(getSequence(null, null));
@@ -63,7 +63,7 @@ public class OperlogBO extends BaseBO {
 		vo.setBizDesc(bizDesc);
 		vo.setDisplayName(displayName);
 		vo.setFieldName(fieldName);
-		vo.setId(UnieapConstants.getSequence());
+		//vo.setId(UnieapConstants.getSequence());
 		vo.setModuleName(moduleName);
 		vo.setNewValue(newValue);
 		vo.setOldValue(oldValue);
@@ -75,13 +75,18 @@ public class OperlogBO extends BaseBO {
 		vo.setOperType(operType);
 		vo.setRecordId(recordId);
 		vo.setTenantId(UnieapConstants.getTenantId());
-		UnieapCacheMgt.getPersistenceData("mdm_operlog").add(vo);
+		if(UnieapCacheMgt.getPersistenceData("MDM_OPERLOG")==null) {
+			 List<Object> data = new ArrayList<Object>();
+			 UnieapCacheMgt.getPersistenceDataList().put("MDM_OPERLOG", data);
+		}
+		UnieapCacheMgt.getPersistenceData("MDM_OPERLOG").add(vo);
 		return result(UnieapConstants.ISSUCCESS, UnieapConstants.SUCCESS);
 	}
 
 	/**
 	 * 
-	 * @param app
+	 * @param dsName
+	 * @param appName
 	 * @param moduleName
 	 * @param bizCode
 	 * @param bizDesc
@@ -89,17 +94,13 @@ public class OperlogBO extends BaseBO {
 	 * @param operType
 	 * @param operDesc
 	 * @param id
+	 * @param oldObj
 	 * @param newObj
 	 * @return
-	 * @throws IntrospectionException
-	 * @throws IllegalAccessException
-	 * @throws IllegalArgumentException
-	 * @throws InvocationTargetException
+	 * @throws Exception
 	 */
-	public Map<String, String> save(String dsName,String appName, String moduleName, String bizCode, String bizDesc, String operObj,
-			String operType, String operDesc, Long id, Object newObj)
-			throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Object oldObj = mdmOperlogRepository.getOne(id);
+	public Map<String, String> save(String dsName, String appName, String moduleName, String bizCode, String bizDesc,
+			String operObj, String operType, String operDesc, Long id, Object oldObj, Object newObj) throws Exception {
 		Map<String, PropertyDescriptor> beanprops = UnieapCacheMgt.getBeanProps(newObj.getClass().getName());
 		if (beanprops == null) {
 			beanprops = cacheBeanprops(newObj);
@@ -128,7 +129,7 @@ public class OperlogBO extends BaseBO {
 								soldValue = oldValue.toString();
 							}
 							if (!StringUtils.equals(snewValue, soldValue)) {
-								save(dsName,appName, moduleName, bizCode, bizDesc, operObj, operType, operDesc,
+								save(dsName, appName, moduleName, bizCode, bizDesc, operObj, operType, operDesc,
 										Long.toString(id), fieldName, fieldName, soldValue, snewValue);
 							}
 						} else if (Integer.class == retType) {
@@ -136,7 +137,7 @@ public class OperlogBO extends BaseBO {
 								inewValue = (Integer) newValue;
 								ioldValue = (Integer) oldValue;
 								if (inewValue.intValue() != ioldValue.intValue()) {
-									save(dsName,appName, moduleName, bizCode, bizDesc, operObj, operType, operDesc,
+									save(dsName, appName, moduleName, bizCode, bizDesc, operObj, operType, operDesc,
 											Long.toString(id), fieldName, fieldName, ioldValue.toString(),
 											inewValue.toString());
 								}
@@ -151,7 +152,7 @@ public class OperlogBO extends BaseBO {
 								} else {
 									soldValue = oldValue.toString();
 								}
-								save(dsName,appName, moduleName, bizCode, bizDesc, operObj, operType, operDesc,
+								save(dsName, appName, moduleName, bizCode, bizDesc, operObj, operType, operDesc,
 										Long.toString(id), fieldName, fieldName, snewValue, soldValue);
 							}
 						}

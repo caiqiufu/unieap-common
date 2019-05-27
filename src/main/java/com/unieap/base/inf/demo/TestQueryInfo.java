@@ -14,7 +14,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.unieap.base.UnieapConstants;
 import com.unieap.base.inf.unitls.SoapCallUtils;
-import com.unieap.base.vo.BizConfigVO;
+import com.unieap.base.inf.vo.BizConfigVO;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;

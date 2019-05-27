@@ -1,11 +1,12 @@
 ##################################################
-server:
-  port: 8080
-  #address: localhost
-  session-timeout: 30  
-  tomcat.max-threads: 0  
-  tomcat.uri-encoding: UTF-8
+#系统级别参数，优先加载
+##################################################
 spring:
+  http:
+    encoding:
+    force: true
+    charset: UTF-8
+    enabled: true
   application:
     name: unieap-common
 #################################################

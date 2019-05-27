@@ -10,8 +10,8 @@ import com.unieap.base.SYSConfig;
 import com.unieap.base.UnieapCacheMgt;
 import com.unieap.base.db.DBManager;
 import com.unieap.base.db.EntityRowMapper;
-import com.unieap.base.vo.BizConfigVO;
-import com.unieap.base.vo.InfConfigVO;
+import com.unieap.base.inf.vo.BizConfigVO;
+import com.unieap.base.inf.vo.InfConfigVO;
 
 @Service
 public class LoadBizConfigDataHandler implements ConfigHandler {
@@ -36,7 +36,8 @@ public class LoadBizConfigDataHandler implements ConfigHandler {
 		sql.append("class_name as className,SOAP_Action as SOAPAction,url,ext_parameters as extParameters,");
 		sql.append("transform_message_handler as transformMessageHandler,activate_flag as activateFlag,");
 		sql.append("access_name as accessName,password, error_code_ignore as errorCodeIgnore,");
-		sql.append("success_code as successCode,response_sample as responseSample,timeout ");
+		sql.append("success_code as successCode,response_sample as responseSample,timeout, ");
+		sql.append("result_type as resultType ");
 		sql.append(" from esb_biz_config where activate_flag ='Y' and tenant_id = ?");
 		List<?> datas = DBManager.getJT().query(sql.toString(), new Object[] { SYSConfig.getConfig().get("tenantId") },
 				new EntityRowMapper(BizConfigVO.class));
@@ -71,7 +72,6 @@ public class LoadBizConfigDataHandler implements ConfigHandler {
 				vo.setNumberRoute(loadInfConfigDataHandler.getNumberRoute(vo.getInfCode()));
 				vo.setNumberFilterList(loadInfConfigDataHandler.getNumberFilterList(vo.getInfCode()));
 				vo.setNumberRouteList(loadInfConfigDataHandler.getNumberRouteList(vo.getInfCode()));
-				vo.setNSList(loadInfConfigDataHandler.getNSList(vo.getInfCode()));
 			}
 			return volist;
 		}

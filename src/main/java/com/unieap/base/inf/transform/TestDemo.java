@@ -9,6 +9,7 @@ import org.dom4j.Node;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
+import com.unieap.base.inf.vo.InfFieldVO;
 import com.unieap.base.utils.XmlJSONUtils;
 
 import net.sf.json.JSONArray;

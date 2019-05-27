@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.unieap.base.ApplicationContextProvider;
 import com.unieap.base.controller.BaseController;
 import com.unieap.base.file.bo.FileBO;
-import com.unieap.base.inf.handler.BizServiceBO;
+import com.unieap.base.inf.handler.BizServiceHandler;
 
 @Controller
 public class ExtAction extends BaseController {
@@ -35,11 +35,11 @@ public class ExtAction extends BaseController {
 		String ContentType = request.getContentType();
 		extParameters.put("ContentType", ContentType);
 		extParameters.put("SOAPAction", SOAPAction);
-		BizServiceBO bizServiceBO = (BizServiceBO) ApplicationContextProvider.getBean("bizServiceBO");
+		BizServiceHandler bizServiceHandler = (BizServiceHandler) ApplicationContextProvider.getBean("bizServiceHandler");
 		if (StringUtils.isEmpty(requestInfo)) {
 			requestInfo = binaryReader(request);
 		}
-		return bizServiceBO.process(requestInfo, extParameters);
+		return bizServiceHandler.process(requestInfo, extParameters);
 	}
 
 	@RequestMapping("unieap/extAction/bizHandle")
@@ -48,7 +48,7 @@ public class ExtAction extends BaseController {
 		Map<String, Object> extParameters = new HashMap<String, Object>();
 		extParameters.put("HttpServletRequest", request);
 		extParameters.put("HttpServletResponse", response);
-		BizServiceBO bizServiceBO = (BizServiceBO) ApplicationContextProvider.getBean("bizServiceBO");
+		BizServiceHandler bizServiceHandler = (BizServiceHandler) ApplicationContextProvider.getBean("bizServiceHandler");
 		String SOAPAction = request.getHeader("SOAPAction");
 		//application/xml /application/json/text/xml;charset=UTF-8
 		String ContentType = request.getContentType();
@@ -57,7 +57,7 @@ public class ExtAction extends BaseController {
 		if (StringUtils.isEmpty(requestInfo)) {
 			requestInfo = binaryReader(request);
 		}
-		return bizServiceBO.process(requestInfo, extParameters);
+		return bizServiceHandler.process(requestInfo, extParameters);
 	}
 
 	@RequestMapping("unieap/extAction/bizFileHandle")
@@ -69,7 +69,7 @@ public class ExtAction extends BaseController {
 		extParameters.put("files", items);
 		extParameters.put("HttpServletRequest", request);
 		extParameters.put("HttpServletResponse", response);
-		BizServiceBO bizServiceBO = (BizServiceBO) ApplicationContextProvider.getBean("bizServiceBO");
+		BizServiceHandler bizServiceHandler = (BizServiceHandler) ApplicationContextProvider.getBean("bizServiceHandler");
 		String SOAPAction = request.getHeader("SOAPAction");
 		//application/xml /application/json/text/xml;charset=UTF-8
 		String ContentType = request.getContentType();
@@ -78,7 +78,7 @@ public class ExtAction extends BaseController {
 		if (StringUtils.isEmpty(requestInfo)) {
 			requestInfo = binaryReader(request);
 		}
-		return bizServiceBO.process(requestInfo, extParameters);
+		return bizServiceHandler.process(requestInfo, extParameters);
 	}
 
 	@RequestMapping("unieap/extAction/downloadFileHandle")
@@ -87,7 +87,7 @@ public class ExtAction extends BaseController {
 		Map<String, Object> extParameters = new HashMap<String, Object>();
 		extParameters.put("HttpServletRequest", request);
 		extParameters.put("HttpServletResponse", response);
-		BizServiceBO bizServiceBO = (BizServiceBO) ApplicationContextProvider.getBean("bizServiceBO");
+		BizServiceHandler bizServiceHandler = (BizServiceHandler) ApplicationContextProvider.getBean("bizServiceHandler");
 		String SOAPAction = request.getHeader("SOAPAction");
 		//application/xml /application/json/text/xml;charset=UTF-8
 		String ContentType = request.getContentType();
@@ -96,7 +96,7 @@ public class ExtAction extends BaseController {
 		if (StringUtils.isEmpty(SOAPAction)) {
 			requestInfo = binaryReader(request);
 		}
-		return bizServiceBO.process(requestInfo, extParameters);
+		return bizServiceHandler.process(requestInfo, extParameters);
 	}
 
 	/**

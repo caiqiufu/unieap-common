@@ -10,13 +10,13 @@ import javax.xml.ws.Endpoint;
 
 import org.springframework.util.StringUtils;
 
-import com.unieap.base.inf.transform.BizFieldVO;
-import com.unieap.base.inf.transform.BizMessageVO;
-import com.unieap.base.inf.transform.InfFieldVO;
-import com.unieap.base.vo.BizConfigVO;
+import com.unieap.base.inf.vo.BizConfigVO;
+import com.unieap.base.inf.vo.BizFieldVO;
+import com.unieap.base.inf.vo.BizMessageVO;
+import com.unieap.base.inf.vo.InfConfigVO;
+import com.unieap.base.inf.vo.InfFieldVO;
 import com.unieap.base.vo.DicDataVO;
 import com.unieap.base.vo.DicGroupVO;
-import com.unieap.base.vo.InfConfigVO;
 import com.unieap.base.vo.MessageVO;
 import com.unieap.base.vo.UserVO;
 
