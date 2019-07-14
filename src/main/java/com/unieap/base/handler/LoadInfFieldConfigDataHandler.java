@@ -35,7 +35,7 @@ public class LoadInfFieldConfigDataHandler implements ConfigHandler {
 		sql.append("field_display_name as fieldDisplayName,field_type as fieldType,");
 		sql.append("xpath,ns,parent_id as parentId,leaf_flag as leafFlag,class_name as className,remark ");
 		sql.append("FROM unieap.esb_inf_config_field");
-		sql.append(" where parent_id is null order by inf_code");
+		sql.append(" where parent_id = 0 order by inf_code");
 		List<?> datas = DBManager.getJT().query(sql.toString(), new EntityRowMapper(InfFieldVO.class));
 		if (datas != null && datas.size() > 0) {
 			List<InfFieldVO> roots = (List<InfFieldVO>) datas;

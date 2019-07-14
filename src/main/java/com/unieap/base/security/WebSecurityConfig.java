@@ -12,6 +12,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private MyUserDetailService myUserDetailService;
+	
+	@Autowired
+	private MyAuthenticationAccessDeniedHandler myAuthenticationAccessDeniedHandler;
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -23,9 +26,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/login", "/css/**", "/js/**", "/images/**", "/Ext/**").permitAll()
+		http.authorizeRequests().antMatchers("/login", "/css/**", "/js/**", "/images/**", "/Ext/**","/sharefolder/**").permitAll()
 				.anyRequest().authenticated().and().formLogin().loginPage("/login").usernameParameter("username")
 				.passwordParameter("password").permitAll().loginProcessingUrl("/desk").and().logout().permitAll();
+		http.exceptionHandling().accessDeniedHandler(myAuthenticationAccessDeniedHandler);
 		http.headers().frameOptions().disable().and().csrf().disable();
 		// session失效后跳转
 		http.sessionManagement().invalidSessionUrl("/login");
@@ -37,6 +41,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public void configure(WebSecurity web) throws Exception {
 		// ingore是完全绕过了spring security的所有filter，相当于不走spring security
 		// permitall没有绕过spring security，其中包含了登录的以及匿名的。
-		web.ignoring().antMatchers("/unieap/service/**", "/unieap/extAction/**", "/biz/service/**");
+		web.ignoring().antMatchers("/unieap/service/**", "/unieap/extAction/**", "/biz/service/**","/sharefolder/**");
 	}
 }

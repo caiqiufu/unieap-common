@@ -18,14 +18,19 @@ spring:
     mode: HTML
   jpa :
      database : MYSQL  
-     show-sql : false
+     show-sql : true
      open-in-view : false
      # Hibernate ddl auto (create, create-drop, update)
+     generate-ddl: false
      hibernate :
        ddl-auto : update
        naming-strategy : org.hibernate.cfg.ImprovedNamingStrategy
      properties :
         hibernate :
+           ########################################
+           # true, getOne 后加载的引用实体不用再查下database，避免出现no session 错误
+           ########################################
+           enable_lazy_load_no_trans: true
            dialect : org.hibernate.dialect.MySQL5Dialect
   batch : 
       job :
@@ -45,3 +50,4 @@ endpoints :
          enabled : true
          #禁用密码验证
          sensitive : false
+####################################################################

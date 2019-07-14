@@ -55,6 +55,10 @@
 	background-image: url(/images/import.gif) !important;
 }
 
+.export {
+	background-image: url(/images/export.gif) !important;
+}
+
 .search {
 	background-image: url(/images/search.png ) !important;
 }
@@ -69,7 +73,7 @@
 }
 
 .view {
-	background-image: url(/images/view.gif ) !important;
+	background-image: url(/images/detailview.gif ) !important;
 }
 
 .find {

@@ -3,13 +3,13 @@ package com.unieap.base.repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.unieap.base.db.UnieapRepository;
 import com.unieap.base.pojo.MdmOperlog;
 
 @Repository
-public interface MdmOperlogRepository extends JpaRepository<MdmOperlog, Long> {
+public interface MdmOperlogRepository extends UnieapRepository<MdmOperlog, Long> {
 	default void saveAll(List<Object> datas) {
 		if (datas != null && datas.size() > 0) {
 			// auto generate Id

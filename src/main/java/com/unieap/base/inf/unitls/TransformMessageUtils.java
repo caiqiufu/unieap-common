@@ -14,7 +14,10 @@ import org.dom4j.QName;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
+import com.unieap.base.ApplicationContextProvider;
 import com.unieap.base.UnieapCacheMgt;
+import com.unieap.base.UnieapConstants;
+import com.unieap.base.inf.verify.FieldVerify;
 import com.unieap.base.inf.vo.BizFieldVO;
 import com.unieap.base.inf.vo.BizMessageVO;
 import com.unieap.base.inf.vo.InfConfigVO;
@@ -25,10 +28,13 @@ import net.sf.json.JSONObject;
 
 public class TransformMessageUtils {
 
-	public static String getBizMessage2JSON(BizMessageVO bizMessageVO, Map<String, Object> results) {
+	@SuppressWarnings("unchecked")
+	public static String getBizMessage2JSON(BizMessageVO bizMessageVO, Map<String, Object> results) throws Exception {
 		List<BizFieldVO> fields = new ArrayList<BizFieldVO>();
 		JSONObject jso = new JSONObject();
 		ReadContext ctx = JsonPath.parse(jso);
+		Map<String, Object> extParameters = new HashMap<String, Object>();
+		extParameters.put(UnieapConstants.BIZMESSAGEVO, bizMessageVO);
 		if (!bizMessageVO.getFieldList().isEmpty()) {
 			BizFieldVO bizFieldVO = bizMessageVO.getRootFieldVO();
 			fields.add(bizFieldVO);
@@ -41,12 +47,36 @@ public class TransformMessageUtils {
 							String value = getMessageFromXmlSourceValue(
 									(org.dom4j.Document) results.get(bizFieldVO.getInfFieldVO().getInfCode()),
 									bizFieldVO.getInfFieldVO());
+							if (bizFieldVO.getInfFieldVO().getClassName() != null) {
+								FieldVerify fieldVerify = (FieldVerify) ApplicationContextProvider
+										.getBean(bizFieldVO.getInfFieldVO().getClassName());
+								value = (String) fieldVerify.verify(bizFieldVO, bizFieldVO.getInfFieldVO(), value,
+										extParameters);
+							}
+							if (bizFieldVO.getClassName() != null) {
+								FieldVerify fieldVerify = (FieldVerify) ApplicationContextProvider
+										.getBean(bizFieldVO.getClassName());
+								value = (String) fieldVerify.verify(bizFieldVO, bizFieldVO.getInfFieldVO(), value,
+										extParameters);
+							}
 							jso.put(bizFieldVO.getFieldName(), value);
 						}
 						if ("JSON".equals(infConfigVO.getResultType())) {
 							String value = getMessageFromJsonSourceValue(
 									(ReadContext) results.get(bizFieldVO.getInfFieldVO().getInfCode()),
 									bizFieldVO.getInfFieldVO());
+							if (bizFieldVO.getInfFieldVO().getClassName() != null) {
+								FieldVerify fieldVerify = (FieldVerify) ApplicationContextProvider
+										.getBean(bizFieldVO.getInfFieldVO().getClassName());
+								value = (String) fieldVerify.verify(bizFieldVO, bizFieldVO.getInfFieldVO(), value,
+										extParameters);
+							}
+							if (bizFieldVO.getClassName() != null) {
+								FieldVerify fieldVerify = (FieldVerify) ApplicationContextProvider
+										.getBean(bizFieldVO.getClassName());
+								value = (String) fieldVerify.verify(bizFieldVO, bizFieldVO.getInfFieldVO(), value,
+										extParameters);
+							}
 							jso.put(bizFieldVO.getFieldName(), value);
 						}
 
@@ -56,12 +86,36 @@ public class TransformMessageUtils {
 								String value = getMessageFromXmlSourceValue(
 										(org.dom4j.Document) results.get(bizFieldVO.getInfFieldVO().getInfCode()),
 										bizFieldVO.getInfFieldVO());
+								if (bizFieldVO.getInfFieldVO().getClassName() != null) {
+									FieldVerify fieldVerify = (FieldVerify) ApplicationContextProvider
+											.getBean(bizFieldVO.getInfFieldVO().getClassName());
+									value = (String) fieldVerify.verify(bizFieldVO, bizFieldVO.getInfFieldVO(), value,
+											extParameters);
+								}
+								if (bizFieldVO.getClassName() != null) {
+									FieldVerify fieldVerify = (FieldVerify) ApplicationContextProvider
+											.getBean(bizFieldVO.getClassName());
+									value = (String) fieldVerify.verify(bizFieldVO, bizFieldVO.getInfFieldVO(), value,
+											extParameters);
+								}
 								((JSONObject) ctx.read(parentVO.getXpath())).put(bizFieldVO.getFieldName(), value);
 							}
 							if ("JSON".equals(infConfigVO.getResultType())) {
 								String value = getMessageFromJsonSourceValue(
 										(ReadContext) results.get(bizFieldVO.getInfFieldVO().getInfCode()),
 										bizFieldVO.getInfFieldVO());
+								if (bizFieldVO.getInfFieldVO().getClassName() != null) {
+									FieldVerify fieldVerify = (FieldVerify) ApplicationContextProvider
+											.getBean(bizFieldVO.getInfFieldVO().getClassName());
+									value = (String) fieldVerify.verify(bizFieldVO, bizFieldVO.getInfFieldVO(), value,
+											extParameters);
+								}
+								if (bizFieldVO.getClassName() != null) {
+									FieldVerify fieldVerify = (FieldVerify) ApplicationContextProvider
+											.getBean(bizFieldVO.getClassName());
+									value = (String) fieldVerify.verify(bizFieldVO, bizFieldVO.getInfFieldVO(), value,
+											extParameters);
+								}
 								((JSONObject) ctx.read(parentVO.getXpath())).put(bizFieldVO.getFieldName(), value);
 							}
 						}
@@ -76,6 +130,18 @@ public class TransformMessageUtils {
 								values = getMessageFromJsonSourceList(
 										(ReadContext) results.get(bizFieldVO.getInfFieldVO().getInfCode()),
 										bizFieldVO.getInfFieldVO());
+							}
+							if (bizFieldVO.getInfFieldVO().getClassName() != null) {
+								FieldVerify fieldVerify = (FieldVerify) ApplicationContextProvider
+										.getBean(bizFieldVO.getInfFieldVO().getClassName());
+								values = (List<String>) fieldVerify.verify(bizFieldVO, bizFieldVO.getInfFieldVO(),
+										values, extParameters);
+							}
+							if (bizFieldVO.getClassName() != null) {
+								FieldVerify fieldVerify = (FieldVerify) ApplicationContextProvider
+										.getBean(bizFieldVO.getClassName());
+								values = (List<String>) fieldVerify.verify(bizFieldVO, bizFieldVO.getInfFieldVO(),
+										values, extParameters);
 							}
 							// records list from source
 							JSONArray allfieldsobj = ctx.read(parentVO.getXpath());

@@ -7,7 +7,6 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
@@ -24,7 +23,7 @@ public class MdmExclog implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	@Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue
 	@Column(name = "id", unique = true, nullable = false, length = 16)
 	private Long id;
 	@Column(name = "operatorName", nullable = false, length = 256)

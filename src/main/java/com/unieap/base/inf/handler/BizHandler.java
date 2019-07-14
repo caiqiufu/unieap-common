@@ -216,6 +216,7 @@ public abstract class BizHandler extends ConnectionHandler {
 			BizMessageVO bizMessageVO = null;
 			for (InfConfigVO subInfConfigVO : dependInfCodeList) {
 				RequestInfo newRequestInfo = BizServiceUtils.copyRequestInfo(requestInfo);
+				extParameters.put(UnieapConstants.REQUESTINFO, newRequestInfo);
 				newRequestInfo.getRequestBody().setBizCode(subInfConfigVO.getInfCode());
 				InfConfigVO infConfigVO = this.getRouteInfConfig(requestInfo.getRequestBody().getBizCode(),
 						subInfConfigVO.getInfCode(), newRequestInfo.getRequestBody().getServiceNumber());
@@ -228,7 +229,6 @@ public abstract class BizHandler extends ConnectionHandler {
 						newRequestInfo.getRequestBody().getServiceNumber());
 				extParameters.put(UnieapConstants.BIZMESSAGEVO, bizMessageVO);
 				BizHandler bizHandler = (BizHandler) this.getProcessHandler(infConfigVO.getInfCode());
-				extParameters.put(UnieapConstants.REQUESTINFO, newRequestInfo);
 				ProcessResult infProcessResult = bizHandler.process(newRequestInfo, extParameters);
 				if (UnieapConstants.C0.equals(infProcessResult.getResultCode())) {
 					if (!StringUtils.isEmpty(infConfigVO.getTransformMessageHandler())) {

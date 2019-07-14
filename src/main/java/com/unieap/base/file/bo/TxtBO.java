@@ -15,23 +15,36 @@ import org.springframework.stereotype.Service;
 import com.unieap.base.ApplicationContextProvider;
 import com.unieap.base.UnieapConstants;
 import com.unieap.base.pojo.MdmFileArchive;
-import com.unieap.base.utils.JSONUtils;
+
+import net.sf.json.JSONObject;
 
 @Service
 public class TxtBO extends FileHandler {
 
-	public Map<String, String> importTxt(String parameters, String handlerName, List<MdmFileArchive> files)
-			throws Exception {
-		Map paras = JSONUtils.jsonToMap(parameters);
-		if (files != null && files.size() > 0) {
-			TxtHandler hanlder = (TxtHandler) ApplicationContextProvider.getBean(handlerName);
-			for (int i = 0; i < files.size(); i++) {
-				MdmFileArchive fileArchive = this.getFileArchive(files.get(i).getId());
-				String filePath = fileArchive.getFilePath() + File.separator + fileArchive.getFileName();
-				List<String> records = readSmallTxtFile(filePath);
-				hanlder.importData(paras,fileArchive, records);
-			}
-		}
+	/**
+	 * 
+	 * @param parameters
+	 * @param handlerName
+	 * @return
+	 * @throws Exception
+	 */
+	public MdmFileArchive exportTxt(JSONObject parameters, String handlerName) throws Exception {
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param parameters
+	 * @param handlerName
+	 * @return
+	 * @throws Exception
+	 */
+	public Map<String, String> importTxt(JSONObject parameters, String handlerName) throws Exception {
+		TxtHandler hanlder = (TxtHandler) ApplicationContextProvider.getBean(handlerName);
+		MdmFileArchive fileArchive = this.getFileArchive(Long.parseLong(parameters.getString("fileId")));
+		String filePath = fileArchive.getFilePath() + File.separator + fileArchive.getFileName();
+		List<String> records = readSmallTxtFile(filePath);
+		hanlder.importData(parameters, fileArchive, records);
 		return this.result(UnieapConstants.ISSUCCESS, UnieapConstants.SUCCESS);
 	}
 
@@ -54,7 +67,6 @@ public class TxtBO extends FileHandler {
 	}
 
 	public boolean writeTxtFile(String content, String dir, String fileName) throws Exception {
-		File f = new File(dir, fileName);
 		RandomAccessFile mm = null;
 		boolean flag = false;
 		FileOutputStream o = null;

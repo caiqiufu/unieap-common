@@ -9,8 +9,7 @@ import java.util.Map;
 
 import org.springframework.jdbc.core.RowMapper;
 
-import com.unieap.base.UnieapConstants;
-import com.unieap.base.vo.ExtTreeVO;
+import com.unieap.base.vo.TreeVO;
 
 public class TreeEntityRowMapper implements RowMapper<Object> {
 	public Class<?> object;
@@ -50,9 +49,9 @@ public class TreeEntityRowMapper implements RowMapper<Object> {
 	 */
 	private Object getTreeVo(ResultSet rs, Object bean) throws SQLException {
 		List<String> columns = getColumnNames(rs);
-		ExtTreeVO vo = (ExtTreeVO) bean;
+		TreeVO vo = (TreeVO) bean;
 		vo.setId(rs.getObject("id").toString());
-		vo.setLeaf(UnieapConstants.YES.equals(rs.getString("leaf")));
+		vo.setLeafFlag(rs.getString("leafFlag"));
 		vo.setText(rs.getString("text"));
 		if (columns.contains("parentId") && rs.getObject("parentId") != null) {
 			vo.setParentId(rs.getObject("parentId").toString());

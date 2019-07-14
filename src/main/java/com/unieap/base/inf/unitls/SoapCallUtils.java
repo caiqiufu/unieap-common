@@ -32,6 +32,7 @@ import com.unieap.base.inf.element.RequestHeader;
 import com.unieap.base.inf.element.RequestInfo;
 import com.unieap.base.inf.handler.BizServiceUtils;
 import com.unieap.base.inf.handler.ProcessResult;
+import com.unieap.base.inf.vo.BizConfigVO;
 import com.unieap.base.inf.vo.InfConfigVO;
 import com.unieap.base.pojo.Esblog;
 
@@ -59,63 +60,106 @@ public class SoapCallUtils {
 		return connectionFactory;
 	}
 
-	public static SOAPMessage callWebService(String url, SOAPMessage request, int timeout) throws Exception {
-		SOAPConnection connection = getConnectionFactory().createConnection();
-		SOAPMessage response = connection.call(request, getURL(url, timeout));
-		return response;
-	}
-
-	public static SOAPMessage callWebService(InfConfigVO infConfigVO, SOAPMessage request) throws Exception {
+	/**
+	 * 
+	 * @param infConfigVO
+	 * @param SOAPAction
+	 * @param requestMessage
+	 * @return
+	 * @throws Exception
+	 */
+	public static String callService(InfConfigVO infConfigVO, String SOAPAction, String requestMessage)
+			throws Exception {
 		if (UnieapConstants.YES.equals(infConfigVO.getActivateFlag())) {
-			SOAPConnection connection = getConnectionFactory().createConnection();
-			SOAPMessage response = connection.call(request, getURL(infConfigVO.getUrl(), infConfigVO.getTimeout()));
-			return response;
+			URL url = new URL(infConfigVO.getUrl());
+			int timeout = 1000;
+			Integer to = infConfigVO.getTimeout();
+			if (to != null) {
+				timeout = infConfigVO.getTimeout().intValue();
+			}
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			// 3：设置连接参数
+			// 3.1设置发送方式：POST必须大写
+			connection.setRequestMethod("POST");
+			// 3.2设置数据格式：Content-type
+			connection.setRequestProperty("content-type", "text/xml;charset=utf-8");
+			// 3.3设置输入输出，新创建的connection默认是没有读写权限的，
+			connection.setDoInput(true);
+			connection.setDoOutput(true);
+			connection.setConnectTimeout(timeout);
+			connection.setRequestProperty("SOAPAction", SOAPAction);
+			// 4：组织SOAP协议数据，发送给服务端
+			OutputStream os = connection.getOutputStream();
+			os.write(requestMessage.getBytes());
+			// 5：接收服务端的响应
+			// int responseCode = connection.getResponseCode();
+			InputStream is = connection.getInputStream();
+			InputStreamReader isr = new InputStreamReader(is);
+			BufferedReader br = new BufferedReader(isr);
+			StringBuilder sb = new StringBuilder();
+			String temp = null;
+			while (null != (temp = br.readLine())) {
+				sb.append(temp);
+			}
+			is.close();
+			isr.close();
+			br.close();
+			os.close();
+			return sb.toString();
 		} else {
-			SOAPMessage response = SoapCallUtils
-					.formartSoapString(new String(infConfigVO.getResponseSample(), "UTF-8"));
-			return response;
+			return new String(infConfigVO.getResponseSample(), "UTF-8");
 		}
 	}
 
 	/**
 	 * 
 	 * @param bizConfigVO
+	 * @param SOAPAction
 	 * @param requestMessage
 	 * @return
 	 * @throws Exception
 	 */
-	public static String callHTTPService(String requestUrl, int timeout, String SOAPAction, String requestMessage)
+	public static String callBizService(BizConfigVO bizConfigVO, String SOAPAction, String requestMessage)
 			throws Exception {
-		URL url = new URL(requestUrl);
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		// 3：设置连接参数
-		// 3.1设置发送方式：POST必须大写
-		connection.setRequestMethod("POST");
-		// 3.2设置数据格式：Content-type
-		connection.setRequestProperty("content-type", "text/xml;charset=utf-8");
-		// 3.3设置输入输出，新创建的connection默认是没有读写权限的，
-		connection.setDoInput(true);
-		connection.setDoOutput(true);
-		connection.setConnectTimeout(timeout);
-		connection.setRequestProperty("SOAPAction", SOAPAction);
-		// 4：组织SOAP协议数据，发送给服务端
-		OutputStream os = connection.getOutputStream();
-		os.write(requestMessage.getBytes());
-		// 5：接收服务端的响应
-		// int responseCode = connection.getResponseCode();
-		InputStream is = connection.getInputStream();
-		InputStreamReader isr = new InputStreamReader(is);
-		BufferedReader br = new BufferedReader(isr);
-		StringBuilder sb = new StringBuilder();
-		String temp = null;
-		while (null != (temp = br.readLine())) {
-			sb.append(temp);
+		if (UnieapConstants.YES.equals(bizConfigVO.getActivateFlag())) {
+			URL url = new URL(bizConfigVO.getUrl());
+			int timeout = 1000;
+			Integer to = bizConfigVO.getTimeout();
+			if (to != null) {
+				timeout = bizConfigVO.getTimeout().intValue();
+			}
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			// 3：设置连接参数
+			// 3.1设置发送方式：POST必须大写
+			connection.setRequestMethod("POST");
+			// 3.2设置数据格式：Content-type
+			connection.setRequestProperty("content-type", "text/xml;charset=utf-8");
+			// 3.3设置输入输出，新创建的connection默认是没有读写权限的，
+			connection.setDoInput(true);
+			connection.setDoOutput(true);
+			connection.setConnectTimeout(timeout);
+			connection.setRequestProperty("SOAPAction", SOAPAction);
+			// 4：组织SOAP协议数据，发送给服务端
+			OutputStream os = connection.getOutputStream();
+			os.write(requestMessage.getBytes());
+			// 5：接收服务端的响应
+			// int responseCode = connection.getResponseCode();
+			InputStream is = connection.getInputStream();
+			InputStreamReader isr = new InputStreamReader(is);
+			BufferedReader br = new BufferedReader(isr);
+			StringBuilder sb = new StringBuilder();
+			String temp = null;
+			while (null != (temp = br.readLine())) {
+				sb.append(temp);
+			}
+			is.close();
+			isr.close();
+			br.close();
+			os.close();
+			return sb.toString();
+		} else {
+			return new String(bizConfigVO.getResponseSample(), "UTF-8");
 		}
-		is.close();
-		isr.close();
-		br.close();
-		os.close();
-		return sb.toString();
 	}
 
 	public static URL getURL(String url, final int timeout) throws Exception {
@@ -139,12 +183,17 @@ public class SoapCallUtils {
 		requestHeader.setRequestTime(requestTime);
 		requestHeader.setSystemCode(UnieapConstants.ESB);
 		String infCode = requestInfo.getRequestBody().getBizCode();
-		InfConfigVO vo = UnieapCacheMgt.infHandlerList.get(infCode);
-		String url = vo.getUrl();
-		String appName = vo.getDestAppName();
+		InfConfigVO infConfigVO = UnieapCacheMgt.infHandlerList.get(infCode);
+		String appName = infConfigVO.getDestAppName();
 		SOAPMessage response;
 		try {
-			response = callWebService(url, request, 10000);
+			if (UnieapConstants.YES.equals(infConfigVO.getActivateFlag())) {
+				SOAPConnection connection = getConnectionFactory().createConnection();
+				response = connection.call(request, getURL(infConfigVO.getUrl(), infConfigVO.getTimeout()));
+			} else {
+				response = SoapCallUtils.formartSoapString(new String(infConfigVO.getResponseSample(), "UTF-8"));
+			}
+
 		} catch (Exception e) {
 			ProcessResult processResult = new ProcessResult();
 			processResult.setResultCode(UnieapConstants.C99999);
@@ -184,26 +233,5 @@ public class SoapCallUtils {
 		StreamResult result = new StreamResult(bos);
 		tf.transform(source, result);
 		return new String(bos.toByteArray());
-	}
-
-	public static boolean heardCheck(String url) throws Exception {
-		StringBuffer sb = new StringBuffer();
-		sb.append(
-				"<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:uni=\"http://www.unieap.easy.com\">");
-		sb.append("<soapenv:Header/>");
-		sb.append("<soapenv:Body>");
-		sb.append("<uni:bizHandle>");
-		sb.append("<requestInfo>{}</requestInfo>");
-		sb.append("</uni:bizHandle>");
-		sb.append("</soapenv:Body>");
-		sb.append("</soapenv:Envelope>");
-		String requestMessage = sb.toString();
-		SOAPMessage requestSOAPMessage = SoapCallUtils.formartSoapString(requestMessage);
-		try {
-			callWebService(url, requestSOAPMessage, 50);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
 	}
 }

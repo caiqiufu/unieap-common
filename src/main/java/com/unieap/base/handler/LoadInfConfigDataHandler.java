@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.stereotype.Service;
 
@@ -48,7 +49,6 @@ public class LoadInfConfigDataHandler implements ConfigHandler {
 				vo.setNumberRoute(getNumberRoute(vo.getInfCode()));
 				vo.setNumberFilterList(getNumberFilterList(vo.getInfCode()));
 				vo.setNumberRouteList(getNumberRouteList(vo.getInfCode()));
-				//vo.setNSList(getNSList(vo.getInfCode()));
 				vo.setBizTransformMessageHandler(getBizTransformMessageHandler(vo.getInfCode()));
 				UnieapCacheMgt.getInfHandlerList().put(vo.getInfCode(), vo);
 			}
@@ -58,15 +58,16 @@ public class LoadInfConfigDataHandler implements ConfigHandler {
 	public Map<String, String> getBizTransformMessageHandler(String infCode) throws Exception {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT * FROM esb_inf_config_transform where inf_code =? and activate_flag = 'Y'");
-		List<?> datas = DBManager.getJT().queryForList(sql.toString(), new Object[] {infCode });
-		if(datas!=null&&datas.size()>0) {
-			Map<String,String> transfers = new HashMap<String,String>();
+		List<?> datas = DBManager.getJT().queryForList(sql.toString(), new Object[] { infCode });
+		if (datas != null && datas.size() > 0) {
+			Map<String, String> transfers = new HashMap<String, String>();
 			Map<String, Object> data = (Map<String, Object>) datas.get(0);
 			transfers.put((String) data.get("biz_code"), (String) data.get("transform_message_handler"));
 			return transfers;
 		}
 		return null;
 	}
+
 	public List<NumberFilterVO> getNumberFilterList(String infCode) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("select id,inf_code as infCode,number_start as numberStart,");
@@ -77,7 +78,7 @@ public class LoadInfConfigDataHandler implements ConfigHandler {
 				new EntityRowMapper(NumberFilterVO.class));
 		if (datas != null && datas.size() > 0) {
 			List<NumberFilterVO> vos = (List<NumberFilterVO>) datas;
-			return vos;
+			return getFinialNumberFilter(vos);
 		}
 		return null;
 	}
@@ -103,6 +104,9 @@ public class LoadInfConfigDataHandler implements ConfigHandler {
 				}
 				numberRouteList.add(vo);
 			}
+			for (String key : numberRoute.keySet()) {
+				numberRoute.put(key, getFinialNumberRoute(numberRoute.get(key)));
+			}
 			return numberRoute;
 		}
 		return null;
@@ -122,5 +126,199 @@ public class LoadInfConfigDataHandler implements ConfigHandler {
 			return vos;
 		}
 		return null;
+	}
+
+	public List<NumberRouteVO> getFinialNumberRoute(List<NumberRouteVO> existingList) {
+		if (existingList.size() > 0) {
+			List<NumberRouteVO> datas = new CopyOnWriteArrayList<NumberRouteVO>();
+			datas.add((NumberRouteVO) existingList.get(0).clone());
+			while (true) {
+				for (NumberRouteVO vo : datas) {
+					for (NumberRouteVO existingVo : existingList) {
+						long numberStart = Long.parseLong(vo.getNumberStart());
+						long numberEnd = Long.parseLong(vo.getNumberEnd());
+						long existingNumberStart = Long.parseLong(existingVo.getNumberStart());
+						long existingNumberEnd = Long.parseLong(existingVo.getNumberEnd());
+						if (existingNumberStart < numberStart || existingNumberStart > numberEnd) {
+							if (!isExistingRoute(datas, existingVo)) {
+								datas.add((NumberRouteVO) existingVo.clone());
+							}
+						}
+						if (existingNumberStart > numberStart && existingNumberStart < numberEnd
+								&& existingNumberEnd > numberEnd) {
+							vo.setNumberEnd(existingVo.getNumberEnd());
+							deleteSameNumberRouteVO(datas, vo);
+						}
+						if (existingNumberEnd > numberStart && existingNumberEnd < numberEnd
+								&& existingNumberStart < numberStart) {
+							vo.setNumberStart(existingVo.getNumberStart());
+							deleteSameNumberRouteVO(datas, vo);
+						}
+						if ((existingNumberStart >= numberStart && existingNumberEnd < numberEnd)
+								|| (existingNumberStart > numberStart && existingNumberEnd <= numberEnd)) {
+							deleteSameNumberRouteVO(datas, vo);
+						}
+					}
+				}
+				if (verifyNoOverlappingRoute(datas)) {
+					break;
+				}
+			}
+			return datas;
+		}
+		return null;
+	}
+
+	private void deleteSameNumberRouteVO(List<NumberRouteVO> datas, NumberRouteVO vo) {
+		for (NumberRouteVO data : datas) {
+			long numberStart = Long.parseLong(vo.getNumberStart());
+			long numberEnd = Long.parseLong(vo.getNumberEnd());
+			long existingNumberStart = Long.parseLong(data.getNumberStart());
+			long existingNumberEnd = Long.parseLong(data.getNumberEnd());
+			if (numberStart == existingNumberStart && numberEnd == existingNumberEnd) {
+				datas.remove(data);
+			}
+		}
+	}
+
+	private boolean verifyNoOverlappingRoute(List<NumberRouteVO> datas) {
+		if (datas != null && datas.size() > 0) {
+			for (NumberRouteVO ovo : datas) {
+				long oNumberStart = Long.parseLong(ovo.getNumberStart());
+				long oNumberEnd = Long.parseLong(ovo.getNumberEnd());
+				for (NumberRouteVO cvo : datas) {
+					long cNumberStart = Long.parseLong(cvo.getNumberStart());
+					long cNumberEnd = Long.parseLong(cvo.getNumberEnd());
+					// 被包含
+					if (oNumberStart > cNumberStart && oNumberEnd < cNumberEnd) {
+						return false;
+					}
+					// 左包含
+					if (oNumberStart > cNumberStart && oNumberStart < cNumberEnd) {
+						return false;
+					}
+					// 右包含
+					if (oNumberEnd > cNumberStart && oNumberEnd < cNumberEnd) {
+						return false;
+					}
+					// 包含其他
+					if (oNumberStart < cNumberStart && oNumberEnd > cNumberEnd) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+		return true;
+	}
+
+	private boolean isExistingRoute(List<NumberRouteVO> datas, NumberRouteVO vo) {
+		for (NumberRouteVO data : datas) {
+			long numberStart = Long.parseLong(vo.getNumberStart());
+			long numberEnd = Long.parseLong(vo.getNumberEnd());
+			long existingNumberStart = Long.parseLong(data.getNumberStart());
+			long existingNumberEnd = Long.parseLong(data.getNumberEnd());
+			if (numberStart == existingNumberStart && numberEnd == existingNumberEnd) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public List<NumberFilterVO> getFinialNumberFilter(List<NumberFilterVO> existingList) {
+		if (existingList.size() > 0) {
+			List<NumberFilterVO> datas = new CopyOnWriteArrayList<NumberFilterVO>();
+			datas.add((NumberFilterVO) existingList.get(0).clone());
+			while (true) {
+				for (NumberFilterVO vo : datas) {
+					for (NumberFilterVO existingVo : existingList) {
+						long numberStart = Long.parseLong(vo.getNumberStart());
+						long numberEnd = Long.parseLong(vo.getNumberEnd());
+						long existingNumberStart = Long.parseLong(existingVo.getNumberStart());
+						long existingNumberEnd = Long.parseLong(existingVo.getNumberEnd());
+						if (existingNumberStart < numberStart || existingNumberStart > numberEnd) {
+							if (!isExistingFilter(datas, existingVo)) {
+								datas.add((NumberFilterVO) existingVo.clone());
+							}
+						}
+						if (existingNumberStart > numberStart && existingNumberStart < numberEnd
+								&& existingNumberEnd > numberEnd) {
+							vo.setNumberEnd(existingVo.getNumberEnd());
+							deleteSameNumberFilterVO(datas, vo);
+						}
+						if (existingNumberEnd > numberStart && existingNumberEnd < numberEnd
+								&& existingNumberStart < numberStart) {
+							vo.setNumberStart(existingVo.getNumberStart());
+							deleteSameNumberFilterVO(datas, vo);
+						}
+						if ((existingNumberStart >= numberStart && existingNumberEnd < numberEnd)
+								|| (existingNumberStart > numberStart && existingNumberEnd <= numberEnd)) {
+							deleteSameNumberFilterVO(datas, vo);
+						}
+					}
+				}
+				if (verifyNoOverlappingFilter(datas)) {
+					break;
+				}
+			}
+			return datas;
+		}
+		return null;
+	}
+
+	private void deleteSameNumberFilterVO(List<NumberFilterVO> datas, NumberFilterVO vo) {
+		for (NumberFilterVO data : datas) {
+			long numberStart = Long.parseLong(vo.getNumberStart());
+			long numberEnd = Long.parseLong(vo.getNumberEnd());
+			long existingNumberStart = Long.parseLong(data.getNumberStart());
+			long existingNumberEnd = Long.parseLong(data.getNumberEnd());
+			if (numberStart == existingNumberStart && numberEnd == existingNumberEnd) {
+				datas.remove(data);
+			}
+		}
+	}
+
+	private boolean verifyNoOverlappingFilter(List<NumberFilterVO> datas) {
+		if (datas != null && datas.size() > 0) {
+			for (NumberFilterVO ovo : datas) {
+				long oNumberStart = Long.parseLong(ovo.getNumberStart());
+				long oNumberEnd = Long.parseLong(ovo.getNumberEnd());
+				for (NumberFilterVO cvo : datas) {
+					long cNumberStart = Long.parseLong(cvo.getNumberStart());
+					long cNumberEnd = Long.parseLong(cvo.getNumberEnd());
+					// 被包含
+					if (oNumberStart > cNumberStart && oNumberEnd < cNumberEnd) {
+						return false;
+					}
+					// 左包含
+					if (oNumberStart > cNumberStart && oNumberStart < cNumberEnd) {
+						return false;
+					}
+					// 右包含
+					if (oNumberEnd > cNumberStart && oNumberEnd < cNumberEnd) {
+						return false;
+					}
+					// 包含其他
+					if (oNumberStart < cNumberStart && oNumberEnd > cNumberEnd) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+		return true;
+	}
+
+	private boolean isExistingFilter(List<NumberFilterVO> datas, NumberFilterVO vo) {
+		for (NumberFilterVO data : datas) {
+			long numberStart = Long.parseLong(vo.getNumberStart());
+			long numberEnd = Long.parseLong(vo.getNumberEnd());
+			long existingNumberStart = Long.parseLong(data.getNumberStart());
+			long existingNumberEnd = Long.parseLong(data.getNumberEnd());
+			if (numberStart == existingNumberStart && numberEnd == existingNumberEnd) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

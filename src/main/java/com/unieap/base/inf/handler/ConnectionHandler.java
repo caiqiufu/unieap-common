@@ -33,6 +33,7 @@ public class ConnectionHandler {
 
 	/**
 	 * call http request and record log
+	 * 
 	 * @param appCode
 	 * @param requestInfo
 	 * @param extParameters
@@ -44,15 +45,17 @@ public class ConnectionHandler {
 		String requestInfoString = JSONUtils.convertBean2JSON(requestInfo).toString();
 		return this.callCommonHTTPService(appName, requestInfo, requestInfoString, extParameters);
 	}
-    /**
-     * call http request and record log
-     * @param appName
-     * @param requestInfo
-     * @param requestInfoString
-     * @param extParameters
-     * @return
-     * @throws Exception
-     */
+
+	/**
+	 * call http request and record log
+	 * 
+	 * @param appName
+	 * @param requestInfo
+	 * @param requestInfoString
+	 * @param extParameters
+	 * @return
+	 * @throws Exception
+	 */
 	public ProcessResult callCommonHTTPService(String appName, RequestInfo requestInfo, String requestInfoString,
 			Map<String, Object> extParameters) throws Exception {
 		long beginTime = System.currentTimeMillis();
@@ -61,10 +64,19 @@ public class ConnectionHandler {
 		String responseInfoString = "";
 		try {
 			InfConfigVO infConfigVO = UnieapCacheMgt.getInfHandler(requestInfo.getRequestBody().getBizCode());
-			responseInfoString = SoapCallUtils.callHTTPService(infConfigVO.getUrl(),
-					infConfigVO.getTimeout().intValue(), infConfigVO.getSOAPAction(), requestInfoString);
-			processResult.setResultCode(UnieapConstants.C0);
-			processResult.setResultDesc(UnieapConstants.SUCCESS);
+			boolean filter = this.isFilterNumber(requestInfo.getRequestBody().getServiceNumber(),
+					infConfigVO.getInfCode());
+			if (filter) {
+				responseInfoString = new String(infConfigVO.getResponseSample(), "UTF-8");
+				processResult.setResultCode("20011");
+				processResult.setResultDesc(UnieapConstants.getMessage("20011",
+						new String[] { requestInfo.getRequestBody().getServiceNumber() }));
+			} else {
+				responseInfoString = SoapCallUtils.callService(infConfigVO, infConfigVO.getSOAPAction(),
+						requestInfoString);
+				processResult.setResultCode(UnieapConstants.C0);
+				processResult.setResultDesc(UnieapConstants.SUCCESS);
+			}
 			processResult.setVo(responseInfoString);
 		} catch (Exception e) {
 			processResult.setResultCode("20006");
@@ -99,9 +111,9 @@ public class ConnectionHandler {
 	 */
 	public boolean isFilterNumber(String serviceNumber, String infCode) {
 		if (getFilterNumber(serviceNumber, infCode) == null) {
-			return false;
-		} else {
 			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -134,8 +146,16 @@ public class ConnectionHandler {
 	 */
 	public boolean isInFilterNumberRange(String serviceNumber, NumberFilterVO numberFilterVO) {
 		long myServiceNumber = Long.parseLong(serviceNumber);
-		long startNumber = Long.parseLong(numberFilterVO.getNumberStart());
-		long endNumber = Long.parseLong(numberFilterVO.getNumberEnd());
+		String numberStart = numberFilterVO.getNumberStart();
+		String numberEnd = numberFilterVO.getNumberEnd();
+		if ("*".equals(numberStart) || "-1".equals(numberStart)) {
+			numberStart = "1";
+		}
+		if ("*".equals(numberEnd) || "-1".equals(numberEnd)) {
+			numberEnd = "9223372036854775807";
+		}
+		long startNumber = Long.parseLong(numberStart);
+		long endNumber = Long.parseLong(numberStart);
 		if (myServiceNumber >= startNumber && myServiceNumber <= endNumber) {
 			return true;
 		} else {

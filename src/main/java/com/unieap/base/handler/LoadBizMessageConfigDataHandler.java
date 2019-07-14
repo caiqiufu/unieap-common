@@ -75,7 +75,7 @@ public class LoadBizMessageConfigDataHandler implements ConfigHandler {
 		sql.append(" where ic.inf_code = icf.inf_code and bcf.inf_field_id = icf.id ");
 		sql.append(" and icr.biz_code = bcf.biz_code and icr.inf_code = ic.inf_code ");
 		sql.append(" and icr.biz_code = ? and icr.number_start = ? and icr.number_end = ? ");
-		sql.append(" and bcf.parent_id is null order by icr.biz_code");
+		sql.append(" and bcf.parent_id = 0 order by icr.biz_code");
 		List<?> rootVOList = DBManager.getJT().query(sql.toString(), new Object[] { bizCode, numberStart, numberEnd },
 				new EntityRowMapper(BizFieldVO.class));
 		if (rootVOList != null && rootVOList.size() > 0) {
@@ -88,7 +88,6 @@ public class LoadBizMessageConfigDataHandler implements ConfigHandler {
 			Map<String, BizFieldVO> fieldList = new HashMap<String, BizFieldVO>();
 			BizConfigVO bizConfigVO = UnieapCacheMgt.getBizHandlerList().get(rootVO.getBizCode());
 			Map<String, String> nSList = new HashMap<String, String>();
-			bizConfigVO.setNSList(nSList);
 			while (fields.size() > 0) {
 				String nsAlias = null;
 				BizFieldVO fieldVO = fields.get(0);
@@ -196,7 +195,9 @@ public class LoadBizMessageConfigDataHandler implements ConfigHandler {
 				}
 				vob.setInfFieldId(vob.getInfFieldId());
 				vob.setInfFieldVO(getInfField(vob.getInfFieldId()));
-				vob.setChildrenList(getChildrenList(vob.getBizCode(), vob.getId(), numberStart, numberEnd));
+				if(!vob.isLeaf()) {
+					vob.setChildrenList(getChildrenList(vob.getBizCode(), vob.getId(), numberStart, numberEnd));
+				}
 				bizFieldList.put(vob.getId().toString(), vob);
 			}
 		}

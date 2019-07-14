@@ -12,9 +12,10 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -30,22 +31,37 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.unieap.base.SYSConfig;
 import com.unieap.base.UnieapConstants;
 import com.unieap.base.bo.BaseBO;
+import com.unieap.base.file.ImageUtils;
 import com.unieap.base.pojo.MdmFileArchive;
+import com.unieap.base.pojo.MdmFileProcessDetails;
+import com.unieap.base.pojo.MdmFileProcessResult;
 import com.unieap.base.repository.MdmFileArchiveRepository;
-import com.unieap.base.utils.JSONUtils;
+import com.unieap.base.repository.MdmFileProcessDetailsRepository;
+import com.unieap.base.repository.MdmFileProcessRepository;
+
+import net.sf.json.JSONObject;
 
 public abstract class FileHandler extends BaseBO {
-	public Map<String, String> fileHandle(String parameters, String handlerName, List<MdmFileArchive> files)
+
+	@Autowired
+	MdmFileProcessRepository mdmFileProcessRepository;
+	@Autowired
+	MdmFileProcessDetailsRepository mdmFileProcessDetailsRepository;
+
+	public Map<String, String> fileHandle(JSONObject parameters, String handlerName, List<MdmFileArchive> files)
 			throws Exception {
 		return null;
 	}
 
 	public List<FileItem> getFileItems(HttpServletRequest request) {
+		request.getParameterMap().keySet();
 		String tempPath = getRootPath() + File.separator + "buffer";
 		File tempPathFile = new File(tempPath);
 		if (!tempPathFile.exists()) {
@@ -96,8 +112,6 @@ public abstract class FileHandler extends BaseBO {
 			throw new Exception(newfile.getName() + " existing,please check");
 		else {
 			oldfile.renameTo(newfile);
-			DecimalFormat df = new DecimalFormat(".00");
-			String fileSize = df.format((double) newfile.length() / 1024);
 			String fileType = StringUtils.split(fileName, ".")[1];
 			MdmFileArchive fileArchive = new MdmFileArchive();
 			fileArchive.setArchiveDate(UnieapConstants.getDateTime());
@@ -105,7 +119,7 @@ public abstract class FileHandler extends BaseBO {
 			fileArchive.setFileCategory("backup");
 			fileArchive.setFileName(newFileName);
 			fileArchive.setFilePath(folderPath);
-			fileArchive.setFileSize(new Double(fileSize));
+			fileArchive.setFileSize(newfile.length());
 			fileArchive.setFileType(fileType);
 			fileArchive.setId(getSequence(null, null));
 			url = url + File.separator + newFileName;
@@ -116,31 +130,80 @@ public abstract class FileHandler extends BaseBO {
 	}
 
 	/**
+	 * 如果html页面上的路径不以/开头，则认为是相对路径，默认会自动加上上个页面请求的路径(默认加上controller前缀，导致404错误)
 	 * 
 	 * @param       parameters:fileCategory,appName,extKey
 	 * @param files
 	 * @return
 	 * @throws Exception
 	 */
-	public List<MdmFileArchive> upload(String parameters, List<FileItem> files) throws Exception {
-		Map<?, ?> paras = JSONUtils.jsonToMap(parameters);
+	public List<MdmFileArchive> upload(Map<String, String> parameters, List<FileItem> files) throws Exception {
 		String fileCategory = "common";
-		if (paras.containsKey("fileCategory")) {
-			fileCategory = paras.get("fileCategory").toString();
+		if (parameters.containsKey("fileCategory")) {
+			fileCategory = parameters.get("fileCategory").toString();
 		}
 		String appName = UnieapConstants.UNIEAP;
-		if (paras.containsKey("appName")) {
-			appName = paras.get("appName").toString();
+		if (parameters.containsKey("appName")) {
+			appName = parameters.get("appName").toString();
 		}
 		String extKey = "-9999";
-		if (paras.containsKey("extKey")) {
-			appName = paras.get("extKey").toString();
+		if (parameters.containsKey("extKey")) {
+			extKey = parameters.get("extKey").toString();
 		}
-		String shareFolderPath = SYSConfig.getConfig().get("shareFolderPath") + File.separator + appName
-				+ File.separator + "upload";
-		String urlUploadPath = SYSConfig.getConfig().get("url.path") + File.separator + appName + File.separator
-				+ "upload";
+		String shareFolderPath = SYSConfig.getConfig().get("shareFolderPath") + File.separator + appName;
+		String urlUploadPath = SYSConfig.getConfig().get("url.path") + File.separator + appName;
 		return upload(fileCategory, extKey, files, shareFolderPath, urlUploadPath);
+	}
+
+	/**
+	 * 
+	 * @param parameters
+	 * @param fileMap
+	 * @return
+	 * @throws Exception
+	 */
+	public List<MdmFileArchive> upload(JSONObject parameters, Map<String, MultipartFile> fileMap) throws Exception {
+		String fileCategory = "common";
+		if (parameters.containsKey("fileCategory")) {
+			fileCategory = parameters.get("fileCategory").toString();
+		}
+		String appName = UnieapConstants.UNIEAP;
+		if (parameters.containsKey("appName")) {
+			appName = parameters.get("appName").toString();
+		}
+		String extKey = "-9999";
+		if (parameters.containsKey("extKey")) {
+			extKey = parameters.get("extKey").toString();
+		}
+		String shareFolderPath = SYSConfig.getConfig().get("shareFolderPath") + File.separator + appName;
+		String urlUploadPath = SYSConfig.getConfig().get("url.path") + File.separator + appName;
+		return upload(fileCategory, extKey, fileMap, shareFolderPath, urlUploadPath);
+	}
+
+	/**
+	 * 
+	 * @param parameters
+	 * @param workbook
+	 * @param fileName
+	 * @return
+	 * @throws Exception
+	 */
+	public MdmFileArchive upload(JSONObject parameters, XSSFWorkbook workbook, String fileName) throws Exception {
+		String fileCategory = "common";
+		if (parameters.containsKey("fileCategory")) {
+			fileCategory = parameters.get("fileCategory").toString();
+		}
+		String appName = UnieapConstants.UNIEAP;
+		if (parameters.containsKey("appName")) {
+			appName = parameters.get("appName").toString();
+		}
+		String extKey = "-9999";
+		if (parameters.containsKey("extKey")) {
+			extKey = parameters.get("extKey").toString();
+		}
+		String shareFolderPath = SYSConfig.getConfig().get("shareFolderPath") + File.separator + appName;
+		String urlUploadPath = SYSConfig.getConfig().get("url.path") + File.separator + appName;
+		return upload(fileCategory, extKey, workbook, shareFolderPath, urlUploadPath, fileName);
 	}
 
 	/**
@@ -157,40 +220,122 @@ public abstract class FileHandler extends BaseBO {
 			String url) throws Exception {
 		List<MdmFileArchive> fileArchiveList = new ArrayList<MdmFileArchive>();
 		if (files != null && files.size() > 0) {
-			DecimalFormat df = new DecimalFormat(".00");
 			for (int i = 0; i < files.size(); i++) {
 				FileItem fileItem = files.get(i);
 				String fileName = fileItem.getName();
 				if (!StringUtils.isEmpty(fileName)) {
-					String fileSize = df.format((double) fileItem.getSize() / 1024);
 					String fileType = StringUtils.split(fileName, ".")[1];
-					File uploadFile = new File(uploadPath);
-					if (!uploadFile.exists()) {
-						uploadFile.mkdirs();
-					}
-					File fullFile = new File(fileItem.getName());
-					File savedFile = new File(uploadPath, fullFile.getName());
+					String finialFileName = getFinialFileName(StringUtils.split(fileName, ".")[0]) + "." + fileType;
+					this.createDir(uploadPath);
+					File savedFile = new File(uploadPath, finialFileName);
 					fileItem.write(savedFile);
 					MdmFileArchive fileArchive = new MdmFileArchive();
 					fileArchiveList.add(fileArchive);
 					fileArchive.setArchiveDate(UnieapConstants.getDateTime());
 					fileArchive.setExtKey(extKey);
 					fileArchive.setFileCategory(fileCategory);
-					fileArchive.setFileName(fileName);
+					fileArchive.setFileName(finialFileName);
 					fileArchive.setFilePath(uploadPath);
-					fileArchive.setFileSize(new Double(fileSize));
+					fileArchive.setFileSize(fileItem.getSize());
 					fileArchive.setFileType(fileType);
 					fileArchive.setId(getSequence(null, null));
-					url = url + File.separator + fileName;
+					url = url + File.separator + finialFileName;
 					fileArchive.setUrl(url);
 					fileArchive.setTenantId(UnieapConstants.getUser().getTenantId());
-					// fileIds.append(fileArchive.getId().toString()).append(",");
 					mdmFileArchiveRepository.save(fileArchive);
 				}
 			}
 		}
 		return fileArchiveList;
+	}
 
+	/**
+	 * 
+	 * @param fileCategory
+	 * @param extKey
+	 * @param workbook
+	 * @param uploadPath
+	 * @param url
+	 * @param fileName
+	 * @return
+	 * @throws Exception
+	 */
+	public MdmFileArchive upload(String fileCategory, String extKey, XSSFWorkbook workbook, String uploadPath,
+			String url, String fileName) throws Exception {
+		if (workbook != null && !StringUtils.isEmpty(fileName)) {
+			String fileType = StringUtils.split(fileName, ".")[1];
+			String finialFileName = getFinialFileName(StringUtils.split(fileName, ".")[0]) + "." + fileType;
+			createDir(uploadPath);
+			FileOutputStream output = new FileOutputStream(uploadPath + File.separator + finialFileName);
+			workbook.write(output);
+			output.close();
+			File file = new File(uploadPath + File.separator + finialFileName);
+			MdmFileArchive fileArchive = new MdmFileArchive();
+			fileArchive.setArchiveDate(UnieapConstants.getDateTime());
+			fileArchive.setExtKey(extKey);
+			fileArchive.setFileCategory(fileCategory);
+			fileArchive.setFileName(finialFileName);
+			fileArchive.setFilePath(uploadPath);
+			fileArchive.setFileSize(file.length());
+			fileArchive.setFileType(fileType);
+			fileArchive.setId(getSequence());
+			url = url + File.separator + finialFileName;
+			fileArchive.setUrl(url);
+			fileArchive.setTenantId(UnieapConstants.getUser().getTenantId());
+			mdmFileArchiveRepository.save(fileArchive);
+			return fileArchive;
+		}
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param fileCategory
+	 * @param extKey
+	 * @param fileMap
+	 * @param uploadPath
+	 * @param url
+	 * @return
+	 * @throws Exception
+	 */
+	public List<MdmFileArchive> upload(String fileCategory, String extKey, Map<String, MultipartFile> fileMap,
+			String uploadPath, String url) throws Exception {
+		List<MdmFileArchive> fileArchiveList = new ArrayList<MdmFileArchive>();
+		if (fileMap != null && fileMap.size() > 0) {
+			for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+				MultipartFile fileItem = entity.getValue();
+				String fileName = fileItem.getOriginalFilename();
+				if (!StringUtils.isEmpty(fileName)) {
+					String fileType = StringUtils.split(fileName, ".")[1];
+					String finialFileName = getFinialFileName(StringUtils.split(fileName, ".")[0]) + "." + fileType;
+					this.createDir(uploadPath);
+					File savedFile = new File(uploadPath, finialFileName);
+					fileItem.transferTo(savedFile);
+					MdmFileArchive fileArchive = new MdmFileArchive();
+					fileArchiveList.add(fileArchive);
+					fileArchive.setArchiveDate(UnieapConstants.getDateTime());
+					fileArchive.setExtKey(extKey);
+					fileArchive.setFileCategory(fileCategory);
+					fileArchive.setFileName(finialFileName);
+					fileArchive.setFilePath(uploadPath);
+					fileArchive.setFileSize(fileItem.getSize());
+					fileArchive.setFileType(fileType);
+					fileArchive.setId(getSequence());
+					url = url + File.separator + finialFileName;
+					fileArchive.setUrl(url);
+					fileArchive.setTenantId(UnieapConstants.getUser().getTenantId());
+					mdmFileArchiveRepository.save(fileArchive);
+				}
+			}
+		}
+		return fileArchiveList;
+	}
+
+	public String getFinialFileName(String originalFileName) {
+		Date currentTime = new Date();
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		String dateString = formatter.format(currentTime);
+		return originalFileName + "_" + dateString;
 	}
 
 	/**
@@ -212,11 +357,12 @@ public abstract class FileHandler extends BaseBO {
 		Rectangle rect = new java.awt.Rectangle(x, y, width, height);
 		if (files != null && files.size() > 0) {
 			List<MdmFileArchive> fileArchiveList = new ArrayList<MdmFileArchive>();
-			DecimalFormat df = new DecimalFormat(".00");
 			for (int i = 0; i < files.size(); i++) {
 				FileItem fileItem = files.get(i);
 				String fileName = fileItem.getName();
-				FileOutputStream fos = new FileOutputStream(uploadPath + File.separator + fileName);
+				String fileType = StringUtils.split(fileName, ".")[1];
+				String finialFileName = getFinialFileName(StringUtils.split(fileName, ".")[0]) + "." + fileType;
+				FileOutputStream fos = new FileOutputStream(uploadPath + File.separator + finialFileName);
 				// java.io.FileInputStream fis = null;
 				InputStream is = null;
 				ImageInputStream iis = null;
@@ -228,8 +374,8 @@ public abstract class FileHandler extends BaseBO {
 					String types = Arrays.toString(ImageIO.getReaderFormatNames()).replace("]", ",");
 					String suffix = null;
 					// 获取图片后缀
-					if (fileName.indexOf(".") > -1) {
-						suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
+					if (finialFileName.indexOf(".") > -1) {
+						suffix = finialFileName.substring(finialFileName.lastIndexOf(".") + 1);
 					} // 类型和图片后缀全部小写，然后判断后缀是否合法
 					if (suffix == null || types.toLowerCase().indexOf(suffix.toLowerCase() + ",") < 0) {
 						extracted(types);
@@ -243,20 +389,18 @@ public abstract class FileHandler extends BaseBO {
 					param.setSourceRegion(rect);
 					BufferedImage bi = reader.read(0, param);
 					ImageIO.write(bi, suffix, fos);
-					String fileSize = df.format((double) fileItem.getSize() / 1024);
-					String fileType = StringUtils.split(fileName, ".")[1];
 					MdmFileArchive fileArchive = new MdmFileArchive();
 					fileArchiveList.add(fileArchive);
 					fileArchive.setArchiveDate(UnieapConstants.getDateTime());
 					fileArchive.setExtKey(extKey);
 					fileArchive.setFileCategory(fileCategory);
-					fileArchive.setFileName(fileName);
+					fileArchive.setFileName(finialFileName);
 					fileArchive.setFilePath(uploadPath);
-					fileArchive.setFileSize(new Double(fileSize));
+					fileArchive.setFileSize(fileItem.getSize());
 					fileArchive.setFileType(fileType);
-					fileArchive.setId(getSequence(null, null));
+					fileArchive.setId(getSequence());
 					fileArchive.setTenantId(UnieapConstants.getUser().getTenantId());
-					url = url + File.separator + fileName;
+					url = url + File.separator + finialFileName;
 					fileArchive.setUrl(url);
 					mdmFileArchiveRepository.save(fileArchive);
 					return fileArchiveList;
@@ -277,6 +421,106 @@ public abstract class FileHandler extends BaseBO {
 					}
 				}
 			}
+		}
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param fileCategory
+	 * @param extKey
+	 * @param fileMap
+	 * @param uploadPath
+	 * @param url
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @return
+	 * @throws Exception
+	 */
+	public List<MdmFileArchive> uploadByThumbnailImage(String fileCategory, String extKey,
+			Map<String, MultipartFile> fileMap, String uploadPath, String url, int x, int y, int width, int height)
+			throws Exception {
+		if (fileMap != null && fileMap.size() > 0) {
+			List<MdmFileArchive> fileArchiveList = new ArrayList<MdmFileArchive>();
+			for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+				MultipartFile fileItem = entity.getValue();
+				String fileName = fileItem.getOriginalFilename();
+				String fileType = StringUtils.split(fileName, ".")[1];
+				String finialFileName = getFinialFileName(StringUtils.split(fileName, ".")[0]) + "." + fileType;
+				FileOutputStream fos = new FileOutputStream(uploadPath + File.separator + finialFileName);
+				File savedFile = new File(uploadPath, finialFileName);
+				fileItem.transferTo(savedFile);
+				MdmFileArchive fileArchive = ImageUtils.getInstance().thumbnailImage(savedFile, fos, width, height,
+						finialFileName, true);
+				if (fileArchive != null) {
+					fileArchiveList.add(fileArchive);
+					fileArchiveList.add(fileArchive);
+					fileArchive.setExtKey(extKey);
+					fileArchive.setFileCategory(fileCategory);
+					fileArchive.setFileName(finialFileName);
+					fileArchive.setFilePath(uploadPath);
+					fileArchive.setFileSize(fileItem.getSize());
+					fileArchive.setFileType(fileType);
+					fileArchive.setId(getSequence());
+					fileArchive.setTenantId(UnieapConstants.getUser().getTenantId());
+					url = url + File.separator + finialFileName;
+					fileArchive.setUrl(url);
+					mdmFileArchiveRepository.save(fileArchive);
+				}
+
+			}
+			return fileArchiveList;
+		}
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param fileCategory
+	 * @param extKey
+	 * @param fileMap
+	 * @param uploadPath
+	 * @param url
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @return
+	 * @throws Exception
+	 */
+	public List<MdmFileArchive> uploadByCutImage(String fileCategory, String extKey, Map<String, MultipartFile> fileMap,
+			String uploadPath, String url, int x, int y, int width, int height) throws Exception {
+		if (fileMap != null && fileMap.size() > 0) {
+			List<MdmFileArchive> fileArchiveList = new ArrayList<MdmFileArchive>();
+			for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+				MultipartFile fileItem = entity.getValue();
+				String fileName = fileItem.getOriginalFilename();
+				String fileType = StringUtils.split(fileName, ".")[1];
+				String finialFileName = getFinialFileName(StringUtils.split(fileName, ".")[0]) + "." + fileType;
+				FileOutputStream fos = new FileOutputStream(uploadPath + File.separator + finialFileName);
+				File savedFile = new File(uploadPath, finialFileName);
+				fileItem.transferTo(savedFile);
+				MdmFileArchive fileArchive = ImageUtils.getInstance().cutImage(savedFile, fos, x, y, width, height);
+				if (fileArchive != null) {
+					fileArchiveList.add(fileArchive);
+					fileArchiveList.add(fileArchive);
+					fileArchive.setExtKey(extKey);
+					fileArchive.setFileCategory(fileCategory);
+					fileArchive.setFileName(finialFileName);
+					fileArchive.setFilePath(uploadPath);
+					fileArchive.setFileSize(fileItem.getSize());
+					fileArchive.setFileType(fileType);
+					fileArchive.setId(getSequence());
+					fileArchive.setTenantId(UnieapConstants.getUser().getTenantId());
+					url = url + File.separator + finialFileName;
+					fileArchive.setUrl(url);
+					mdmFileArchiveRepository.save(fileArchive);
+				}
+
+			}
+			return fileArchiveList;
 		}
 		return null;
 	}
@@ -327,6 +571,16 @@ public abstract class FileHandler extends BaseBO {
 		return result(UnieapConstants.ISSUCCESS, UnieapConstants.SUCCESS);
 	}
 
+	/**
+	 * 
+	 * @param url
+	 * @param fileName
+	 * @param fileSize
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
 	public Map<String, String> downloadByUrl(String url, String fileName, String fileSize, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		response.setCharacterEncoding("utf-8");
@@ -346,11 +600,6 @@ public abstract class FileHandler extends BaseBO {
 			while ((byteRead = (iputstream.read(buffer))) != -1) {
 				os.write(buffer, 0, byteRead);
 			}
-			/*
-			 * fs = new FileInputStream(new File(url)); os = response.getOutputStream();
-			 * byte[] b = new byte[1024]; int length; while ((length = fs.read(b)) > 0) {
-			 * os.write(b, 0, length); }
-			 */
 			os.flush();
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.flushBuffer();
@@ -467,5 +716,30 @@ public abstract class FileHandler extends BaseBO {
 			return new String[] { UnieapConstants.NO, errorInfo.toString() };
 		}
 		return new String[] { UnieapConstants.YES, errorInfo.toString() };
+	}
+
+	public MdmFileProcessResult saveFileProcess(Long id,Long fileId, Long totalNumber, String resultCode, String resultDesc) {
+		MdmFileProcessResult mdmFileProcessResult = new MdmFileProcessResult();
+		mdmFileProcessResult.setId(id);
+		mdmFileProcessResult.setFileId(fileId);
+		mdmFileProcessResult.setCreateBy(UnieapConstants.UNIEAP);
+		mdmFileProcessResult.setCreateDate(UnieapConstants.getDateTime());
+		mdmFileProcessResult.setResultCode(resultCode);
+		mdmFileProcessResult.setResultDesc(resultDesc);
+		mdmFileProcessResult.setTotalNumber(totalNumber);
+		return mdmFileProcessRepository.save(mdmFileProcessResult);
+	}
+
+	public void saveFileProcessDetail(Long processId, Long rowNumber, String originalContent, String resultCode,
+			String resultDesc) {
+		MdmFileProcessDetails mdmFileProcessDetails = new MdmFileProcessDetails();
+		mdmFileProcessDetails.setCreateBy(UnieapConstants.UNIEAP);
+		mdmFileProcessDetails.setCreateDate(UnieapConstants.getDateTime());
+		mdmFileProcessDetails.setOriginalContent(originalContent);
+		mdmFileProcessDetails.setProcessId(processId);
+		mdmFileProcessDetails.setResultCode(resultCode);
+		mdmFileProcessDetails.setResultDesc(resultDesc);
+		mdmFileProcessDetails.setRowNumber(rowNumber);
+		mdmFileProcessDetailsRepository.save(mdmFileProcessDetails);
 	}
 }

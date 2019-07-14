@@ -7,6 +7,8 @@ spring:
     force: true
     charset: UTF-8
     enabled: true
+    multipart: 
+       location: /data/upload_tmp
   application:
     name: unieap-common
 #################################################

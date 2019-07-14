@@ -39,12 +39,7 @@ public class BizFieldVO extends BaseVO {
 	}
 
 	public boolean isOptional() {
-		if (UnieapConstants.YES.equals(optionalFlag)) {
-			isOptional = true;
-		} else {
-			isOptional = false;
-		}
-		return isOptional;
+		return UnieapConstants.YES.equals(optionalFlag);
 	}
 
 	public void setOptional(boolean isOptional) {
@@ -60,12 +55,7 @@ public class BizFieldVO extends BaseVO {
 	}
 
 	public boolean isLeaf() {
-		if (UnieapConstants.YES.equals(leafFlag)) {
-			isLeaf = true;
-		} else {
-			isLeaf = false;
-		}
-		return isLeaf;
+		return UnieapConstants.YES.equals(leafFlag);
 	}
 
 	public void setLeaf(boolean isLeaf) {

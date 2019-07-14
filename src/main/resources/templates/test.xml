@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<n0:ResultMsg
+	xmlns:n0="http://www.huawei.com/bme/cbsinterface/cbs/accountmgrmsg">
+	<ResultHeader>
+		<n2:ResultCode
+			xmlns:n2="http://www.huawei.com/bme/cbsinterface/common">0</n2:ResultCode>
+		<n2:ResultDesc
+			xmlns:n2="http://www.huawei.com/bme/cbsinterface/common">success</n2:ResultDesc>
+	</ResultHeader>
+	<ResultRecord>
+		<n3:BalanceRecord
+			xmlns:n3="http://www.huawei.com/bme/cbsinterface/cbs/accountmgr">
+			<n3:BalanceDesc>10</n3:BalanceDesc>
+			<n0:Balance>10</n0:Balance>
+		</n3:BalanceRecord>
+		<n3:BalanceRecord
+			xmlns:n3="http://www.huawei.com/bme/cbsinterface/cbs/accountmgr">
+			<n3:BalanceDesc>20</n3:BalanceDesc>
+			<n0:Balance>20</n0:Balance>
+		</n3:BalanceRecord>
+	</ResultRecord>
+</n0:ResultMsg>

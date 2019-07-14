@@ -28,6 +28,8 @@ public class UnieapConstants {
 	public final static String MODIFY = "Modify";
 	public final static String DELETE = "Delete";
 	public final static String CHECKEXIST = "checkExist";
+	public final static String SEARCH = "Search";
+	public final static String EXPORT = "Export";
 	public final static String ISSUCCESS = "isSuccess";
 	public final static String RETURN_MESSAGE = "message";
 	public final static String SUCCESS = "success";
@@ -40,6 +42,7 @@ public class UnieapConstants {
 	public static String C99999 = "999999";
 
 	public final static String ESB = "unieap-esb";
+	public final static String MDM = "unieap-mdm";
 	public final static String SUCCESS_CODE = "SUCCESSCODE";
 	public final static String ERRORCODE_IGNORE = "ERRORCODEIGNORE";
 
@@ -50,19 +53,23 @@ public class UnieapConstants {
 	public final static String TRANSFORMTYPE = "TRANSFORM_TYPE";
 	public final static String TRANSFORM2EXISTING = "TE";
 	public final static String TRANSFORM2STANDARD = "TS";
-    //esb interface begin
+	// esb interface begin
 	public final static String INFCONFIG = "INFCONFIG";
 	public final static String BIZCONFIG = "BIZCONFIG";
 	public final static String BIZMESSAGEVO = "BIZMESSAGEVO";
 	public final static String REQUESTINFO = "REQUESTINFO";
-	//esb interface end
-	
-	
+	// esb interface end
+
 	public final static String PAYLOAD = "payload";
 	public final static String REQUEST_MESSAGE = "REQUEST_MESSAGE";
 
 	public final static String BUTTON_PERMISSION = "button_permission";
 	public final static String DIC_PERMISSION = "dic_permission";
+	
+	public final static String BATCH_UPLOAD = "BU";
+	public final static String DOWNLOAD = "DL";
+	
+	public final static String DYNAMIC_PROGRESS = "DYNAMIC_PROGRESS";
 
 	/**
 	 * success
@@ -91,8 +98,9 @@ public class UnieapConstants {
 	}
 
 	public final static String getCurrentTime() {
-		Map<String, Object> obj = DBManager.getJT().queryForMap("SELECT CURRENT_TIMESTAMP() CURRENTTIME");
-		Date data = (Date) obj.get("CURRENTTIME");
+		//Map<String, Object> obj = DBManager.getJT().queryForMap("SELECT CURRENT_TIMESTAMP() CURRENTTIME");
+		//Date data = (Date) obj.get("CURRENTTIME");
+		Date data = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 		String dt = sdf.format(data);
 		return dt;
@@ -206,16 +214,29 @@ public class UnieapConstants {
 		return getSequence(null);
 	}
 
-	public synchronized final static Long getBatchSequence(String serialName, int batchNo) {
+	/**
+	 * get batch sequence
+	 * 
+	 * @param serialName
+	 * @param batchLength
+	 * @return
+	 */
+	public synchronized final static Long getBatchSequence(String serialName, int batchLength) {
 		if (StringUtils.isEmpty(serialName)) {
 			serialName = UNIEAP;
 		}
-		return DBManager.getJT().queryForObject("SELECT unieap.NEXTVAL('" + serialName + "'," + batchNo + ") SEQ",
+		return DBManager.getJT().queryForObject("SELECT unieap.NEXTVAL('" + serialName + "'," + batchLength + ") SEQ",
 				Long.class);
 	}
 
-	public synchronized final static Long getBatchSequence(int batchNo) {
-		return getBatchSequence(null, batchNo);
+	/**
+	 * get batch sequence
+	 * 
+	 * @param batchLength
+	 * @return
+	 */
+	public synchronized final static Long getBatchSequence(int batchLength) {
+		return getBatchSequence(null, batchLength);
 	}
 
 	public interface PERSISTENCE_TYPE {

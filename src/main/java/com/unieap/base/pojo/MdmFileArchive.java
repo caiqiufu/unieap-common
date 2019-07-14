@@ -1,12 +1,11 @@
 package com.unieap.base.pojo;
 // Generated 2017-11-25 11:34:12 by Hibernate Tools 3.5.0.Final
 
+import java.text.DecimalFormat;
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -19,7 +18,6 @@ public class MdmFileArchive implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name = "id", unique = true, nullable = false, length = 16)
 	private Long id;
 	@Column(name = "fileName", nullable = false, length = 32)
@@ -27,7 +25,7 @@ public class MdmFileArchive implements java.io.Serializable {
 	@Column(name = "fileType", nullable = false, length = 32)
 	private String fileType;
 	@Column(name = "fileSize", nullable = false)
-	private Double fileSize;
+	private Long fileSize;
 	@Column(name = "filePath", nullable = false, length = 512)
 	private String filePath;
 	@Column(name = "url", nullable = true, length = 512)
@@ -43,6 +41,11 @@ public class MdmFileArchive implements java.io.Serializable {
 	@Column(name = "tenantId", nullable = false)
 	private Long tenantId;
 
+	public String getFileSizeMB() {
+		DecimalFormat df = new DecimalFormat(".00");
+		return df.format(this.fileSize.longValue() / 1024);
+	}
+
 	public MdmFileArchive() {
 	}
 
@@ -57,7 +60,7 @@ public class MdmFileArchive implements java.io.Serializable {
 		this.tenantId = tenantId;
 	}
 
-	public MdmFileArchive(Long id, String fileName, String fileType, Double fileSize, String filePath, String url,
+	public MdmFileArchive(Long id, String fileName, String fileType, Long fileSize, String filePath, String url,
 			String extKey, String fileCategory, Date archiveDate, String remark, Long tenantId) {
 		this.id = id;
 		this.fileName = fileName;
@@ -96,11 +99,11 @@ public class MdmFileArchive implements java.io.Serializable {
 		this.fileType = fileType;
 	}
 
-	public Double getFileSize() {
+	public Long getFileSize() {
 		return this.fileSize;
 	}
 
-	public void setFileSize(Double fileSize) {
+	public void setFileSize(Long fileSize) {
 		this.fileSize = fileSize;
 	}
 

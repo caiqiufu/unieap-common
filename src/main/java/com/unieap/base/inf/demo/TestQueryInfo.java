@@ -13,7 +13,6 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
 import com.unieap.base.UnieapConstants;
-import com.unieap.base.inf.unitls.SoapCallUtils;
 import com.unieap.base.inf.vo.BizConfigVO;
 
 import net.sf.json.JSONArray;
@@ -52,9 +51,9 @@ public class TestQueryInfo {
 		bizConfigVO.setActivateFlag(UnieapConstants.YES);
 		// bizConfigVO.setUrl("http://127.0.0.1:8100/unieap/extAction/queryInfo");
 		bizConfigVO.setUrl("http://172.30.8.253:8765/unieap/extAction/queryInfo");
-		String responseInfo = SoapCallUtils.callHTTPService(bizConfigVO.getUrl(), bizConfigVO.getTimeout().intValue(),
-				bizConfigVO.getSOAPAction(), requestMessage);
-		System.out.println("responseInfo=" + responseInfo);
+/*		String responseInfo = SoapCallUtils.callHTTPService(bizConfigVO.getUrl(), bizConfigVO.getTimeout().intValue(),
+				bizConfigVO.getSOAPAction(), requestMessage);*/
+		//System.out.println("responseInfo=" + responseInfo);
 
 	}
 

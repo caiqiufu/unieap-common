@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,7 +49,7 @@ import net.sf.json.JSONObject;
  */
 @Service
 public class BaseBO {
-	
+
 	@Autowired
 	FileBO fileBO;
 	/**
@@ -64,29 +66,66 @@ public class BaseBO {
 	}
 
 	/**
-	 * 针对sql设计，只参与分页数据组装
-	 * 
+	 * @针对sql设计，只参与分页数据组装
 	 * @param className
-	 * @param sql
-	 * @param totalSql
+	 * @param querySql
+	 * @param countSql
 	 * @param parameters
 	 * @param ps
-	 * @throws Exception 
+	 * @param dsName
+	 * @throws Exception
 	 */
-	public void getPaginationDataByMysql(Class<?> className, String sql, String totalSql, Object[] parameters,
+	public void getPaginationDataByMysql(Class<?> className, String querySql, String countSql, Object[] parameters,
 			PaginationSupport ps, String dsName) throws Exception {
-		sql = sql + " limit " + ps.getStartIndex() + "," + ps.getPageSize();
-		log.debug("query sql:"+sql);
-		log.debug("totalSql sql:"+totalSql);
-		int totalCount = DBManager.getJT().queryForObject(totalSql, parameters, Integer.class);
+		querySql = querySql + " limit " + ps.getStartIndex() + "," + ps.getPageSize();
+		log.debug("query sql:" + querySql);
+		log.debug("totalSql sql:" + countSql);
+		int totalCount = DBManager.getJT().queryForObject(countSql, parameters, Integer.class);
 		ps.setTotalCount(totalCount);
-		List<Object> items = DBManager.getJT().query(sql, parameters, new EntityRowMapper(className));
+		List<Object> items = DBManager.getJT().query(querySql, parameters, new EntityRowMapper(className));
 		ps.setItems(items);
-		log.debug("JsonString:"+ps.getJsonString());
+		log.debug("JsonString:" + ps.getJsonString());
 	}
 
+	/**
+	 * @针对sql设计，只参与分页数据组装
+	 * @param className
+	 * @param querySql
+	 * @param countSql
+	 * @param parameters
+	 * @param ps
+	 * @throws Exception
+	 */
+	public void getPaginationDataByMysql(Class<?> className, String querySql, String countSql, Object[] parameters,
+			PaginationSupport ps) throws Exception {
+		this.getPaginationDataByMysql(className, querySql, countSql, parameters, ps, null);
+	}
+
+	/**
+	 * 
+	 * @param dsName
+	 * @param serialName
+	 * @return
+	 */
 	public Long getSequence(String dsName, String serialName) {
 		return UnieapConstants.getSequence(serialName);
+	}
+
+	/**
+	 * 
+	 * @param serialName
+	 * @return
+	 */
+	public Long getSequence(String serialName) {
+		return UnieapConstants.getSequence(serialName);
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public Long getSequence() {
+		return UnieapConstants.getSequence();
 	}
 
 	public String getCurrentTime(String dsName) {
@@ -149,6 +188,7 @@ public class BaseBO {
 		UnieapCacheMgt.setBeanProps(bean.getClass().getName(), beanprops);
 		return beanprops;
 	}
+
 	/**
 	 * @param dicType
 	 * @param isOptional
@@ -156,11 +196,11 @@ public class BaseBO {
 	 * @return String
 	 * @throws Exception
 	 */
-	public String getDicData(String dicType,String isOptional,String whereby) throws Exception{
+	public String getDicData(String dicType, String isOptional, String whereby) throws Exception {
 		DicHandler dicHandler = (DicHandler) ApplicationContextProvider.getBean(dicType);
 		return dicHandler.getDicList(isOptional, whereby);
 	}
-	
+
 	public String getCommDicList(String groupCode, String isOptional) throws Exception {
 		DicGroupVO group = UnieapConstants.getDicData(groupCode);
 		JSONArray ja = new JSONArray();
@@ -172,7 +212,7 @@ public class BaseBO {
 			ja.add(jac);
 		}
 		List<DicDataVO> dataList = group.getDataList();
-		for (DicDataVO data :dataList) {
+		for (DicDataVO data : dataList) {
 			JSONObject jac = new JSONObject();
 			jac.put("dicCode", data.getDicCode());
 			jac.put("dicName", data.getDicName());
@@ -187,6 +227,7 @@ public class BaseBO {
 		String dicString = ja.toString();
 		return dicString;
 	}
+
 	public static String getSortField(String sortOrginialField) {
 		StringBuffer sb = new StringBuffer(sortOrginialField);
 		for (int i = 1; i < sb.length(); i++) {
@@ -197,11 +238,30 @@ public class BaseBO {
 		}
 		return sb.toString();
 	}
+
 	public void createJs(ServletContext servlet, String fileName, String jsStr) throws Exception {
 		String shareFolderPath = SYSConfig.getConfig().get("shareFolderPath");
 		String mdmCommonPath = SYSConfig.getConfig().get("mdmCommonPath");
-		//String CODELISTJSPATH = "unieap/js/common";
-		String uploadPath = shareFolderPath+mdmCommonPath;
+		// String CODELISTJSPATH = "unieap/js/common";
+		String uploadPath = shareFolderPath + mdmCommonPath;
 		fileBO.write(fileName, uploadPath, true, true, jsStr);
+	}
+
+	public JSONObject getDynamicProgress(HttpServletRequest request, HttpServletResponse response,
+			String progressTransactionId) {
+		JSONObject result = (JSONObject) request.getSession().getAttribute(progressTransactionId);
+		if (result == null) {
+			result = new JSONObject();
+			result.put("total", 0);
+			result.put("count", 0);
+		}
+		return result;
+	}
+
+	public void setDynamicProgress(HttpServletRequest request, String progressTransactionId, int total, int count) {
+		JSONObject resultt = new JSONObject();
+		resultt.put("total", total);
+		resultt.put("count", count);
+		request.getSession().setAttribute(progressTransactionId, resultt);
 	}
 }

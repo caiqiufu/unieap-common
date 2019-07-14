@@ -28,7 +28,7 @@ public class PaginationSupport extends BaseVO {
 	private int pageSize = 15;
 	private int currentPage = 1;
 	private int startIndex = 1;
-	private List<Object> items;
+	private List<?> items;
 	private int totalCount = 0;
 	private String jsonString = "";
 	private String dsName = null;
@@ -64,11 +64,11 @@ public class PaginationSupport extends BaseVO {
 		this.jsonString = jsonString;
 	}
 
-	public List<Object> getItems() {
+	public List<?> getItems() {
 		return items;
 	}
 
-	public void setItems(List<Object> items) {
+	public void setItems(List<?> items) {
 		this.items = items;
 	}
 

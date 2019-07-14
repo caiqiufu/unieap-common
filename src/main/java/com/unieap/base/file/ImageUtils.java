@@ -19,10 +19,14 @@ import javax.imageio.stream.ImageInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.unieap.base.UnieapConstants;
+import com.unieap.base.pojo.MdmFileArchive;
+
 public class ImageUtils {
-	public static ImageUtils getInstance(){
+	public static ImageUtils getInstance() {
 		return new ImageUtils();
 	}
+
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private static String DEFAULT_THUMB_PREVFIX = "thumb_";
@@ -37,15 +41,13 @@ public class ImageUtils {
 	 * Description: 根据原图与裁切size截取局部图片
 	 * </p>
 	 * 
-	 * @param srcImg
-	 *            源图片
-	 * @param output
-	 *            图片输出流
-	 * @param rect
-	 *            需要截取部分的坐标和大小
+	 * @param srcImg 源图片
+	 * @param output 图片输出流
+	 * @param rect   需要截取部分的坐标和大小
 	 */
-	public void cutImage(File srcImg, OutputStream output, java.awt.Rectangle rect) {
+	public MdmFileArchive cutImage(File srcImg, OutputStream output, java.awt.Rectangle rect) {
 		if (srcImg.exists()) {
+			MdmFileArchive fileArchive = new MdmFileArchive();
 			java.io.FileInputStream fis = null;
 			ImageInputStream iis = null;
 			try {
@@ -60,7 +62,7 @@ public class ImageUtils {
 				} // 类型和图片后缀全部小写，然后判断后缀是否合法
 				if (suffix == null || types.toLowerCase().indexOf(suffix.toLowerCase() + ",") < 0) {
 					log.error("Sorry, the image suffix is illegal. the standard image suffix is {}." + types);
-					return;
+					return null;
 				}
 				// 将FileInputStream 转换为ImageInputStream
 				iis = ImageIO.createImageInputStream(fis);
@@ -71,10 +73,11 @@ public class ImageUtils {
 				param.setSourceRegion(rect);
 				BufferedImage bi = reader.read(0, param);
 				ImageIO.write(bi, suffix, output);
-			} catch (FileNotFoundException e) {
+				fileArchive.setArchiveDate(UnieapConstants.getDateTime());
+				return fileArchive;
+			} catch (Exception e) {
 				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
+				return null;
 			} finally {
 				try {
 					if (fis != null)
@@ -87,8 +90,10 @@ public class ImageUtils {
 			}
 		} else {
 			log.warn("the src image is not exist.");
+			return null;
 		}
 	}
+
 	/**
 	 * 
 	 * @param srcImg
@@ -98,32 +103,39 @@ public class ImageUtils {
 	 * @param width
 	 * @param height
 	 */
-	public void cutImage(File srcImg, OutputStream output, int x, int y, int width, int height) {
-		cutImage(srcImg, output, new java.awt.Rectangle(x, y, width, height));
+	public MdmFileArchive cutImage(File srcImg, OutputStream output, int x, int y, int width, int height) {
+		return cutImage(srcImg, output, new java.awt.Rectangle(x, y, width, height));
 	}
+
 	/**
 	 * 
 	 * @param srcImg
 	 * @param destImgPath
 	 * @param rect
 	 */
-	public void cutImage(File srcImg, String destImgPath, java.awt.Rectangle rect) {
+	public MdmFileArchive cutImage(File srcImg, String destImgPath, java.awt.Rectangle rect) {
 		File destImg = new File(destImgPath);
 		if (destImg.exists()) {
 			String p = destImg.getPath();
 			try {
-				if (!destImg.isDirectory())
+				if (!destImg.isDirectory()) {
 					p = destImg.getParent();
-				if (!p.endsWith(File.separator))
+				}
+				if (!p.endsWith(File.separator)) {
 					p = p + File.separator;
-				cutImage(srcImg, new java.io.FileOutputStream(
+				}
+				return cutImage(srcImg, new java.io.FileOutputStream(
 						p + DEFAULT_CUT_PREVFIX + "_" + new java.util.Date().getTime() + "_" + srcImg.getName()), rect);
 			} catch (FileNotFoundException e) {
 				log.warn("the dest image is not exist.");
+				return null;
 			}
-		} else
+		} else {
 			log.warn("the dest image folder is not exist.");
+			return null;
+		}
 	}
+
 	/**
 	 * 
 	 * @param srcImg
@@ -133,9 +145,10 @@ public class ImageUtils {
 	 * @param width
 	 * @param height
 	 */
-	public void cutImage(File srcImg, String destImg, int x, int y, int width, int height) {
-		cutImage(srcImg, destImg, new java.awt.Rectangle(x, y, width, height));
+	public MdmFileArchive cutImage(File srcImg, String destImg, int x, int y, int width, int height) {
+		return cutImage(srcImg, destImg, new java.awt.Rectangle(x, y, width, height));
 	}
+
 	/**
 	 * 
 	 * @param srcImg
@@ -145,8 +158,8 @@ public class ImageUtils {
 	 * @param width
 	 * @param height
 	 */
-	public void cutImage(String srcImg, String destImg, int x, int y, int width, int height) {
-		cutImage(new File(srcImg), destImg, new java.awt.Rectangle(x, y, width, height));
+	public MdmFileArchive cutImage(String srcImg, String destImg, int x, int y, int width, int height) {
+		return cutImage(new File(srcImg), destImg, new java.awt.Rectangle(x, y, width, height));
 	}
 
 	/**
@@ -157,19 +170,17 @@ public class ImageUtils {
 	 * Description: 根据图片路径生成缩略图
 	 * </p>
 	 * 
-	 * @param imagePath
-	 *            原图片路径
-	 * @param w
-	 *            缩略图宽
-	 * @param h
-	 *            缩略图高
-	 * @param prevfix
-	 *            生成缩略图的前缀
-	 * @param force
-	 *            是否强制按照宽高生成缩略图(如果为false，则生成最佳比例缩略图)
+	 * @param srcImg  原图片
+	 * @param output
+	 * @param w       缩略图宽
+	 * @param h       缩略图高
+	 * @param prevfix 生成缩略图的前缀
+	 * @param force   是否强制按照宽高生成缩略图(如果为false，则生成最佳比例缩略图)
 	 */
-	public void thumbnailImage(File srcImg, OutputStream output, int w, int h, String prevfix, boolean force) {
+	public MdmFileArchive thumbnailImage(File srcImg, OutputStream output, int w, int h, String prevfix,
+			boolean force) {
 		if (srcImg.exists()) {
+			MdmFileArchive fileArchive = new MdmFileArchive();
 			try {
 				// ImageIO 支持的图片类型 : [BMP, bmp, jpg, JPG, wbmp, jpeg, png, PNG,
 				// JPEG, WBMP, GIF, gif]
@@ -181,7 +192,7 @@ public class ImageUtils {
 				} // 类型和图片后缀全部小写，然后判断后缀是否合法
 				if (suffix == null || types.toLowerCase().indexOf(suffix.toLowerCase() + ",") < 0) {
 					log.error("Sorry, the image suffix is illegal. the standard image suffix is {}." + types);
-					return;
+					return null;
 				}
 				log.debug("target image's size, width:{}, height:{}.", w, h);
 				Image img = ImageIO.read(srcImg);
@@ -208,13 +219,18 @@ public class ImageUtils {
 				// 将图片保存在原目录并加上前缀
 				ImageIO.write(bi, suffix, output);
 				output.close();
+				fileArchive.setArchiveDate(UnieapConstants.getDateTime());
+				return fileArchive;
 			} catch (IOException e) {
 				log.error("generate thumbnail image failed.", e);
+				return null;
 			}
 		} else {
 			log.warn("the src image is not exist.");
+			return null;
 		}
 	}
+
 	/**
 	 * 
 	 * @param srcImg
@@ -223,18 +239,23 @@ public class ImageUtils {
 	 * @param prevfix
 	 * @param force
 	 */
-	public void thumbnailImage(File srcImg, int w, int h, String prevfix, boolean force) {
+	public MdmFileArchive thumbnailImage(File srcImg, int w, int h, String prevfix, boolean force) {
 		String p = srcImg.getAbsolutePath();
 		try {
-			if (!srcImg.isDirectory())
+			if (!srcImg.isDirectory()) {
 				p = srcImg.getParent();
-			if (!p.endsWith(File.separator))
+			}
+			if (!p.endsWith(File.separator)) {
 				p = p + File.separator;
-			thumbnailImage(srcImg, new java.io.FileOutputStream(p + prevfix + srcImg.getName()), w, h, prevfix, force);
+			}
+			return thumbnailImage(srcImg, new java.io.FileOutputStream(p + prevfix + srcImg.getName()), w, h, prevfix,
+					force);
 		} catch (FileNotFoundException e) {
 			log.error("the dest image is not exist.", e);
+			return null;
 		}
 	}
+
 	/**
 	 * 
 	 * @param imagePath
@@ -243,10 +264,11 @@ public class ImageUtils {
 	 * @param prevfix
 	 * @param force
 	 */
-	public void thumbnailImage(String imagePath, int w, int h, String prevfix, boolean force) {
+	public MdmFileArchive thumbnailImage(String imagePath, int w, int h, String prevfix, boolean force) {
 		File srcImg = new File(imagePath);
-		thumbnailImage(srcImg, w, h, prevfix, force);
+		return thumbnailImage(srcImg, w, h, prevfix, force);
 	}
+
 	/**
 	 * 
 	 * @param imagePath
@@ -254,17 +276,18 @@ public class ImageUtils {
 	 * @param h
 	 * @param force
 	 */
-	public void thumbnailImage(String imagePath, int w, int h, boolean force) {
-		thumbnailImage(imagePath, w, h, DEFAULT_THUMB_PREVFIX, DEFAULT_FORCE);
+	public MdmFileArchive thumbnailImage(String imagePath, int w, int h, boolean force) {
+		return thumbnailImage(imagePath, w, h, DEFAULT_THUMB_PREVFIX, DEFAULT_FORCE);
 	}
+
 	/**
 	 * 
 	 * @param imagePath
 	 * @param w
 	 * @param h
 	 */
-	public void thumbnailImage(String imagePath, int w, int h) {
-		thumbnailImage(imagePath, w, h, DEFAULT_FORCE);
+	public MdmFileArchive thumbnailImage(String imagePath, int w, int h) {
+		return thumbnailImage(imagePath, w, h, DEFAULT_FORCE);
 	}
 
 	public static void main(String[] args) {

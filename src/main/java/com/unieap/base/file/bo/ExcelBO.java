@@ -1,18 +1,18 @@
 package com.unieap.base.file.bo;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -24,23 +24,24 @@ import com.unieap.base.file.vo.CellVO;
 import com.unieap.base.file.vo.ExcelVO;
 import com.unieap.base.file.vo.SheetVO;
 import com.unieap.base.pojo.MdmFileArchive;
-import com.unieap.base.utils.JSONUtils;
+
+import net.sf.json.JSONObject;
 
 @Service
 public class ExcelBO extends FileHandler {
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Map<String, String> exportExcel(String parameters, String handlerName, HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
-		Map paras = JSONUtils.jsonToMap(parameters);
-		XSSFWorkbook workbook = new XSSFWorkbook();
+	/**
+	 * 
+	 * @param parameters
+	 * @param handlerName
+	 * @return
+	 * @throws Exception
+	 */
+	public MdmFileArchive exportExcel(JSONObject parameters, String handlerName) throws Exception {
 		ExcelHandler hanlder = (ExcelHandler) ApplicationContextProvider.getBean(handlerName);
-		ExcelVO excelVO = hanlder.getExportData(paras);
-		String fileName = excelVO.getFileName();
-		response.setCharacterEncoding("utf-8");
-		response.setContentType("application/vnd.ms-excel");
-		response.setHeader("Content-Disposition", "attachment;fileName=" + fileName);
+		ExcelVO excelVO = hanlder.getExportData(parameters);
 		List<SheetVO> sheets = excelVO.getSheets();
 		if (sheets != null && sheets.size() > 0) {
+			XSSFWorkbook workbook = new XSSFWorkbook();
 			for (int i = 0; i < sheets.size(); i++) {
 				XSSFSheet sheet = workbook.createSheet();
 				SheetVO svo = sheets.get(i);
@@ -52,7 +53,7 @@ public class ExcelBO extends FileHandler {
 					startNumber = 1;
 				}
 				if (rows != null && rows.size() > 0) {
-					XSSFCellStyle bodyStyle = getBodyStyle(workbook);
+					XSSFCellStyle contextStyle = getContextStyle(workbook);
 					for (int j = 0; j < rows.size(); j++) {
 						XSSFRow row = sheet.createRow(j + startNumber);
 						List<CellVO> cells = rows.get(j);
@@ -60,8 +61,7 @@ public class ExcelBO extends FileHandler {
 							for (int k = 0; k < cells.size(); k++) {
 								CellVO vo = cells.get(k);
 								XSSFCell cell = row.createCell(k);
-								cell.setCellStyle(bodyStyle);
-								cell.setCellType(XSSFCell.CELL_TYPE_STRING);
+								cell.setCellStyle(contextStyle);
 								cell.setCellValue(vo.getCellValue());
 							}
 						}
@@ -69,31 +69,9 @@ public class ExcelBO extends FileHandler {
 				}
 
 			}
-			OutputStream os = null;
-			try {
-				os = response.getOutputStream();
-				workbook.write(os);
-				os.flush();
-				os.close();
-				response.setStatus(HttpServletResponse.SC_OK);
-				response.flushBuffer();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				if (os != null) {
-					try {
-						os.close();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-				}
-			}
+			return this.upload(parameters, workbook, excelVO.getFileName());
 		}
-		return result(UnieapConstants.ISSUCCESS, UnieapConstants.SUCCESS);
+		return null;
 	}
 
 	public void setHeadTitle(XSSFWorkbook workbook, XSSFSheet sheet, SheetVO svo) {
@@ -116,8 +94,17 @@ public class ExcelBO extends FileHandler {
 	 */
 	public XSSFCellStyle getHeadStyle(XSSFWorkbook workbook) {
 		// 创建单元格样式
-		XSSFCellStyle cellStyle = workbook.createCellStyle();
-		return cellStyle;
+		XSSFCellStyle style = workbook.createCellStyle();
+		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+		style.setWrapText(true);
+		// 标题居中，没有边框，所以这里没有设置边框，设置标题文字样式
+		XSSFFont titleFont = workbook.createFont();
+		titleFont.setBold(true);// 加粗
+		titleFont.setFontHeight((short) 15);// 文字尺寸
+		titleFont.setFontHeightInPoints((short) 15);
+		style.setFont(titleFont);
+		return style;
 	}
 
 	/**
@@ -125,47 +112,45 @@ public class ExcelBO extends FileHandler {
 	 * 
 	 * @return
 	 */
-	public XSSFCellStyle getBodyStyle(XSSFWorkbook workbook) {
-		// 创建单元格样式
-		XSSFCellStyle cellStyle = workbook.createCellStyle();
-		return cellStyle;
+	public XSSFCellStyle getContextStyle(XSSFWorkbook workbook) {
+		XSSFCellStyle style = workbook.createCellStyle();
+		style.setAlignment(HorizontalAlignment.CENTER);// 文本水平居中显示
+		style.setVerticalAlignment(VerticalAlignment.CENTER);// 文本竖直居中显示
+		style.setWrapText(true);// 文本自动换行
+
+		// 生成Excel表单，需要给文本添加边框样式和颜色
+		/*
+		 * CellStyle.BORDER_DOUBLE 双边线 CellStyle.BORDER_THIN 细边线 CellStyle.BORDER_MEDIUM
+		 * 中等边线 CellStyle.BORDER_DASHED 虚线边线 CellStyle.BORDER_HAIR 小圆点虚线边线
+		 * CellStyle.BORDER_THICK 粗边线
+		 */
+		style.setBorderBottom(BorderStyle.THIN);// 设置文本边框
+		style.setBorderLeft(BorderStyle.THIN);
+		style.setBorderRight(BorderStyle.THIN);
+		style.setBorderTop(BorderStyle.THIN);
+		// set border color
+		style.setTopBorderColor(new XSSFColor(Color.BLACK));// 设置文本边框颜色
+		style.setBottomBorderColor(new XSSFColor(Color.BLACK));
+		style.setLeftBorderColor(new XSSFColor(Color.BLACK));
+		style.setRightBorderColor(new XSSFColor(Color.BLACK));
+
+		return style;
 	}
 
 	/**
-	 * only support office 2007
 	 * 
 	 * @param parameters
-	 * @param handlerConfig
-	 * @param vo
+	 * @param handlerName
 	 * @return
 	 * @throws Exception
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Map<String, String> importExcel(String parameters, String handlerName, List<MdmFileArchive> files)
-			throws Exception {
-		Map paras = JSONUtils.jsonToMap(parameters);
-		if (files != null && files.size() > 0) {
-			ExcelHandler hanlder = (ExcelHandler) ApplicationContextProvider.getBean(handlerName);
-			for (int i = 0; i < files.size(); i++) {
-				MdmFileArchive fileArchive = this.getFileArchive(files.get(i).getId());
-				String filePath = fileArchive.getFilePath() + File.separator + fileArchive.getFileName();
-				FileInputStream fs = new FileInputStream(new File(filePath));
-				XSSFWorkbook workbook = new XSSFWorkbook(fs);
-				hanlder.importData(paras, fileArchive, workbook);
-			}
-		}
+	public Map<String, String> importExcel(JSONObject parameters, String handlerName) throws Exception {
+		ExcelHandler hanlder = (ExcelHandler) ApplicationContextProvider.getBean(handlerName);
+		MdmFileArchive fileArchive = this.getFileArchive(Long.parseLong(parameters.getString("fileId")));
+		String filePath = fileArchive.getFilePath() + File.separator + fileArchive.getFileName();
+		FileInputStream fs = new FileInputStream(new File(filePath));
+		XSSFWorkbook workbook = new XSSFWorkbook(fs);
+		hanlder.importData(parameters, fileArchive, workbook);
 		return this.result(UnieapConstants.ISSUCCESS, UnieapConstants.SUCCESS);
-		// XSSFWorkbook workbook = new
-		// XSSFWorkbook(vo.getFile().getInputStream());
-		/*
-		 * try { book = new XSSFWorkbook(vo.getFile().getInputStream()); } catch
-		 * (Exception ex) { book = new
-		 * HSSFWorkbook(vo.getFile().getInputStream()); }
-		 */
-		// HSSFWorkbook workbook = new
-		// HSSFWorkbook(vo.getFile().getInputStream());
-		// Map exDatas = hanlder.importData(paras, workbook);
-		// exDatas.put(UnieapConstants.ISSUCCESS, UnieapConstants.SUCCESS);
-		// return exDatas;
 	}
 }

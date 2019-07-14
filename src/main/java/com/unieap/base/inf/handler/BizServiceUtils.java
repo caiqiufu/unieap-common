@@ -76,13 +76,7 @@ public class BizServiceUtils {
 			} else {
 				throw new Exception("missed element:RequestHeader->channelCode");
 			}
-			if (requestHeader.has("transactionId")) {
-				String transactionId = requestHeader.getString("transactionId");
-				if (transactionId == null || "".equals(transactionId)) {
-					transactionId = BizServiceUtils.generateTransactionId();
-				}
-				header.setTransactionId(transactionId);
-			}
+			header.setTransactionId(BizServiceUtils.generateTransactionId());
 			if (requestHeader.has("extTransactionId")) {
 				String extTransactionId = requestHeader.getString("extTransactionId");
 				header.setExtTransactionId(extTransactionId);
@@ -300,7 +294,6 @@ public class BizServiceUtils {
 		RequestHeader requestHeader = requestInfo.getRequestHeader();
 		RequestBody requestBody = requestInfo.getRequestBody();
 		Esblog esblog = new Esblog();
-		// esblog.setId(UnieapConstants.getSequence());
 		esblog.setChannelCode(requestHeader.getChannelCode());
 		esblog.setBizCode(requestBody.getBizCode());
 		esblog.setServiceNumber(requestInfo.getRequestBody().getServiceNumber());

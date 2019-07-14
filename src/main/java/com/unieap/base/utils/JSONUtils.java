@@ -40,7 +40,6 @@ import net.sf.json.JSONObject;
  * Description: [用于JSON格式的对象和POJO对象及集合对象之间的转换]
  * </p>
  * 
- * @author <a href="mailto: leixueibin@neusoft.com">雷学斌</a>
  * @version $Revision: 1.5 $
  */
 public final class JSONUtils {
@@ -412,6 +411,17 @@ public final class JSONUtils {
 
 	/**
 	 * 
+	 * @param json
+	 * @param beanClass
+	 * @return
+	 * @throws Exception
+	 */
+	public static Object convertJSON2Bean(JSONObject json, Class<?> beanClass) throws Exception {
+		return convertJSON2Bean(json, beanClass, null);
+	}
+
+	/**
+	 * 
 	 * <p>
 	 * Discription:[将JSON对象转换为POJO对象]
 	 * </p>
@@ -422,7 +432,6 @@ public final class JSONUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
 	public static Object convertJSON2Bean(JSONObject json, Class<?> beanClass,
 			Map<String, Object> collectionComponentTypes) throws Exception {
 		Object bean = beanClass.newInstance();
@@ -439,7 +448,6 @@ public final class JSONUtils {
 		String key = null;
 		while (keys.hasNext()) {
 			key = (String) keys.next();
-			// Method setter = props[i].getWriteMethod();
 			Method setter = getMethod(props, key);
 			if (setter == null) {
 				continue;
@@ -778,7 +786,10 @@ public final class JSONUtils {
 	}
 
 	public static String formatDate(Date date, String dateFormat) {
-		SimpleDateFormat objSDateFormat = new SimpleDateFormat(StringUtils.delete(dateFormat, "yyyy-MM-dd HH:mm:ss"));
+		if (StringUtils.isEmpty(dateFormat)) {
+			dateFormat = "yyyy-MM-dd HH:mm:ss";
+		}
+		SimpleDateFormat objSDateFormat = new SimpleDateFormat(dateFormat);
 		return objSDateFormat.format(date);
 	}
 
@@ -800,7 +811,6 @@ public final class JSONUtils {
 			return map;
 		}
 		JSONObject jsonObj = JSONObject.fromObject(json);
-		// JSONObject jsonObj = new JSONObject(json);
 		Iterator<String> iter = jsonObj.keys();
 		while (iter.hasNext()) {
 			String key = (String) iter.next();
