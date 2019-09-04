@@ -6,8 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
 import javax.xml.ws.Endpoint;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.StringUtils;
 
 import com.unieap.base.inf.vo.BizConfigVO;
@@ -15,6 +17,7 @@ import com.unieap.base.inf.vo.BizFieldVO;
 import com.unieap.base.inf.vo.BizMessageVO;
 import com.unieap.base.inf.vo.InfConfigVO;
 import com.unieap.base.inf.vo.InfFieldVO;
+import com.unieap.base.inf.vo.InfSQLConfigVO;
 import com.unieap.base.vo.DicDataVO;
 import com.unieap.base.vo.DicGroupVO;
 import com.unieap.base.vo.MessageVO;
@@ -50,6 +53,11 @@ public final class UnieapCacheMgt {
 
 	public static Map<String, BizFieldVO> bizFieldList = new HashMap<String, BizFieldVO>();
 	public static Map<String, InfFieldVO> infFieldList = new HashMap<String, InfFieldVO>();
+	
+	public static Map<String, InfSQLConfigVO> sqlBizList = new HashMap<String, InfSQLConfigVO>();
+	
+	public static Map<String, DataSource> dsList = new HashMap<String, DataSource>();
+	public static Map<String, JdbcTemplate> jtList = new HashMap<String, JdbcTemplate>();
 
 	public static Map<String, Endpoint> getEndpointList() {
 		return endpointList;
@@ -272,6 +280,30 @@ public final class UnieapCacheMgt {
 
 	public static Map<String, BizMessageVO> getBizMessageList() {
 		return bizMessageList;
+	}
+
+	public static Map<String, InfSQLConfigVO> getSqlBizList() {
+		return sqlBizList;
+	}
+
+	public static void setSqlBizList(Map<String, InfSQLConfigVO> sqlBizList) {
+		UnieapCacheMgt.sqlBizList = sqlBizList;
+	}
+
+	public static Map<String, DataSource> getDsList() {
+		return dsList;
+	}
+
+	public static void setDsList(Map<String, DataSource> dsList) {
+		UnieapCacheMgt.dsList = dsList;
+	}
+
+	public static Map<String, JdbcTemplate> getJtList() {
+		return jtList;
+	}
+
+	public static void setJtList(Map<String, JdbcTemplate> jtList) {
+		UnieapCacheMgt.jtList = jtList;
 	}
 
 }

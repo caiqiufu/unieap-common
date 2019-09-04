@@ -62,6 +62,7 @@ public class UnieapConstants {
 
 	public final static String PAYLOAD = "payload";
 	public final static String REQUEST_MESSAGE = "REQUEST_MESSAGE";
+	public final static String RESPONSE_MESSAGE = "RESPONSE_MESSAGE";
 
 	public final static String BUTTON_PERMISSION = "button_permission";
 	public final static String DIC_PERMISSION = "dic_permission";

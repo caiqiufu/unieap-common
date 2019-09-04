@@ -1,5 +1,9 @@
 ##################################################
-# server info
+#4个需要修改的点
+#1.eureka 服务器地址
+#2.该应用的端口和地址
+#3.日志级别
+#4.数据库连接地址 
 ##################################################
 server:
   tomcat:
@@ -7,26 +11,53 @@ server:
     max-threads: 1000
     min-spare-threads: 30
   port: 8080
-  #address: localhost
+  address: localhost
   session-timeout: 30
-################################################
-#eureka配置
-################################################
+#  eureka server 启动时会创建一个定时任务，每隔一段时间(默认60s)将当前清单中超时(默认90s)没有续约的服务剔除出去
+#  自我保护 ：
+#  在信息面板中可能会出现这样的红色警告 EMERGENCY! EUREKA MAY BE INCORRECTLY CLAIMING INSTANCES ARE UP WHEN THEY'RE NOT. RENEWALS ARE LESSER THAN THRESHOLD AND HENCE THE INSTANCES ARE NOT BEING EXPIRED JUST TO BE SAFE.
+#  该警告就是触发了eureka的自我保护机制，服务注册到eureka server后会维护一个心跳连接.eureka server在运行期间，会统计心跳失败的比例在15分钟内是否低于85%.
+#  如果低于,会将当前的实例注册信息保护起来,让这些实例不会过期.可以配置 eureka.server.enable-self-preservation=false 来关闭保护机制
+#  关闭保护机制，信息面板中会显示 THE SELF PRESERVATION MODE IS TURNED OFF.THIS MAY NOT PROTECT INSTANCE EXPIRY IN CASE OF NETWORK/OTHER PROBLEMS.
 eureka:
   instance:
-    lease-expiration-duration-in-seconds: 10 #服务过期时间配置,超过这个时间没有接收到心跳EurekaServer就会将这个实例剔除
+    lease-expiration-duration-in-seconds: 5 #服务过期时间配置,超过这个时间没有接收到心跳EurekaServer就会将这个实例剔除
     lease-renewal-interval-in-seconds: 3 #服务刷新时间配置，每隔这个时间会主动心跳一次
-    prefer-ip-address: true #以IP地址注册到服务中心
+    prefer-ip-address: true  #以IP地址注册到服务中心
+    health-check-url-path: /actuator/health
+    #eureka的client注册到server时默认是使用hostname而不是ip,这就导致client在多台机器时，服务间相互调用时也会使用hostname进行调用，从而调用失败。
+    #hostname: 127.0.0.1
+    #ip-address: 127.0.0.1
+    #instance-id: ${eureka.instance.ip-address}:${server.port}
+   #server:
+   # enable-self-preservation: false #关闭Eureka服务器的自我保护，默认为true
+   # eviction-interval-timer-in-ms: 5000 #Eureka服务器的清理注册列表功能，默认是60秒，这个配置就是让Eureka服务器多少时间清理一次注册列表
   client:
-    enabled: false
-    healthcheck:
-       enabled: false
+    #在默认设置下，该服务注册中心也会将自己作为客户端来尝试注册它自己，所以我们需要禁用它的客户端注册行为
+    #配置register-with-eureka: false 和 fetch-registry: false 来表明自己是一个eureka server
+    #双机部署的时候使用
+    #register-with-eureka: true
+    register-with-eureka: false
+    fetch-registry: false
+    registry-fetch-interval-seconds: 5 #多少秒去注册中心获取注册服务器列表数据，默认为30秒
     serviceUrl:
-      defaultZone: http://172.30.8.52:8761/eureka/
-################################################
-#数据库配置
-################################################
-spring:  
+      #双机部署的时候使用，配置slave地址
+      defaultZone: http://127.0.0.1:8761/eureka/
+      #defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+# 共有8个级别，按照从低到高为：ALL < TRACE < DEBUG < INFO < WARN < ERROR < FATAL < OFF。
+logging:
+   file: logs/eureka-server/application-debug.log
+   pattern:
+     console: "%d %-5level %logger : %msg%n"
+     file: "%d %-5level [%thread] %logger : %msg%n"
+   level:
+      org.springframework: DEBUG
+      org.springframework.web: DEBUG
+      com.howtodoinjava: DEBUG
+      org.hibernate: DEBUG
+      com.netflix.eureka: DEBUG
+#数据库配置###################################### 
+spring: 
   datasource :
     url : jdbc:mysql://127.0.0.1:3306/unieap?characterencoding=utf-8;GenerateSimpleParameterMetadata=true
     username : unieap  
@@ -50,17 +81,3 @@ spring:
     #PSCatch
     poolPreparedStatements : true
     maxPoolPreparedStatementPerConnectionSize : 20
-################################################
-#数据库配置
-# 共有8个级别，按照从低到高为：ALL < TRACE < DEBUG < INFO < WARN < ERROR < FATAL < OFF。
-################################################
-logging :
-   file : logs/unieap-common/application-debug.log
-   pattern :
-     console : "%d %-5level %logger : %msg%n"
-     file : "%d %-5level [%thread] %logger : %msg%n"
-   level :
-      org.springframework: DEBUG
-      org.springframework.web: DEBUG
-      com.howtodoinjava: DEBUG
-      org.hibernate: DEBUG

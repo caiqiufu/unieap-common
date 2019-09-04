@@ -5,18 +5,23 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StringUtils;
 
 import com.unieap.base.UnieapCacheMgt;
 import com.unieap.base.UnieapConstants;
+import com.unieap.base.db.DBManager;
 import com.unieap.base.inf.element.RequestInfo;
 import com.unieap.base.inf.element.ResponseHeader;
 import com.unieap.base.inf.unitls.SoapCallUtils;
 import com.unieap.base.inf.vo.InfConfigVO;
+import com.unieap.base.inf.vo.InfSQLConfigVO;
 import com.unieap.base.pojo.Esblog;
 import com.unieap.base.repository.EsbLogCacheMgt;
 import com.unieap.base.utils.DateUtils;
-import com.unieap.base.utils.JSONUtils;
 import com.unieap.base.vo.NumberFilterVO;
+import com.unieap.base.vo.PaginationSupport;
+
+import net.sf.json.JSONObject;
 
 /**
  * 主要是流程编排逻辑
@@ -34,21 +39,6 @@ public class ConnectionHandler {
 	/**
 	 * call http request and record log
 	 * 
-	 * @param appCode
-	 * @param requestInfo
-	 * @param extParameters
-	 * @return
-	 * @throws Exception
-	 */
-	public ProcessResult callCommonHTTPService(String appName, RequestInfo requestInfo,
-			Map<String, Object> extParameters) throws Exception {
-		String requestInfoString = JSONUtils.convertBean2JSON(requestInfo).toString();
-		return this.callCommonHTTPService(appName, requestInfo, requestInfoString, extParameters);
-	}
-
-	/**
-	 * call http request and record log
-	 * 
 	 * @param appName
 	 * @param requestInfo
 	 * @param requestInfoString
@@ -59,6 +49,7 @@ public class ConnectionHandler {
 	public ProcessResult callCommonHTTPService(String appName, RequestInfo requestInfo, String requestInfoString,
 			Map<String, Object> extParameters) throws Exception {
 		long beginTime = System.currentTimeMillis();
+		extParameters.put(UnieapConstants.REQUEST_MESSAGE, requestInfoString);
 		requestInfo.getRequestHeader().setRequestTime(DateUtils.getStringDate());
 		ProcessResult processResult = new ProcessResult();
 		String responseInfoString = "";
@@ -77,6 +68,7 @@ public class ConnectionHandler {
 				processResult.setResultCode(UnieapConstants.C0);
 				processResult.setResultDesc(UnieapConstants.SUCCESS);
 			}
+			extParameters.put(UnieapConstants.RESPONSE_MESSAGE, responseInfoString);
 			processResult.setVo(responseInfoString);
 		} catch (Exception e) {
 			processResult.setResultCode("20006");
@@ -84,7 +76,7 @@ public class ConnectionHandler {
 			long endTime = System.currentTimeMillis();
 			String during = Long.toString(endTime - beginTime);
 			Esblog esblog = BizServiceUtils.getEsbLog(requestInfo, processResult, requestInfoString, responseInfoString,
-					during, appName);
+					during, appName, (String) extParameters.get("ProcessServerInfo"));
 			EsbLogCacheMgt.setEsbLogVO(esblog);
 			return processResult;
 		}
@@ -96,10 +88,81 @@ public class ConnectionHandler {
 			long endTime = System.currentTimeMillis();
 			String during = Long.toString(endTime - beginTime);
 			Esblog esblog = BizServiceUtils.getEsbLog(requestInfo, processResult, requestInfoString, responseInfoString,
-					during, appName);
+					during, appName, (String) extParameters.get("ProcessServerInfo"));
 			EsbLogCacheMgt.setEsbLogVO(esblog);
 		}
 		requestInfo.getRequestHeader().setResponseTime(DateUtils.getStringDate());
+		return processResult;
+	}
+
+	public ProcessResult callCommonSQLService(String appName, RequestInfo requestInfo, InfConfigVO infConfigVO,
+			InfSQLConfigVO infSQLConfigVO, PaginationSupport ps, Map<String, Object> extParameters) throws Exception {
+		String pageSize = "100";
+		String startIndex = "0";
+		String orderBy = "";
+		String queryParaString = "";
+		if (!StringUtils.isEmpty(requestInfo.getRequestBody().getExtParameters())) {
+			JSONObject jsonResult = JSONObject.fromObject(requestInfo.getRequestBody().getExtParameters());
+			if (jsonResult.containsKey("pageSize")) {
+				pageSize = jsonResult.getString("pageSize");
+			}
+			if (jsonResult.containsKey("startIndex")) {
+				startIndex = jsonResult.getString("startIndex");
+			}
+			if (jsonResult.containsKey("orderBy")) {
+				orderBy = jsonResult.getString("orderBy");
+			}
+			if (!StringUtils.isEmpty(orderBy)) {
+				infSQLConfigVO.setOrderBy(orderBy);
+			}
+			if (jsonResult.containsKey("queryPara")) {
+				queryParaString = jsonResult.getString("queryPara");
+			}
+			ps.setStartIndex(Integer.parseInt(startIndex));
+			ps.setPageSize(Integer.parseInt(pageSize));
+			if (!StringUtils.isEmpty(orderBy)) {
+				infSQLConfigVO.setOrderBy(orderBy);
+			}
+		}
+		String querySql = infSQLConfigVO.getQuerySql();
+		if ("MYSQL".equals(infSQLConfigVO.getDsType())) {
+			querySql = querySql + " limit " + ps.getStartIndex() + "," + ps.getPageSize();
+		}
+		if ("ORACLE".equals(infSQLConfigVO.getDsType())) {
+			// to do
+		}
+		if (StringUtils.isEmpty(queryParaString)) {
+			extParameters.put(UnieapConstants.REQUEST_MESSAGE, querySql);
+			int totalCount = DBManager.getBizJT(infSQLConfigVO.getDsName()).queryForObject(infSQLConfigVO.getCountSql(),
+					Integer.class);
+			ps.setTotalCount(totalCount);
+			List<Map<String, Object>> items = DBManager.getBizJT(infSQLConfigVO.getDsName()).queryForList(querySql);
+			ps.setItems(items);
+		} else {
+			extParameters.put(UnieapConstants.REQUEST_MESSAGE, querySql + ";" + queryParaString);
+			if (queryParaString.contains(",")) {
+				Object[] queryPara = StringUtils.split(queryParaString, ",");
+				int totalCount = DBManager.getBizJT(infSQLConfigVO.getDsName())
+						.queryForObject(infSQLConfigVO.getCountSql(), queryPara, Integer.class);
+				ps.setTotalCount(totalCount);
+				List<Map<String, Object>> items = DBManager.getBizJT(infSQLConfigVO.getDsName()).queryForList(querySql,
+						queryPara);
+				ps.setItems(items);
+			} else {
+				Object[] queryPara = new Object[] { queryParaString };
+				int totalCount = DBManager.getBizJT(infSQLConfigVO.getDsName())
+						.queryForObject(infSQLConfigVO.getCountSql(), queryPara, Integer.class);
+				ps.setTotalCount(totalCount);
+				List<Map<String, Object>> items = DBManager.getBizJT(infSQLConfigVO.getDsName()).queryForList(querySql,
+						queryPara);
+				ps.setItems(items);
+			}
+		}
+		extParameters.put(UnieapConstants.RESPONSE_MESSAGE, ps.toJsonString());
+		ProcessResult processResult = new ProcessResult();
+		processResult.setResultCode(UnieapConstants.C0);
+		processResult.setResultDesc(UnieapConstants.SUCCESS);
+		processResult.setVo(ps);
 		return processResult;
 	}
 

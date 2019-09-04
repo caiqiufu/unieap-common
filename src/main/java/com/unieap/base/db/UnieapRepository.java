@@ -11,6 +11,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 import com.unieap.base.utils.DBUtils;
 import com.unieap.base.vo.PaginationSupport;
 
+@SuppressWarnings("hiding")
 @NoRepositoryBean
 public interface UnieapRepository<T, Long> extends JpaSpecificationExecutor<T>, JpaRepository<T, Long> {
 
@@ -25,7 +26,7 @@ public interface UnieapRepository<T, Long> extends JpaSpecificationExecutor<T>, 
 	}
 
 	/**
-	 * 
+	 * field with suffix not included in filter
 	 * @param page
 	 * @param pojo
 	 * @throws Exception
@@ -37,7 +38,7 @@ public interface UnieapRepository<T, Long> extends JpaSpecificationExecutor<T>, 
 		} else {
 			sort = new Sort(Sort.Direction.DESC, page.getSort());
 		}
-		Pageable pageable = PageRequest.of(page.getCurrentPage()-1, page.getPageSize(), sort);
+		Pageable pageable = PageRequest.of(page.getCurrentPage() - 1, page.getPageSize(), sort);
 		if (filter) {
 			Criteria<T> criteria = new Criteria<>();
 			DBUtils.setCriteria(criteria, pojo);

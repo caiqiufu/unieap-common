@@ -23,7 +23,6 @@ public class BizFieldVO extends BaseVO {
 	public String ns;
 	public Integer parentId;
 	public String leafFlag;
-	public boolean isLeaf;
 	public BizFieldVO parentVO;
 	public List<BizFieldVO> childrenList;
 	public InfFieldVO infFieldVO;
@@ -56,10 +55,6 @@ public class BizFieldVO extends BaseVO {
 
 	public boolean isLeaf() {
 		return UnieapConstants.YES.equals(leafFlag);
-	}
-
-	public void setLeaf(boolean isLeaf) {
-		this.isLeaf = isLeaf;
 	}
 
 	public String getClassName() {

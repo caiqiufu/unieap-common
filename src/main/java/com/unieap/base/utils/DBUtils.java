@@ -45,22 +45,23 @@ public class DBUtils {
 		}
 		return b;
 	}
-	public static Map<String,PropertyDescriptor> cacheBeanprops(Object bean) throws IntrospectionException{
-		Map<String,PropertyDescriptor> beanprops = new HashMap<String,PropertyDescriptor>();
+
+	public static Map<String, PropertyDescriptor> cacheBeanprops(Object bean) throws IntrospectionException {
+		Map<String, PropertyDescriptor> beanprops = new HashMap<String, PropertyDescriptor>();
 		BeanInfo poInfo = Introspector.getBeanInfo(bean.getClass());
 		PropertyDescriptor[] props = poInfo.getPropertyDescriptors();
-		String methodName,desc;
-		for (int i = 0; i < props.length; i++){
-			if (!"class".equals(props[i].getName())){
+		String methodName, desc;
+		for (int i = 0; i < props.length; i++) {
+			if (!"class".equals(props[i].getName())) {
 				Method getter = props[i].getReadMethod();
-				if(getter!=null){
+				if (getter != null) {
 					methodName = getter.getName();
-					if(methodName.length()>4){
-						desc = StringUtils.substring(methodName, methodName.length()-4);
-						if(!"Desc".equals(desc)){
+					if (methodName.length() > 4) {
+						desc = StringUtils.substring(methodName, methodName.length() - 4);
+						if (!"Desc".equals(desc)) {
 							beanprops.put(props[i].getName(), props[i]);
 						}
-					}else{
+					} else {
 						beanprops.put(props[i].getName(), props[i]);
 					}
 				}
@@ -69,30 +70,45 @@ public class DBUtils {
 		UnieapCacheMgt.setBeanProps(bean.getClass().getName(), beanprops);
 		return beanprops;
 	}
-	public static <T> void setCriteria(Criteria<T> criteria,Object bean) throws Exception{
-		if(bean!=null){
-			Map<String,PropertyDescriptor> beanprops = UnieapCacheMgt.getBeanProps(bean.getClass().getName());
-			if(beanprops==null){
+
+	public static <T> void setCriteria(Criteria<T> criteria, Object bean) throws Exception {
+		if (bean != null) {
+			Map<String, PropertyDescriptor> beanprops = UnieapCacheMgt.getBeanProps(bean.getClass().getName());
+			if (beanprops == null) {
 				cacheBeanprops(bean);
 				beanprops = UnieapCacheMgt.getBeanProps(bean.getClass().getName());
 			}
 			Iterator<String> iter = beanprops.keySet().iterator();
-			while(iter.hasNext()){
+			while (iter.hasNext()) {
 				String key = iter.next();
-				if(beanprops.containsKey(key)){
-					PropertyDescriptor prop = beanprops.get(key);
-					Method getter = prop.getReadMethod();
-					Object value = getter.invoke(bean, null);
-					if (value!=null&&StringUtils.isNotEmpty(value.toString())){
-						Class<?> retType = getter.getReturnType();
-						if(String.class==retType){
-							criteria.add(Restrictions.like(key,value.toString(), true));
-						}else{
-							criteria.add(Restrictions.eq(key,value, true));
+				if (beanprops.containsKey(key)) {
+					if (!isFieldDesc(beanprops, key)) {
+						PropertyDescriptor prop = beanprops.get(key);
+						Method getter = prop.getReadMethod();
+						Object value = getter.invoke(bean, null);
+						if (value != null && StringUtils.isNotEmpty(value.toString())) {
+							Class<?> retType = getter.getReturnType();
+							if (String.class == retType) {
+								criteria.add(Restrictions.like(key, value.toString(), true));
+							} else {
+								criteria.add(Restrictions.eq(key, value, true));
+							}
 						}
 					}
 				}
 			}
 		}
+	}
+
+	private static boolean isFieldDesc(Map<String, PropertyDescriptor> beanprops, String fieldName) {
+		if (fieldName.length() > 4 && "Desc".equals(fieldName.substring(fieldName.length() - 4))) {
+			String originalFieldName = fieldName.substring(fieldName.length() - 4);
+			if (beanprops.containsKey(originalFieldName)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		return false;
 	}
 }

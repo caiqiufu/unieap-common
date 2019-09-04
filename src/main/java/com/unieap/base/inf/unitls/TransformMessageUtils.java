@@ -23,25 +23,25 @@ import com.unieap.base.inf.vo.BizMessageVO;
 import com.unieap.base.inf.vo.InfConfigVO;
 import com.unieap.base.inf.vo.InfFieldVO;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 public class TransformMessageUtils {
 
 	@SuppressWarnings("unchecked")
 	public static String getBizMessage2JSON(BizMessageVO bizMessageVO, Map<String, Object> results) throws Exception {
 		List<BizFieldVO> fields = new ArrayList<BizFieldVO>();
-		JSONObject jso = new JSONObject();
+		net.minidev.json.JSONObject jso = new net.minidev.json.JSONObject();
 		ReadContext ctx = JsonPath.parse(jso);
 		Map<String, Object> extParameters = new HashMap<String, Object>();
 		extParameters.put(UnieapConstants.BIZMESSAGEVO, bizMessageVO);
 		if (!bizMessageVO.getFieldList().isEmpty()) {
 			BizFieldVO bizFieldVO = bizMessageVO.getRootFieldVO();
 			fields.add(bizFieldVO);
-			while (!bizFieldVO.isLeaf || fields.size() > 0) {
+			while (!bizFieldVO.isLeaf() || fields.size() > 0) {
+				if (!bizFieldVO.isLeaf() && fields.size() == 0) {
+					break;
+				}
 				BizFieldVO parentVO = bizFieldVO.getParentVO();
 				InfConfigVO infConfigVO = UnieapCacheMgt.getInfHandler(bizFieldVO.getInfFieldVO().getInfCode());
-				if (bizFieldVO.isLeaf) {
+				if (bizFieldVO.isLeaf()) {
 					if (parentVO == null) {
 						if ("XML".equals(infConfigVO.getResultType())) {
 							String value = getMessageFromXmlSourceValue(
@@ -98,7 +98,8 @@ public class TransformMessageUtils {
 									value = (String) fieldVerify.verify(bizFieldVO, bizFieldVO.getInfFieldVO(), value,
 											extParameters);
 								}
-								((JSONObject) ctx.read(parentVO.getXpath())).put(bizFieldVO.getFieldName(), value);
+								((net.minidev.json.JSONObject) ctx.read(parentVO.getXpath()))
+										.put(bizFieldVO.getFieldName(), value);
 							}
 							if ("JSON".equals(infConfigVO.getResultType())) {
 								String value = getMessageFromJsonSourceValue(
@@ -116,7 +117,8 @@ public class TransformMessageUtils {
 									value = (String) fieldVerify.verify(bizFieldVO, bizFieldVO.getInfFieldVO(), value,
 											extParameters);
 								}
-								((JSONObject) ctx.read(parentVO.getXpath())).put(bizFieldVO.getFieldName(), value);
+								((net.minidev.json.JSONObject) ctx.read(parentVO.getXpath()))
+										.put(bizFieldVO.getFieldName(), value);
 							}
 						}
 						if ("List".equals(parentVO.getFieldType())) {
@@ -144,16 +146,17 @@ public class TransformMessageUtils {
 										values, extParameters);
 							}
 							// records list from source
-							JSONArray allfieldsobj = ctx.read(parentVO.getXpath());
+							net.minidev.json.JSONArray allfieldsobj = ctx.read(parentVO.getXpath());
 							int i = values.size();
 							if (i > 0) {
 								if (allfieldsobj.size() == i) {
 									for (int j = 0; j < i; j++) {
-										allfieldsobj.getJSONObject(j).put(bizFieldVO.getFieldName(), values.get(j));
+										((net.minidev.json.JSONObject) allfieldsobj.get(j))
+												.put(bizFieldVO.getFieldName(), values.get(j));
 									}
 								} else {
 									for (int j = 0; j < i; j++) {
-										JSONObject obj = new JSONObject();
+										net.minidev.json.JSONObject obj = new net.minidev.json.JSONObject();
 										obj.put(bizFieldVO.getFieldName(), values.get(j));
 										allfieldsobj.add(obj);
 									}
@@ -165,44 +168,49 @@ public class TransformMessageUtils {
 					if (parentVO == null) {
 						if ("Object".equals(bizFieldVO.getFieldType())) {
 							if (!jso.containsKey(bizFieldVO.getFieldName())) {
-								jso.put(bizFieldVO.getFieldName(), new JSONObject());
+								jso.put(bizFieldVO.getFieldName(), new net.minidev.json.JSONObject());
 							}
 						}
 						if ("List".equals(bizFieldVO.getFieldType())) {
 							if (!jso.containsKey(bizFieldVO.getFieldName())) {
-								jso.put(bizFieldVO.getFieldName(), new JSONArray());
+								jso.put(bizFieldVO.getFieldName(), new net.minidev.json.JSONArray());
 							}
 						}
 					} else {
 						if ("Object".equals(parentVO.getFieldType())) {
-							JSONObject pjson = ctx.read(bizFieldVO.getParentVO().getXpath());
+							net.minidev.json.JSONObject pjson = ctx.read(bizFieldVO.getParentVO().getXpath());
 							if ("Object".equals(bizFieldVO.getFieldType())) {
 								if (!pjson.containsKey(bizFieldVO.getFieldName())) {
-									pjson.put(bizFieldVO.getFieldName(), new JSONObject());
+									pjson.put(bizFieldVO.getFieldName(), new net.minidev.json.JSONObject());
 								}
 							}
 							if ("List".equals(bizFieldVO.getFieldType())) {
 								if (!pjson.containsKey(bizFieldVO.getFieldName())) {
-									pjson.put(bizFieldVO.getFieldName(), new JSONArray());
+									pjson.put(bizFieldVO.getFieldName(), new net.minidev.json.JSONArray());
 								} else {
-									pjson.getJSONObject(bizFieldVO.getFieldName()).put(bizFieldVO.getFieldName(),
-											new JSONArray());
+									((net.minidev.json.JSONObject) pjson.get(bizFieldVO.getFieldName()))
+											.put(bizFieldVO.getFieldName(), new net.minidev.json.JSONArray());
 								}
 							}
 						}
 						if ("List".equals(parentVO.getFieldType())) {
-							JSONArray pjson = ctx.read(bizFieldVO.getParentVO().getXpath());
+							net.minidev.json.JSONArray pjson = ctx.read(bizFieldVO.getParentVO().getXpath());
 							if ("Object".equals(bizFieldVO.getFieldType())) {
-								if (!pjson.getJSONObject(0).containsKey(bizFieldVO.getFieldName())) {
-									pjson.getJSONObject(0).put(bizFieldVO.getFieldName(), new JSONObject());
+								if (!((net.minidev.json.JSONObject) pjson.get(0))
+										.containsKey(bizFieldVO.getFieldName())) {
+									((net.minidev.json.JSONObject) pjson.get(0)).put(bizFieldVO.getFieldName(),
+											new net.minidev.json.JSONObject());
 								}
 							}
 							if ("List".equals(bizFieldVO.getFieldType())) {
-								if (!pjson.getJSONObject(0).containsKey(bizFieldVO.getFieldName())) {
-									pjson.getJSONObject(0).put(bizFieldVO.getFieldName(), new JSONArray());
+								if (!((net.minidev.json.JSONObject) pjson.get(0))
+										.containsKey(bizFieldVO.getFieldName())) {
+									((net.minidev.json.JSONObject) pjson.get(0)).put(bizFieldVO.getFieldName(),
+											new net.minidev.json.JSONArray());
 								} else {
-									pjson.getJSONObject(0).getJSONObject(bizFieldVO.getFieldName())
-											.put(bizFieldVO.getFieldName(), new JSONArray());
+									((net.minidev.json.JSONObject) ((net.minidev.json.JSONObject) pjson.get(0))
+											.get(bizFieldVO.getFieldName())).put(bizFieldVO.getFieldName(),
+													new net.minidev.json.JSONArray());
 								}
 							}
 						}
@@ -212,9 +220,17 @@ public class TransformMessageUtils {
 					List<BizFieldVO> childrenList = bizFieldVO.getChildrenList();
 					for (BizFieldVO childVO : childrenList) {
 						if (childVO.isOptional()) {
-							int length = getMessageFromXmlSourceListLength(
-									(org.dom4j.Document) results.get(childVO.getInfFieldVO().getInfCode()),
-									childVO.getInfFieldVO());
+							int length = 0;
+							if ("JSON".equals(infConfigVO.getResultType())) {
+								length = getMessageFromJsonSourceListLength(
+										(ReadContext) results.get(childVO.getInfFieldVO().getInfCode()),
+										childVO.getInfFieldVO());
+							}
+							if ("XML".equals(infConfigVO.getResultType())) {
+								length = getMessageFromXmlSourceListLength(
+										(org.dom4j.Document) results.get(childVO.getInfFieldVO().getInfCode()),
+										childVO.getInfFieldVO());
+							}
 							if (length > 0) {
 								fields.add(childVO);
 							}
@@ -249,10 +265,10 @@ public class TransformMessageUtils {
 				element = document.addElement(bizFieldVO.getFieldName());
 			}
 			fields.add(bizFieldVO);
-			while (!bizFieldVO.isLeaf || fields.size() > 0) {
+			while (!bizFieldVO.isLeaf() || fields.size() > 0) {
 				BizFieldVO parentVO = bizFieldVO.getParentVO();
 				InfConfigVO infConfigVO = UnieapCacheMgt.getInfHandler(bizFieldVO.getInfFieldVO().getInfCode());
-				if (bizFieldVO.isLeaf) {
+				if (bizFieldVO.isLeaf()) {
 					if (parentVO == null) {
 						if ("XML".equals(infConfigVO.getResultType())) {
 							String value = getMessageFromXmlSourceValue(
@@ -411,18 +427,38 @@ public class TransformMessageUtils {
 		return 0;
 	}
 
+	public static int getMessageFromJsonSourceListLength(ReadContext ctx, InfFieldVO infFieldVO) {
+		Object obj = ctx.read(infFieldVO.getXpath());
+		if (obj != null) {
+			if (obj instanceof net.minidev.json.JSONArray) {
+				return ((net.minidev.json.JSONArray) obj).size();
+			} else {
+				return 1;
+			}
+		}
+		return 0;
+	}
+
 	public static String getMessageFromJsonSourceValue(ReadContext ctx, InfFieldVO infFieldVO) {
-		JSONObject pjson = ctx.read(infFieldVO.getXpath());
-		return pjson.getString(infFieldVO.getFieldName());
+		Object obj = ctx.read(infFieldVO.getXpath());
+		if (obj != null) {
+			return obj.toString();
+		} else {
+			return "";
+		}
 	}
 
 	public static List<String> getMessageFromJsonSourceList(ReadContext ctx, InfFieldVO infFieldVO) {
-		JSONArray pjson = ctx.read(infFieldVO.getXpath());
+		net.minidev.json.JSONArray pjson = ctx.read(infFieldVO.getXpath());
 		if (pjson != null && pjson.size() > 0) {
 			List<String> values = new ArrayList<String>();
 			for (int i = 0; i < pjson.size(); i++) {
-				JSONObject obj = pjson.getJSONObject(i);
-				values.add(obj.getString(infFieldVO.getFieldName()));
+				Object obj = pjson.get(i);
+				if (obj != null) {
+					values.add(obj.toString());
+				} else {
+					values.add("");
+				}
 			}
 			return values;
 		}

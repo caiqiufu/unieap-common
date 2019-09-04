@@ -24,19 +24,19 @@ public class LoginController {
 	@Autowired
 	public LoginBO loginBO;
 
-	@RequestMapping("/login")
-	public String login(HttpServletRequest request, HttpServletResponse response, Model model) {
+	@RequestMapping("/unieapLogin")
+	public String unieapLogin(HttpServletRequest request, HttpServletResponse response, Model model) {
 		model.addAttribute("myname_zh", "菜菜");
 		model.addAttribute("myname_en", "Chai Chai");
-		return "login";
+		return "unieapLogin";
 	}
-	@RequestMapping("/")
-	public String index(HttpServletRequest request, HttpServletResponse response, Model model) {
-		return "index";
+	@RequestMapping("/unieapIndex")
+	public String unieapIndex(HttpServletRequest request, HttpServletResponse response, Model model) {
+		return "unieapIndex";
 	}
-	@RequestMapping("/logout")
-	public String logout() {
-		return "logout";
+	@RequestMapping("/unieapLogout")
+	public String unieapLogout() {
+		return "unieapLogout";
 	}
 
 	@RequestMapping("/desk")

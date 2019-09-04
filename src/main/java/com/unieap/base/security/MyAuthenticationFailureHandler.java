@@ -16,7 +16,9 @@ public class MyAuthenticationFailureHandler extends SimpleUrlAuthenticationFailu
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException exception) throws IOException, ServletException {
+		request.getSession().setAttribute("loginErrorMessage", "3");
 		response.setContentType("application/json;charset=utf-8");
+		response.sendRedirect("/login?error=3"); 
 		PrintWriter out = response.getWriter();
 		out.write("{\"status\":\"error\",\"msg\":\"登录失败\"}");
 		out.flush();

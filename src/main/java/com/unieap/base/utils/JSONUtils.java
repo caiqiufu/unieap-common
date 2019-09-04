@@ -68,8 +68,8 @@ public final class JSONUtils {
 	 * @throws Exception
 	 */
 	public static JSONArray getJSONArray(List<?> list) throws Exception {
+		JSONArray ja = new JSONArray();
 		if (list != null && !list.isEmpty()) {
-			JSONArray ja = new JSONArray();
 			JSONObject jsonObj = null;
 			for (Object value : list) {
 				if (value instanceof Map) {
@@ -79,10 +79,8 @@ public final class JSONUtils {
 				}
 				ja.add(jsonObj);
 			}
-			return ja;
-		} else {
-			return null;
 		}
+		return ja;
 	}
 
 	/**

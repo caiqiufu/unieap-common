@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import com.unieap.base.UnieapConstants;
 import com.unieap.base.file.bo.ExcelBO;
@@ -19,8 +17,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @Configuration
-@EnableScheduling
-public class TaskFileProcess {
+public class TaskFileProcess implements TaskProcess{
 
 	@Autowired
 	private MdmFileTaskRepository mdmFileTaskRepository;
@@ -32,8 +29,7 @@ public class TaskFileProcess {
 	@Autowired
 	private TxtBO txtBO;
 
-	@Scheduled(cron = "0/2 * * * * *")
-	public void fileProcess() throws Exception {
+	public void process() throws Exception {
 		List<MdmFileTask> tasks = mdmFileTaskRepository.getProcessTaskList("0");
 		if (tasks != null && tasks.size() > 0) {
 			for (MdmFileTask task : tasks) {

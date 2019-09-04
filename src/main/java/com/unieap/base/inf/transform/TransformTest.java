@@ -24,8 +24,8 @@ public class TransformTest {
 		if (!bizMessageVO.getFieldList().isEmpty()) {
 			BizFieldVO bizFieldVO = bizMessageVO.getRootFieldVO();
 			fields.add(bizFieldVO);
-			while (!bizFieldVO.isLeaf || fields.size() > 0) {
-				if (bizFieldVO.isLeaf) {
+			while (!bizFieldVO.isLeaf() || fields.size() > 0) {
+				if (bizFieldVO.isLeaf()) {
 					if (bizFieldVO.getParentVO() == null) {
 						jso.put(bizFieldVO.getFieldName(), "set value:" + bizFieldVO.getFieldName());
 					} else {
@@ -121,7 +121,6 @@ public class TransformTest {
 		rootFieldVO.setFieldDisplayName("QueryBalanceResultMsg");
 		rootFieldVO.setFieldType("Object");
 		rootFieldVO.setId(1);
-		rootFieldVO.setLeaf(false);
 		rootFieldVO.setSeq(1);
 		rootFieldVO.setXpath("$.QueryBalanceResultMsg");
 		bizVO.setRootFieldVO(rootFieldVO);
@@ -135,7 +134,6 @@ public class TransformTest {
 		resultHeader.setFieldDisplayName("ResultHeader");
 		resultHeader.setFieldType("Object");
 		resultHeader.setId(2);
-		resultHeader.setLeaf(false);
 		resultHeader.setSeq(1);
 		resultHeader.setXpath("$.QueryBalanceResultMsg.ResultHeader");
 		queryBalanceResultMsgList.add(resultHeader);
@@ -150,7 +148,6 @@ public class TransformTest {
 		resultCode.setFieldDisplayName("ResultCode");
 		resultCode.setFieldType("Object");
 		resultCode.setId(2);
-		resultCode.setLeaf(true);
 		resultCode.setSeq(1);
 		resultCode.setXpath("$.QueryBalanceResultMsg.ResultHeader.ResultCode");
 		resultCode.setParentVO(resultHeader);
@@ -162,7 +159,6 @@ public class TransformTest {
 		resultDesc.setFieldDisplayName("ResultDesc");
 		resultDesc.setFieldType("Object");
 		resultDesc.setId(2);
-		resultDesc.setLeaf(true);
 		resultDesc.setSeq(1);
 		resultDesc.setXpath("$.QueryBalanceResultMsg.ResultHeader.ResultDesc");
 		resultDesc.setParentVO(resultHeader);
@@ -175,7 +171,6 @@ public class TransformTest {
 		queryBalanceResult.setFieldDisplayName("QueryBalanceResult");
 		queryBalanceResult.setFieldType("Object");
 		queryBalanceResult.setId(1);
-		queryBalanceResult.setLeaf(false);
 		queryBalanceResult.setSeq(1);
 		queryBalanceResult.setXpath("$.QueryBalanceResultMsg.QueryBalanceResult");
 		queryBalanceResult.setParentVO(rootFieldVO);
@@ -191,7 +186,6 @@ public class TransformTest {
 		balanceRecord.setFieldDisplayName("BalanceRecord");
 		balanceRecord.setFieldType("List");
 		balanceRecord.setId(1);
-		balanceRecord.setLeaf(false);
 		balanceRecord.setSeq(1);
 		balanceRecord.setXpath("$.QueryBalanceResultMsg.QueryBalanceResult.BalanceRecord");
 		balanceRecord.setParentVO(queryBalanceResult);
@@ -207,7 +201,6 @@ public class TransformTest {
 		balanceDesc.setFieldDisplayName("BalanceDesc");
 		balanceDesc.setFieldType("String");
 		balanceDesc.setId(1);
-		balanceDesc.setLeaf(true);
 		balanceDesc.setSeq(1);
 		balanceDesc.setXpath("$.QueryBalanceResultMsg.QueryBalanceResult.BalanceRecord[*].BalanceDesc");
 		balanceDesc.setParentVO(balanceRecord);
@@ -220,7 +213,6 @@ public class TransformTest {
 		balance.setFieldDisplayName("Balance");
 		balance.setFieldType("String");
 		balance.setId(1);
-		balance.setLeaf(true);
 		balance.setSeq(1);
 		balance.setXpath("$.QueryBalanceResultMsg.QueryBalanceResult.BalanceRecord[*].Balance");
 		balance.setParentVO(balanceRecord);

@@ -59,6 +59,17 @@ public class Esblog implements java.io.Serializable {
 	private String sourceSystem;
 	@Column(name = "destSystem", nullable = true, length = 32)
 	private String destSystem;
+	
+	@Column(name = "createTimeEnd", nullable = true, length = 255)
+	private String createTimeEnd;
+	@Column(name = "createTimeStart", nullable = true, length = 255)
+	private String createTimeStart;
+	@Column(name = "requestTimeStart", nullable = true, length = 255)
+	private String requestTimeStart;
+	@Column(name = "requestTimeEnd", nullable = true, length = 255)
+	private String requestTimeEnd;
+	@Column(name = "processServerInfo", nullable = true, length = 1024)
+	private String processServerInfo;
 
 	public Esblog() {
 	}
@@ -233,6 +244,46 @@ public class Esblog implements java.io.Serializable {
 
 	public void setDestSystem(String destSystem) {
 		this.destSystem = destSystem;
+	}
+
+	public String getCreateTimeEnd() {
+		return createTimeEnd;
+	}
+
+	public void setCreateTimeEnd(String createTimeEnd) {
+		this.createTimeEnd = createTimeEnd;
+	}
+
+	public String getCreateTimeStart() {
+		return createTimeStart;
+	}
+
+	public void setCreateTimeStart(String createTimeStart) {
+		this.createTimeStart = createTimeStart;
+	}
+
+	public String getRequestTimeStart() {
+		return requestTimeStart;
+	}
+
+	public void setRequestTimeStart(String requestTimeStart) {
+		this.requestTimeStart = requestTimeStart;
+	}
+
+	public String getRequestTimeEnd() {
+		return requestTimeEnd;
+	}
+
+	public void setRequestTimeEnd(String requestTimeEnd) {
+		this.requestTimeEnd = requestTimeEnd;
+	}
+
+	public String getProcessServerInfo() {
+		return processServerInfo;
+	}
+
+	public void setProcessServerInfo(String processServerInfo) {
+		this.processServerInfo = processServerInfo;
 	}
 
 }

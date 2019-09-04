@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,6 +88,8 @@ public abstract class FileHandler extends BaseBO {
 
 	@Autowired
 	MdmFileArchiveRepository mdmFileArchiveRepository;
+	private FileInputStream fileInputStream;
+	private FileOutputStream fileOutputStream;
 
 	public MdmFileArchive getFileArchive(Long fileId) throws Exception {
 		MdmFileArchive fileArchive = mdmFileArchiveRepository.getOne(fileId);
@@ -626,21 +629,17 @@ public abstract class FileHandler extends BaseBO {
 	}
 
 	/**
-	 * <p>
-	 * 描述:创建文件
-	 * </P>
-	 * Jan 26, 2011
 	 * 
+	 * @param fileName
 	 * @param path
 	 * @param isCover
 	 * @param isEnter
 	 * @param str
 	 * @throws Exception
 	 */
-	public void write(String fileName, String uploadPath, boolean isCover, boolean isEnter, String str)
-			throws Exception {
-		create(uploadPath, fileName);
-		File file = new File(uploadPath, fileName);
+	public void write(String fileName, String path, boolean isCover, boolean isEnter, String str) throws Exception {
+		create(path, fileName, isCover);
+		File file = new File(path, fileName);
 		OutputStreamWriter out = null;
 		String feed = str;
 		if (isEnter) {
@@ -658,18 +657,43 @@ public abstract class FileHandler extends BaseBO {
 	}
 
 	/**
-	 * <p>
-	 * 描述:创建文件夹
-	 * </P>
-	 * Jan 26, 2011
 	 * 
-	 * @param name
+	 * @param fileName
+	 * @param path
+	 * @param isCover
+	 * @param strs
+	 * @throws Exception
+	 */
+	public void write(String fileName, String path, boolean isCover, String[] strs) throws Exception {
+		create(path, fileName, isCover);
+		File file = new File(path, fileName);
+		OutputStreamWriter out = null;
+		StringBuffer feed = new StringBuffer();
+		for (String str : strs) {
+			feed.append(str).append('\n');
+		}
+		try {
+			out = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+			out.write(feed.toString());
+			out.flush();
+		} catch (IOException e) {
+			throw new Exception("write file [" + fileName + "] failure!", e);
+		} finally {
+			out.close();
+		}
+	}
+
+	/**
+	 * 
+	 * @param dir
+	 * @param fileName
+	 * @param isCover
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean create(String dir, String fileName) throws Exception {
+	public boolean create(String dir, String fileName, boolean isCover) throws Exception {
 		File f = new File(dir, fileName);
-		if (f.exists()) {
+		if (f.exists() && !isCover) {
 			return true;
 		}
 		createDir(dir);
@@ -718,7 +742,8 @@ public abstract class FileHandler extends BaseBO {
 		return new String[] { UnieapConstants.YES, errorInfo.toString() };
 	}
 
-	public MdmFileProcessResult saveFileProcess(Long id,Long fileId, Long totalNumber, String resultCode, String resultDesc) {
+	public MdmFileProcessResult saveFileProcess(Long id, Long fileId, Long totalNumber, String resultCode,
+			String resultDesc) {
 		MdmFileProcessResult mdmFileProcessResult = new MdmFileProcessResult();
 		mdmFileProcessResult.setId(id);
 		mdmFileProcessResult.setFileId(fileId);
@@ -741,5 +766,108 @@ public abstract class FileHandler extends BaseBO {
 		mdmFileProcessDetails.setResultDesc(resultDesc);
 		mdmFileProcessDetails.setRowNumber(rowNumber);
 		mdmFileProcessDetailsRepository.save(mdmFileProcessDetails);
+	}
+
+	public void copyFileUsingFileChannels(File source, File dest) throws IOException {
+		FileChannel inputChannel = null;
+		FileChannel outputChannel = null;
+		try {
+			fileInputStream = new FileInputStream(source);
+			inputChannel = fileInputStream.getChannel();
+			fileOutputStream = new FileOutputStream(dest);
+			outputChannel = fileOutputStream.getChannel();
+			outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
+		} finally {
+			inputChannel.close();
+			outputChannel.close();
+		}
+	}
+
+	/**
+	 * 删除文件，可以是文件或文件夹
+	 *
+	 * @param fileName 要删除的文件名
+	 * @return 删除成功返回true，否则返回false
+	 */
+	public boolean delete(String fileName) {
+		File file = new File(fileName);
+		if (!file.exists()) {
+			System.out.println("删除文件失败:" + fileName + "不存在！");
+			return false;
+		} else {
+			if (file.isFile())
+				return deleteFile(fileName);
+			else
+				return deleteDirectory(fileName);
+		}
+	}
+
+	/**
+	 * 删除单个文件
+	 *
+	 * @param fileName 要删除的文件的文件名
+	 * @return 单个文件删除成功返回true，否则返回false
+	 */
+	public boolean deleteFile(String fileName) {
+		File file = new File(fileName);
+		// 如果文件路径所对应的文件存在，并且是一个文件，则直接删除
+		if (file.exists() && file.isFile()) {
+			if (file.delete()) {
+				System.out.println("删除单个文件" + fileName + "成功！");
+				return true;
+			} else {
+				System.out.println("删除单个文件" + fileName + "失败！");
+				return false;
+			}
+		} else {
+			System.out.println("删除单个文件失败：" + fileName + "不存在！");
+			return false;
+		}
+	}
+
+	/**
+	 * 删除目录及目录下的文件
+	 *
+	 * @param dir 要删除的目录的文件路径
+	 * @return 目录删除成功返回true，否则返回false
+	 */
+	public boolean deleteDirectory(String dir) {
+		// 如果dir不以文件分隔符结尾，自动添加文件分隔符
+		if (!dir.endsWith(File.separator))
+			dir = dir + File.separator;
+		File dirFile = new File(dir);
+		// 如果dir对应的文件不存在，或者不是一个目录，则退出
+		if ((!dirFile.exists()) || (!dirFile.isDirectory())) {
+			System.out.println("删除目录失败：" + dir + "不存在！");
+			return false;
+		}
+		boolean flag = true;
+		// 删除文件夹中的所有文件包括子目录
+		File[] files = dirFile.listFiles();
+		for (int i = 0; i < files.length; i++) {
+			// 删除子文件
+			if (files[i].isFile()) {
+				flag = deleteFile(files[i].getAbsolutePath());
+				if (!flag)
+					break;
+			}
+			// 删除子目录
+			else if (files[i].isDirectory()) {
+				flag = deleteDirectory(files[i].getAbsolutePath());
+				if (!flag)
+					break;
+			}
+		}
+		if (!flag) {
+			System.out.println("删除目录失败！");
+			return false;
+		}
+		// 删除当前目录
+		if (dirFile.delete()) {
+			System.out.println("删除目录" + dir + "成功！");
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

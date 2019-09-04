@@ -20,7 +20,10 @@ public class InfWSCommonService extends BizHandler {
 	@Override
 	public ProcessResult process(RequestInfo requestInfo, Map<String, Object> extParameters) throws Exception {
 		Object payload = extParameters.get(UnieapConstants.PAYLOAD);
-		String requestMessage = this.getSOAPRequestMessageFromPayload(payload);
+		String requestMessage = (String)extParameters.get(UnieapConstants.REQUEST_MESSAGE);
+		if(payload!=null) {
+			requestMessage = this.getSOAPRequestMessageFromPayload(payload);
+		}
 		requestInfo.getRequestHeader().setSystemCode(appCode);
 		ProcessResult processResult = this.callCommonHTTPService(appCode, requestInfo, requestMessage, extParameters);
 		return processResult;

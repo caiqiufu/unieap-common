@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -30,6 +32,7 @@ import com.unieap.base.pojo.Esblog;
 import com.unieap.base.ratelimit.TokenBucket;
 import com.unieap.base.repository.EsbLogCacheMgt;
 import com.unieap.base.utils.JSONUtils;
+import com.unieap.base.utils.XmlJSONUtils;
 import com.unieap.base.vo.UserVO;
 
 import net.sf.json.JSONObject;
@@ -37,13 +40,71 @@ import net.sf.json.JSONObject;
 public class BizServiceUtils {
 	public static int totalRequestAmount = 0;
 
+	public static RequestInfo getRequestInfo(String bizCode,String soapXMLMessage,JSONObject requestParameterInfo) throws Exception{
+		JSONObject requestParameterInfoPath = requestParameterInfo.getJSONObject("requestParameterInfoPath");
+		JSONObject ns = requestParameterInfo.getJSONObject("ns");
+		Map<String,String> namespace = new HashMap<String,String>();
+		Iterator<?> keys = ns.keys();
+		String key = null;
+		while (keys.hasNext()) {
+			key = (String) keys.next();
+			namespace.put(key,ns.getString(key));
+		}
+		org.dom4j.Document dom = XmlJSONUtils.getSOAPXMLDocumentDom4J(soapXMLMessage, namespace);
+		RequestInfo requestInfo = new RequestInfo();
+		RequestHeader header = new RequestHeader();
+		requestInfo.setRequestHeader(header);
+		RequestBody body = new RequestBody();
+		requestInfo.setRequestBody(body);
+		body.setBizCode(bizCode);
+		if(requestParameterInfoPath.containsKey("appCode")&&!StringUtils.isEmpty(requestParameterInfoPath.getString("appCode"))&&dom.selectSingleNode(requestParameterInfoPath.getString("appCode"))!=null) {
+			header.setAppCode(dom.selectSingleNode(requestParameterInfoPath.getString("appCode")).getText());
+		}
+		if(requestParameterInfoPath.containsKey("accessName")&&!StringUtils.isEmpty(requestParameterInfoPath.getString("accessName"))&&dom.selectSingleNode(requestParameterInfoPath.getString("accessName"))!=null) {
+			header.setAccessName(dom.selectSingleNode(requestParameterInfoPath.getString("accessName")).getText());
+		}
+		if(requestParameterInfoPath.containsKey("password")&&!StringUtils.isEmpty(requestParameterInfoPath.getString("password"))&&dom.selectSingleNode(requestParameterInfoPath.getString("password"))!=null) {
+			header.setPassword(dom.selectSingleNode(requestParameterInfoPath.getString("password")).getText());
+		}
+		if(requestParameterInfoPath.containsKey("remoteAddress")&&!StringUtils.isEmpty(requestParameterInfoPath.getString("remoteAddress"))&&dom.selectSingleNode(requestParameterInfoPath.getString("remoteAddress"))!=null) {
+			header.setRemoteAddress(dom.selectSingleNode(requestParameterInfoPath.getString("remoteAddress")).getText());
+		}
+		if(requestParameterInfoPath.containsKey("operName")&&!StringUtils.isEmpty(requestParameterInfoPath.getString("operName"))&&dom.selectSingleNode(requestParameterInfoPath.getString("operName"))!=null) {
+			header.setOperName(dom.selectSingleNode(requestParameterInfoPath.getString("operName")).getText());
+		}
+		if(requestParameterInfoPath.containsKey("channelCode")&&!StringUtils.isEmpty(requestParameterInfoPath.getString("channelCode"))&&dom.selectSingleNode(requestParameterInfoPath.getString("channelCode"))!=null) {
+			header.setChannelCode(dom.selectSingleNode(requestParameterInfoPath.getString("channelCode")).getText());
+		}
+		if(requestParameterInfoPath.containsKey("extTransactionId")&&!StringUtils.isEmpty(requestParameterInfoPath.getString("extTransactionId"))&&dom.selectSingleNode(requestParameterInfoPath.getString("extTransactionId"))!=null) {
+			header.setExtTransactionId(dom.selectSingleNode(requestParameterInfoPath.getString("extTransactionId")).getText());
+		}
+		if(requestParameterInfoPath.containsKey("transactionId")&&!StringUtils.isEmpty(requestParameterInfoPath.getString("transactionId"))&&dom.selectSingleNode(requestParameterInfoPath.getString("transactionId"))!=null) {
+			header.setTransactionId(dom.selectSingleNode(requestParameterInfoPath.getString("transactionId")).getText());
+		}
+		if(requestParameterInfoPath.containsKey("requestTime")&&!StringUtils.isEmpty(requestParameterInfoPath.getString("requestTime"))&&dom.selectSingleNode(requestParameterInfoPath.getString("requestTime"))!=null) {
+			header.setRequestTime(dom.selectSingleNode(requestParameterInfoPath.getString("requestTime")).getText());
+		}else {
+			String requestTime = UnieapConstants.getCurrentTime();
+			header.setRequestTime(requestTime);
+		}
+		if(requestParameterInfoPath.containsKey("version")&&!StringUtils.isEmpty(requestParameterInfoPath.getString("version"))&&dom.selectSingleNode(requestParameterInfoPath.getString("version"))!=null) {
+			header.setVersion(dom.selectSingleNode(requestParameterInfoPath.getString("version")).getText());
+		}
+		if(requestParameterInfoPath.containsKey("extParameters")&&!StringUtils.isEmpty(requestParameterInfoPath.getString("extParameters"))&&dom.selectSingleNode(requestParameterInfoPath.getString("extParameters"))!=null) {
+			header.setExtParameters(dom.selectSingleNode(requestParameterInfoPath.getString("extParameters")).getText());
+		}
+		if(requestParameterInfoPath.containsKey("serviceNumber")&&!StringUtils.isEmpty(requestParameterInfoPath.getString("serviceNumber"))&&dom.selectSingleNode(requestParameterInfoPath.getString("serviceNumber"))!=null) {
+			body.setServiceNumber(dom.selectSingleNode(requestParameterInfoPath.getString("serviceNumber")).getText());
+		}
+		return requestInfo;
+	}
 	public static RequestInfo getRequestInfo(String requestInfoString) throws Exception {
 		RequestInfo requestInfo = new RequestInfo();
 		RequestHeader header = new RequestHeader();
 		RequestBody body = new RequestBody();
-		JSONObject jsonResult = JSONObject.fromObject(requestInfoString);
-		if (jsonResult.has("requestHeader")) {
-			JSONObject requestHeader = (JSONObject) jsonResult.get("requestHeader");
+		JSONObject jsonRequest = JSONObject.fromObject(requestInfoString);
+		if (jsonRequest.has("requestHeader")) {
+			JSONObject requestHeader = (JSONObject) jsonRequest.get("requestHeader");
 			if (requestHeader.has("appCode")) {
 				String appCode = requestHeader.getString("appCode");
 				if (StringUtils.isEmpty(appCode)) {
@@ -138,8 +199,8 @@ public class BizServiceUtils {
 		} else {
 			throw new Exception("missed element:requestHeader");
 		}
-		if (jsonResult.has("requestBody")) {
-			JSONObject requestBody = (JSONObject) jsonResult.get("requestBody");
+		if (jsonRequest.has("requestBody")) {
+			JSONObject requestBody = (JSONObject) jsonRequest.get("requestBody");
 			if (requestBody.has("serviceNumber")) {
 				String serviceNumber = requestBody.getString("serviceNumber");
 				body.setServiceNumber(serviceNumber);
@@ -290,7 +351,7 @@ public class BizServiceUtils {
 	 * @return
 	 */
 	public static Esblog getEsbLog(RequestInfo requestInfo, ProcessResult processResult, String requestInfoString,
-			String ResponseInfoString, String during, String destSystem) {
+			String ResponseInfoString, String during, String destSystem,String processServerInfo) {
 		RequestHeader requestHeader = requestInfo.getRequestHeader();
 		RequestBody requestBody = requestInfo.getRequestBody();
 		Esblog esblog = new Esblog();
@@ -311,10 +372,12 @@ public class BizServiceUtils {
 		}
 		esblog.setRequestInfo(requestInfoString.getBytes());
 		esblog.setResponseInfo(ResponseInfoString.getBytes());
-		// esblog.setCreateDate(UnieapConstants.getDateTime());
+		java.sql.Timestamp dateTime = new java.sql.Timestamp(System.currentTimeMillis());
+		esblog.setCreateDate(dateTime);
 		esblog.setExecuteTime(during);
 		esblog.setSourceSystem(requestHeader.getSystemCode());
 		esblog.setDestSystem(destSystem);
+		esblog.setProcessServerInfo(processServerInfo);
 		return esblog;
 	}
 
@@ -415,7 +478,7 @@ public class BizServiceUtils {
 			requestInfoString = JSONUtils.convertBean2JSON(request).toString();
 		}
 		Esblog esblog = BizServiceUtils.getEsbLog(requestInfo, processResult, requestInfoString, responseInfoString,
-				during, appCode);
+				during, appCode,"");
 		EsbLogCacheMgt.setEsbLogVO(esblog);
 		return responseInfoString;
 	}

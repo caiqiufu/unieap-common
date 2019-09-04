@@ -199,7 +199,7 @@ public class SoapCallUtils {
 			processResult.setResultCode(UnieapConstants.C99999);
 			processResult.setResultDesc(e.getLocalizedMessage());
 			String requestInfoString = BizServiceUtils.getSoapMessageString(request);
-			Esblog esblog = BizServiceUtils.getEsbLog(requestInfo, processResult, requestInfoString, "", "", appName);
+			Esblog esblog = BizServiceUtils.getEsbLog(requestInfo, processResult, requestInfoString, "", "", appName,"");
 			UnieapCacheMgt.setPersistenceData(UnieapConstants.PERSISTENCE_TYPE.ESB, esblog);
 			throw e;
 		}

@@ -23,10 +23,8 @@ public class MyAuthenticationAccessDeniedHandler implements AccessDeniedHandler 
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response,
 			AccessDeniedException accessDeniedException) throws IOException, ServletException {
-		//httpServletRequest.getSession().setAttribute("loginErrorMessage", "2");
-		//RequestDispatcher dispatcher = httpServletRequest.getRequestDispatcher(httpServletRequest.getRequestURI());
-		//dispatcher.forward(httpServletRequest, httpServletResponse);
-		// httpServletResponse.sendRedirect(httpServletRequest.+"/login?error=2");
+		request.getSession().setAttribute("loginErrorMessage", "2");
+		response.sendRedirect("/login?error=2"); 
 		response.setContentType("application/json;charset=UTF-8");
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("code", "403");

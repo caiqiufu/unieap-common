@@ -3,7 +3,6 @@ package com.unieap.base.vo;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
 
@@ -11,7 +10,6 @@ import com.unieap.base.utils.JSONUtils;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-
 
 public class PaginationSupport extends BaseVO {
 	/**
@@ -35,25 +33,28 @@ public class PaginationSupport extends BaseVO {
 	/**
 	 * sort ASC
 	 */
-	public  String ASC = "ASC";
+	public String ASC = "ASC";
 	/**
 	 * sort DESC
 	 */
-	public  String DESC = "DESC";
+	public String DESC = "DESC";
 
 	public String getJsonString() throws Exception {
 		if (StringUtils.isEmpty(jsonString) && this.items != null) {
 			JSONObject data = new JSONObject();
 			try {
 				data.put("totalCount", this.getTotalCount());
-				data.put("pageSize", this.pageSize);
+				data.put("pageSize", this.getPageSize());
 				data.put("currentPage", this.getCurrentPage());
 				data.put("startIndex", this.getStartIndex());
-				JSONArray ja = JSONUtils.getJSONArray(this.items);
-				data.put("rows", ja);
+				if (this.items instanceof JSONArray) {
+					data.put("rows", this.items);
+				} else {
+					JSONArray ja = JSONUtils.getJSONArray(this.items);
+					data.put("rows", ja);
+				}
 			} catch (Exception e) {
-				throw new Exception("items data conver to json error:"
-						+ e.getMessage(), e);
+				throw new Exception("items data conver to json error:" + e.getMessage(), e);
 			}
 			jsonString = data.toString();
 		}
@@ -180,15 +181,16 @@ public class PaginationSupport extends BaseVO {
 	public void setDsName(String dsName) {
 		this.dsName = dsName;
 	}
+
 	/**
 	 * @param sort
 	 * @param dir
 	 */
-	public void setSort(String sort,String dir){
+	public void setSort(String sort, String dir) {
 		this.sort = sort;
 		this.dir = dir;
 	}
-	
+
 	public void po2vo(Class<?> object) throws Exception {
 		List<Object> vos = new ArrayList<Object>();
 		for (Object r : this.items) {

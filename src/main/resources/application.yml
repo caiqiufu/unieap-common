@@ -1,7 +1,7 @@
-#################################################
-#应用级别参数
-#################################################
 spring:  
+  application:
+    #name: unieap-common-slave
+    name: unieap-common-master
   profiles : 
      #指定读取配置文件:dev(开发环境),prod(生产环境),qa(测试环境)
      active : dev
@@ -18,7 +18,7 @@ spring:
     mode: HTML
   jpa :
      database : MYSQL  
-     show-sql : true
+     show-sql : false
      open-in-view : false
      # Hibernate ddl auto (create, create-drop, update)
      generate-ddl: false
@@ -37,17 +37,33 @@ spring:
          enabled : false
       table-prefix : BATCH_
 ###################################################################
+  security:
+    user:
+      name: admin
+      password: 123456
+  #freemarker的viewResolver没有在spring-cloud-netflix-eureka-server-1.3.1.RELEASE.jar中找到模板
+  freemarker:
+     prefer-file-system-access: false
+###############################################################################
+# Eureka gui will be displayed
+###############################################################################
+security:
+    basic:
+      enabled: false  # 开启基于HTTP basic的认证
 context : 
       listener : 
          classes : com.unieap.base.ApplicationEventListener
-security:
-   basic: 
-      enabled: false
 #通过HTTP发送shutdown信号
-endpoints : 
+management:
+   endpoints: 
+      web:
+         exposure:
+           include: '*'
+   endpoint:
       #启用shutdown   
-      shutdown : 
-         enabled : true
+      shutdown: 
+         enabled: true
          #禁用密码验证
-         sensitive : false
-####################################################################
+         sensitive: false
+      health:
+         show-details: always

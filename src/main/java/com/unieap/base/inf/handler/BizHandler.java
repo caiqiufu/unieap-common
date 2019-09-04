@@ -189,7 +189,7 @@ public abstract class BizHandler extends ConnectionHandler {
 		requestInfo.getRequestHeader().setResponseTime(DateUtils.getStringDate());
 		Esblog esblog = BizServiceUtils.getEsbLog(requestInfo, processResult,
 				JSONUtils.convertBean2JSON(request).toString(), JSONUtils.convertBean2JSON(response).toString(), during,
-				UnieapConstants.ESB);
+				UnieapConstants.ESB,"");
 		EsbLogCacheMgt.setEsbLogVO(esblog);
 	}
 
@@ -229,7 +229,17 @@ public abstract class BizHandler extends ConnectionHandler {
 						newRequestInfo.getRequestBody().getServiceNumber());
 				extParameters.put(UnieapConstants.BIZMESSAGEVO, bizMessageVO);
 				BizHandler bizHandler = (BizHandler) this.getProcessHandler(infConfigVO.getInfCode());
+				long beginTime = System.currentTimeMillis();
 				ProcessResult infProcessResult = bizHandler.process(newRequestInfo, extParameters);
+				long endTime = System.currentTimeMillis();
+				String during = "" + (endTime - beginTime);
+				String requestInfoString = (String)extParameters.get(UnieapConstants.REQUEST_MESSAGE);
+				String responseInfoString = (String)extParameters.get(UnieapConstants.RESPONSE_MESSAGE);
+				Esblog esblog = BizServiceUtils.getEsbLog(requestInfo, processResult, requestInfoString, responseInfoString,
+						during, appCode,(String)extParameters.get("ProcessServerInfo"));
+				String responseTime = UnieapConstants.getCurrentTime();
+				esblog.setResponseTime(responseTime);
+				EsbLogCacheMgt.setEsbLogVO(esblog);
 				if (UnieapConstants.C0.equals(infProcessResult.getResultCode())) {
 					if (!StringUtils.isEmpty(infConfigVO.getTransformMessageHandler())) {
 						TransformMessageHandler transformMessageHandler = (TransformMessageHandler) ApplicationContextProvider
@@ -248,7 +258,8 @@ public abstract class BizHandler extends ConnectionHandler {
 					processResult = infProcessResult;
 					payloads.put(infConfigVO.getInfCode(), infProcessResult.getVo());
 				} else {
-					throw new Exception(infProcessResult.getResultCode() + ":" + infProcessResult.getResultDesc());
+					//throw new Exception(infProcessResult.getResultCode() + ":" + infProcessResult.getResultDesc());
+					return infProcessResult;
 				}
 			}
 			if (!numberRouted) {
@@ -281,10 +292,11 @@ public abstract class BizHandler extends ConnectionHandler {
 		JSONObject obj = JSONObject.fromObject(transformMessage);
 		JSONObject resultHeader = obj.getJSONObject("ResultMsg").getJSONObject("ResultHeader");
 		JSONObject resultRecord = obj.getJSONObject("ResultMsg").getJSONObject("ResultRecord");
-		resultRecord.put("ResultRecord", resultRecord);
+		JSONObject resultRecordObj = new JSONObject();
+		resultRecordObj.put("ResultRecord", resultRecord);
 		processResult.setResultCode(resultHeader.getString("ResultCode"));
 		processResult.setResultDesc(resultHeader.getString("ResultDesc"));
-		processResult.setVo(resultRecord.toString());
+		processResult.setVo(resultRecordObj.toString());
 		return processResult;
 	}
 

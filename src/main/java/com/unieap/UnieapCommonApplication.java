@@ -13,6 +13,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.unieap.base.ApplicationContextProvider;
+import com.unieap.base.task.DynamicScheduleTaskSecond;
+import com.unieap.base.task.TaskProcess;
+
 @SpringBootApplication
 @EnableEurekaClient
 @RestController
@@ -20,7 +24,7 @@ import org.springframework.web.client.RestTemplate;
 @ComponentScan(basePackages = { "com" })
 @EnableJpaRepositories("com")
 public class UnieapCommonApplication {
-	
+
 	@Bean
 	@LoadBalanced
 	RestTemplate restTemplate() {
@@ -30,5 +34,8 @@ public class UnieapCommonApplication {
 	public static void main(String[] args) throws Exception {
 		TimeZone.setDefault(TimeZone.getTimeZone("GMT+8"));
 		SpringApplication.run(UnieapCommonApplication.class, args);
+		TaskProcess taskProcess = (TaskProcess) ApplicationContextProvider.getBean("taskFileProcess");
+		DynamicScheduleTaskSecond dynamicScheduleTaskSecond = new DynamicScheduleTaskSecond(taskProcess);
+		dynamicScheduleTaskSecond.setCron("0/5 * * * * ?");
 	}
 }

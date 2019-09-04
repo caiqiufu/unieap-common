@@ -21,7 +21,6 @@ public class InfFieldVO extends BaseVO {
 	public Integer parentId;
 	public InfFieldVO parentVO;
 	public List<InfFieldVO> childrenList;
-	public boolean isLeaf;
 	public String leafFlag;
 	public String className;
 	public String remark;
@@ -145,16 +144,7 @@ public class InfFieldVO extends BaseVO {
 	}
 
 	public boolean isLeaf() {
-		if (UnieapConstants.YES.equals(leafFlag)) {
-			isLeaf = true;
-		} else {
-			isLeaf = false;
-		}
-		return isLeaf;
-	}
-
-	public void setLeaf(boolean isLeaf) {
-		this.isLeaf = isLeaf;
+		return UnieapConstants.YES.equals(leafFlag);
 	}
 
 	public String getLeafFlag() {
